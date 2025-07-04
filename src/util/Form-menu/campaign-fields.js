@@ -1,7 +1,13 @@
 export const fields = [
-  // Row 1
+  // Row 1: Campaign Name full width
   [
-    { type: 'input', name: 'campaignName', label: 'Campaign Name', placeholder: 'Enter campaign name', gridSpan: 3 }
+    {
+      type: 'input',
+      name: 'campaignName',
+      label: 'Campaign Name',
+      placeholder: 'Enter campaign name',
+      gridSpan: 3
+    }
   ],
   // Row 2
   [
@@ -21,9 +27,16 @@ export const fields = [
     { type: 'select', name: 'storeTypes', label: 'Store Type', options: [{ label: 'Type A', value: 'a' }] },
     { type: 'select', name: 'targetDevices', label: 'Target Devices', options: [{ label: 'Mobile', value: 'mobile' }] }
   ],
-  // Row 5 (file upload, full width)
+  // Row 5 (file upload full width)
   [
-    { type: 'file', name: 'productImages', label: 'Product Images', accept: '.jpg,.png,.mp4', maxSizeMB: 25, gridSpan: 3 }
+    {
+      type: 'file',
+      name: 'productImages',
+      label: 'Product Images',
+      accept: '.jpg,.png,.mp4',
+      maxSizeMB: 25,
+      gridSpan: 3
+    }
   ],
   // Row 6
   [
