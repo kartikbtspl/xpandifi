@@ -3,7 +3,7 @@ import AppSidebar from "./AppSidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
 
-const AppLayout = ({ children }) => {
+const AppLayout = ( ) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
