@@ -1,10 +1,8 @@
 import React from 'react'
 import StatCard from '../components/card/StatCard';
-import ReusableTable from '../components/table/ReusableTable';
-import campaignImg from "../../public/images/profile.jpeg"; // or use URL
 
 const Dashboard = () => {
-    const statsData = [
+  const statsData = [
     {
       title: "Revenue",
       value: "25.1k",
@@ -28,7 +26,6 @@ const Dashboard = () => {
       currency: true,
       changeColor: "text-green-600",
       bgGradient: "bg-gradient-to-br from-white via-slate-50 to-blue-100",
-      
     },
     {
       title: "Bid",
@@ -37,7 +34,7 @@ const Dashboard = () => {
       currency: false,
       changeColor: "text-green-600",
       bgGradient: "bg-gradient-to-br from-white via-purple-50 to-purple-100",
-    }
+    },
   ];
 
 //  const campaignData = Array(10).fill().map(() => ({
@@ -74,18 +71,28 @@ const rows = Array.from({ length: 10 }).map((_, i) => ({
 }));
 
   return (
-     <div className="text-gray-800">
-      <h1 className="text-2xl font-bold mb-4">Welcome Back, John Smith</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-         {statsData.map((item, index) => (
-          <StatCard key={index} {...item}  />
-        ))}
+    <div className="w-full">
+      <div>
+        <HeaderSection
+          subtitle="Harshal"
+          showButton={true}
+          buttonLabel="Create Campaign"
+          onButtonClick={() => console.log("clicked")}
+          subtitleClass="text-indigo-700 font-bold text-base"
+          
+        />
       </div>
-      <div className='mt-8'>
-        <ReusableTable columns={columns} rows={rows} title="Campaigns" />
+      <div
+        className="grid gap-4 w-full"
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}
+      >
+        {statsData.map((item, index) => (
+          <StatCard key={index} {...item} />
+        ))}
+
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
