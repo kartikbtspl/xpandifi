@@ -1,8 +1,10 @@
 import React from "react";
 import StatCard from "../components/card/StatCard";
 import HeaderSection from "../components/ui/header-section/HeaderSection";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const statsData = [
     {
       title: "Revenue",
@@ -45,7 +47,7 @@ const Dashboard = () => {
           subtitle="Harshal"
           showButton={true}
           buttonLabel="Create Campaign"
-          onButtonClick={() => console.log("clicked")}
+          onButtonClick={() => navigate("/create-campaign")}
           subtitleClass="text-indigo-700 font-bold text-base"
           
         />
@@ -58,6 +60,7 @@ const Dashboard = () => {
           <StatCard key={index} {...item} />
         ))}
       </div>
+      
     </div>
   );
 };

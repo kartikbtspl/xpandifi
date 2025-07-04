@@ -1,7 +1,6 @@
 import React from 'react';
 import { useController } from 'react-hook-form';
-import Label from './label/Label';
-
+import Label from '../label/Label'
 const FileUpload = ({
   name,
   label,
