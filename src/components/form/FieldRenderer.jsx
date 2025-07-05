@@ -1,22 +1,30 @@
-import Input from '../ui/input/Input'
-import Select from '../ui/select-dropdown/Select';
-import Checkbox from '../ui/checkbox/Checkbox';
-import FileUpload from '../ui/fileupload/FileUpload';
-import RangeDatePicker from '../ui/datePicker/RangeDatePicker';
-
+import Input from "../ui/input/Input";
+import Select from "../ui/select-dropdown/Select";
+import Checkbox from "../ui/checkbox/Checkbox";
+import FileUpload from "../ui/fileupload/FileUpload";
+import RangeDatePicker from "../ui/datePicker/RangeDatePicker";
+import { Controller } from "react-hook-form";
 const FieldRenderer = ({ field, control, errors }) => {
   switch (field.type) {
-    case 'input':
+    case "input":
       return (
-        <Input
+       <Controller
           name={field.name}
-          label={field.label}
-          placeholder={field.placeholder}
-          inputProps={field.inputProps}
-          error={errors?.[field.name]?.message}
+          control={control}
+          defaultValue=""
+          render={({ field: controllerField }) => (
+            <Input
+              {...controllerField}
+              label={field.label}
+              placeholder={field.placeholder}
+              inputProps={field.inputProps}
+              error={errors?.[field.name]?.message}
+              className={field.gridSpan === 3 ? "w-full" : ""}
+            />
+          )}
         />
       );
-    case 'select':
+    case "select":
       return (
         <Select
           name={field.name}
@@ -26,7 +34,7 @@ const FieldRenderer = ({ field, control, errors }) => {
           inputProps={field.inputProps}
         />
       );
-    case 'checkbox':
+    case "checkbox":
       return (
         <Checkbox
           name={field.name}
@@ -35,7 +43,7 @@ const FieldRenderer = ({ field, control, errors }) => {
           control={control}
         />
       );
-    case 'file':
+    case "file":
       return (
         <FileUpload
           name={field.name}
@@ -45,7 +53,7 @@ const FieldRenderer = ({ field, control, errors }) => {
           maxSizeMB={field.maxSizeMB}
         />
       );
-    case 'date-range':
+    case "date-range":
       return (
         <RangeDatePicker
           name={field.name}

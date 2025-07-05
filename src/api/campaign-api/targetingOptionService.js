@@ -14,6 +14,7 @@ export const deviceTypes = async () => {
       withCredentials : true
     }
   );
+  console.log(deviceTypes)
   
   return deviceTypes?.data?.data;
 };
@@ -31,6 +32,7 @@ export const productTypes = async () => {
     }
     
   );
+  
 
   return productTypes?.data?.data;
 };

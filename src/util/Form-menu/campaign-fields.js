@@ -9,11 +9,10 @@ export const fields = [
       gridSpan: 3
     }
   ],
-  // Row 2
   [
-    { type: 'select', name: 'product', label: 'Product', options: [{ label: 'Product 1', value: 'p1' }] },
+    { type: 'select', name: 'product', label: 'Product', options: [] },
     { type: 'input', name: 'adType', label: 'Ad Type', placeholder: 'Enter ad type' },
-    { type: 'select', name: 'storeType', label: 'Store Type', options: [{ label: 'Type 1', value: 't1' }] }
+    { type: 'input', name: 'brandName', label: 'Brand Name', placeholder : 'Enter Brand Name' }
   ],
   // Row 3
   [
@@ -23,9 +22,9 @@ export const fields = [
   ],
   // Row 4
   [
-    { type: 'select', name: 'regions', label: 'Regions', options: [{ label: 'Region 1', value: 'r1' }] },
+    { type: 'select', name: 'regions', label: 'Regions', options: [] },
     { type: 'select', name: 'storeTypes', label: 'Store Type', options: [{ label: 'Type A', value: 'a' }] },
-    { type: 'select', name: 'targetDevices', label: 'Target Devices', options: [{ label: 'Mobile', value: 'mobile' }] }
+    { type: 'select', name: 'targetDevices', label: 'Target Devices', options: [] }
   ],
   // Row 5 (file upload full width)
   [

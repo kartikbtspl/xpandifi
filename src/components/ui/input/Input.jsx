@@ -14,6 +14,11 @@ const Input = ({
   error = "",
   icon,
   iconPosition = "left",
+  // Add these props for RHF integration
+  value,
+  onChange,
+  onBlur,
+  ref,
 }) => {
   // Check if width or height already defined
   const hasCustomWidth = hasClass(className, "w-");
@@ -52,6 +57,11 @@ const Input = ({
           id={name}
           name={name}
           placeholder={placeholder}
+          // RHF integration: spread value, onChange, onBlur, ref
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          ref={ref}
           {...inputProps}
           className={`flex-grow bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 text-base ${
             error ? "text-red-700" : ""
