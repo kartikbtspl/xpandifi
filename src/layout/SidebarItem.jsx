@@ -1,12 +1,21 @@
-import React from 'react'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 
-const SidebarItem = ({icon , label}) => {
+const SidebarItem = ({ icon, label, path, toggleSidebar }) => {
   return (
-     <div className="flex items-center gap-3 cursor-pointer hover:bg-[#445E94] p-2 transition">
-    <span className="text-lg">{icon}</span>
-    <span className="text-sm">{label}</span>
-  </div>
-  )
-}
+    <NavLink
+      to={path}
+      onClick={toggleSidebar}
+      className={({ isActive }) =>
+        `flex items-center gap-3 cursor-pointer hover:bg-[#445E94] p-2 transition ${
+          isActive ? "bg-[#445E94]" : ""
+        }`
+      }
+    >
+      <span className="text-lg">{icon}</span>
+      <span className="text-sm">{label}</span>
+    </NavLink>
+  );
+};
 
-export default SidebarItem
+export default SidebarItem;
