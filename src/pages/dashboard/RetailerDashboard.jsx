@@ -1,5 +1,22 @@
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 
 const RetailerDashboard = () => {
+
+  const [name, setName] = useState("");
+
+   useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+  
+          setName(decoded?.fullName);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    }, []);
   // Bar chart data
   const barData = [10, 20, 35, 30, 25, 15, 5];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -16,6 +33,9 @@ const RetailerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+     <div className="mb-3">
+      <h1 className="text-2xl font-bold">Welcome Back ,<span className="text-[#445E94] text-md">{name || "Retailer"}</span></h1>
+     </div>
       {/* Header Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <MetricCard 
