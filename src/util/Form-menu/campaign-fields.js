@@ -22,7 +22,7 @@ export const fields = [
   ],
   [
     { type: 'select', name: 'regions', label: 'Regions', options: [], multi: true },
-    { type: 'select', name: 'storeTypes', label: 'Store Type', options: [{ label: 'Kirana', value: 'Kirana' } , {label : 'Parma' , value : 'Parma'} , {label : 'Electronic', value : 'Electronic'} , {label : 'Beauty' , value :'Beauty'}] },
+    { type: 'select', name: 'storeTypes', label: 'Store Type', options: [{ label: 'Kirana', value: 'Kirana' } , {label : 'pharmacy' , value : 'pharmacy'} , {label : 'Electronic', value : 'Electronic'} , {label : 'Beauty' , value :'Beauty'}] },
     { type: 'select', name: 'targetDevices', label: 'Target Devices', options: [], multi: true }
   ],
   [
