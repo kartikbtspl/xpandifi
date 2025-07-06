@@ -8,7 +8,7 @@ const FieldRenderer = ({ field, control, errors }) => {
   switch (field.type) {
     case "input":
       return (
-       <Controller
+        <Controller
           name={field.name}
           control={control}
           defaultValue=""
@@ -30,8 +30,9 @@ const FieldRenderer = ({ field, control, errors }) => {
           name={field.name}
           label={field.label}
           options={field.options}
-          control={control}
           inputProps={field.inputProps}
+          multi={field.multi}
+          control={control}
         />
       );
     case "checkbox":

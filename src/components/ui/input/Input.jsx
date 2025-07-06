@@ -1,9 +1,6 @@
 import React from "react";
 import Label from "../label/Label";
 
-const hasClass = (className, pattern) =>
-  new RegExp(`\\b${pattern}\\b`).test(className || "");
-
 const Input = ({
   name,
   label,
@@ -14,39 +11,19 @@ const Input = ({
   error = "",
   icon,
   iconPosition = "left",
-  // Add these props for RHF integration
   value,
   onChange,
   onBlur,
   ref,
 }) => {
-  // Check if width or height already defined
-  const hasCustomWidth = hasClass(className, "w-");
-  const hasCustomHeight = hasClass(className, "h-");
-
-  const baseWrapperClasses = [
-    "inline-flex items-center",
-    hasCustomWidth ? "" : "w-[320px]",
-    hasCustomHeight ? "" : "h-[43px]",
-    "rounded-[12px]",
-    "border",
-    error ? "border-red-500" : "border-gray-300",
-    "pt-[11px]",
-    "pr-3",
-    "pb-[11px]",
-    "pl-3",
-    "gap-2.5",
-    "focus-within:ring-2 focus-within:ring-blue-500",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return (
-    <div className="mb-4">
+    <div className="mb-4 mt-1">
       <Label text={label} htmlFor={name} {...labelProps} />
-
-      <div className={baseWrapperClasses}>
+      <div
+        className={`flex items-center w-full  h-[40px] rounded-lg border ${
+          error ? "border-red-500" : "border-gray-300"
+        } py-2 px-4 gap-2.5 focus-within:ring-2 focus-within:ring-blue-500 bg-white shadow-xs ${className}`}
+      >
         {icon && iconPosition === "left" && (
           <div className="flex items-center text-gray-400 pointer-events-none">
             {icon}
@@ -57,13 +34,12 @@ const Input = ({
           id={name}
           name={name}
           placeholder={placeholder}
-          // RHF integration: spread value, onChange, onBlur, ref
           value={value}
           onChange={onChange}
           onBlur={onBlur}
           ref={ref}
           {...inputProps}
-          className={`flex-grow bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 text-base ${
+          className={`flex-grow bg-transparent border-none outline-none text-gray-900 placeholder-gray-500 text-base font-normal ${
             error ? "text-red-700" : ""
           }`}
           aria-invalid={error ? "true" : "false"}
@@ -76,7 +52,6 @@ const Input = ({
           </div>
         )}
       </div>
-
       {error && (
         <p id={`${name}-error`} className="mt-1 text-sm text-red-500" role="alert">
           {error}

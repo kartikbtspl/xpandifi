@@ -4,14 +4,22 @@ import { loginUser } from "../../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router";
 
-
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
-    className={`animate-spin ${size === "sm" ? "w-4 h-4" : "w-6 h-6"} text-white ${className}`}
+    className={`animate-spin ${
+      size === "sm" ? "w-4 h-4" : "w-6 h-6"
+    } text-white ${className}`}
     fill="none"
     viewBox="0 0 24 24"
   >
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    />
     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
   </svg>
 );
@@ -51,16 +59,30 @@ const SignIn = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 md:p-16 lg:p-20 xl:p-24 bg-white">
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-6">
-            <img src="/images/logo/xpandifi-logo.svg" alt="Xpandifi Logo" className="h-10" />
+            <img
+              src="/images/logo/xpandifi-logo.svg"
+              alt="Xpandifi Logo"
+              className="h-10"
+            />
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-2">Welcome Back</h2>
-          <p className="text-sm text-center text-[#697586] mb-6">Your ads have been waiting for you</p>
+          <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-2">
+            Welcome Back
+          </h2>
+          <p className="text-sm text-center text-[#697586] mb-6">
+            Your ads have been waiting for you
+          </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
               <input
                 type="email"
                 placeholder="Enter your email address"
@@ -73,11 +95,17 @@ const SignIn = () => {
                 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
               />
-              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
               <input
                 type="password"
                 placeholder="Enter Password"
@@ -90,12 +118,18 @@ const SignIn = () => {
                 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
               />
-              {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             {/* Role Select */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Select Role</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Role
+              </label>
               <select
                 {...register("role", { required: "Role is required" })}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
@@ -104,7 +138,11 @@ const SignIn = () => {
                 <option value="Ad-Agency">Ad-Agency</option>
                 <option value="Retailer">Retailer</option>
               </select>
-              {errors.role && <p className="text-sm text-red-500 mt-1">{errors.role.message}</p>}
+              {errors.role && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.role.message}
+                </p>
+              )}
             </div>
 
             {/* Submit */}
@@ -128,7 +166,12 @@ const SignIn = () => {
             </div>
           </form>
 
-          
+          <p className="text-sm text-gray-500 mt-8">
+            Don't have a Ads monetization account?{" "}
+            <Link to="/contact-us" className="text-blue-600 hover:underline">
+              Register here
+            </Link>
+          </p>
         </div>
       </div>
     </div>

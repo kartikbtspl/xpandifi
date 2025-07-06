@@ -1,42 +1,66 @@
-import React from 'react';
-import { useController } from 'react-hook-form';
-import Label from '../label/Label';
+// components/ui/select-dropdown/Select.jsx
+import React from "react";
+import SelectLib from "react-select";
+import { Controller } from "react-hook-form";
+
+const customStyles = {
+  control: (base) => ({
+    ...base,
+    borderRadius: "0.375rem",
+    borderColor: "#D1D5DB", // Tailwind gray-300
+    minHeight: "38px",
+  }),
+  multiValue: (base) => ({
+    ...base,
+    backgroundColor: "#E5E7EB", // Tailwind gray-200
+  }),
+  multiValueLabel: (base) => ({
+    ...base,
+    color: "#111827", // Tailwind gray-900
+  }),
+};
 
 const Select = ({
   name,
   label,
-  control,
   options = [],
-  className = '',
-  labelProps = {},
-  inputProps = {}, // renamed for consistency
+  control,
+  multi = false,
+  inputProps = {},
 }) => {
-  const {
-    field,
-    fieldState: { error },
-  } = useController({ name, control });
-
   return (
-    <div className='mb-4'>
-      <Label text={label} htmlFor={name} {...labelProps} />
-      <select
-        id={name}
-        {...field}
-        {...inputProps}
-        className={`w-[320px] h-[43px] px-3 py-2 border rounded-[12px] text-sm ${
-          error ? 'border-red-500' : 'border-gray-300'
-        } ${className}`}
-      >
-        <option value=''>Select {label}</option>
-        {options.map(opt => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      {error && <p className='text-sm text-red-500 mt-1'>{error.message}</p>}
+    <div className="flex flex-col space-y-1 w-full ">
+      {label && <label className="font-medium mb-1 mt-2">{label}</label>}
+
+      <Controller
+        name={name}
+        control={control}
+        defaultValue={multi ? [] : null}
+        render={({ field }) => (
+          <SelectLib
+            isMulti={multi}
+            options={options}
+            value={
+              multi
+                ? options.filter((opt) => field.value?.includes(opt.value))
+                : options.find((opt) => opt.value === field.value) || null
+            }
+            onChange={(selected) => {
+              if (multi) {
+                field.onChange(selected.map((opt) => opt.value));
+              } else {
+                field.onChange(selected?.value || "");
+              }
+            }}
+            styles={customStyles}
+            className="text-sm"
+            {...inputProps}
+          />
+        )}
+      />
     </div>
   );
 };
 
 export default Select;
+

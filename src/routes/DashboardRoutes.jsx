@@ -6,6 +6,9 @@ import Dashboard from "../pages/Dashboard";
 import CampaignList from "../pages/campaign/CampaignList";
 import CampaignReports from "../pages/campaign/CampaignReports";
 import BidManagement from "../pages/campaign/BidManagement";
+import UserDetails from "../pages/user/UserDetails";
+import PosDataUpload from "../pages/retailer/PosDataUpload";
+import AdPerformance from "../pages/retailer/AdPerformance";
 
 export const dashboardRoutes = [
   <Route
@@ -22,5 +25,8 @@ export const dashboardRoutes = [
     <Route path="/campaigns-list" element = {<CampaignList />} />
     <Route path="/reports" element={<CampaignReports />} />
     <Route path="/bids" element={<BidManagement />} />
+    <Route path="/profile" element = {<UserDetails />} /> 
+    <Route path="/pos-upload" element={<PosDataUpload />} />
+    <Route path="/ad-performance" element={<AdPerformance />} />
    </Route>,
 ];

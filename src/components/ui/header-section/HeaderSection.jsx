@@ -8,7 +8,6 @@ const HeaderSection = ({
   onButtonClick,
   titleClass = '',
   subtitleClass = '',
-  welcomeTextClass = '',
   containerClass = '',
   buttonClass = '',
 }) => {
@@ -17,18 +16,16 @@ const HeaderSection = ({
   return (
     <div className={containerClass || 'flex items-center justify-between mb-2 w-full'}>
       {showTextBlock && (
-        <div>
-          {subtitle ? (
-            <>
-              <p className={welcomeTextClass || 'text-3xl text-[#202020]'}>Welcome Back,</p>
-              <h1 className={subtitleClass || 'text-[#445E94]'}>
-                {subtitle}
-              </h1>
-            </>
-          ) : (
-            <h1 className={titleClass || 'text-sm font-semibold text-gray-800'}>
+        <div className="flex items-center gap-2">
+          {title && (
+            <h1 className={titleClass || 'text-2xl font-semibold text-gray-800'}>
               {title}
             </h1>
+          )}
+          {subtitle && (
+            <h2 className={subtitleClass || 'text-2xl  text-[#445E94]'}>
+              {subtitle}
+            </h2>
           )}
         </div>
       )}

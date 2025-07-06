@@ -1,33 +1,28 @@
 import axiosInstance from "../../config/axiosConfig";
 const token = localStorage.getItem("token");
 export const createCampaignAPI = async (data) => {
+ 
   const formData = new FormData();
-  Object.entries(data).forEach(([key, value]) => {
-    if (value instanceof File) {
-      formData.append(key, value);
-    } else if (value instanceof FileList) {
-      Array.from(value).forEach((file) => formData.append(key, file));
-    } else if (
-      value instanceof Date ||
-      (typeof value === "object" && value?.$d)
-    ) {
-      const isoDate = new Date(value.$d || value).toISOString();
-      formData.append(key, isoDate);
+
+ Object.entries(data).forEach(([key, value]) => {
+    if (key === "productFiles" && Array.isArray(value)) {
+      value.forEach((file) => {
+        formData.append("productFiles", file); // ✅ Correct key
+      });
     } else if (Array.isArray(value)) {
-      if (key === "targetRegions") {
-        const regionNames = value.map((region) => region.name);
-        formData.append(key, JSON.stringify(regionNames));
-      } else {
-        formData.append(key, JSON.stringify(value));
-      }
-    } else if (typeof value === "object") {
       formData.append(key, JSON.stringify(value));
-    } else if (value !== undefined && value !== null) {
-      formData.append(key, value.toString());
+    } else if (typeof value === "object" && value !== null) {
+      formData.append(key, JSON.stringify(value));
+    } else {
+      formData.append(key, value);
     }
   });
+
+  // Optional: Debug output
   
+
   const token = localStorage.getItem("token");
+
   const response = await axiosInstance.post(
     "/api/v1/campaign/createCampaign",
     formData,
@@ -38,8 +33,11 @@ export const createCampaignAPI = async (data) => {
       },
     }
   );
+
   return response?.data;
 };
+
+
 
 export const getCampaignsAPI = async () => {
   const response = await axiosInstance.get("api/v1/campaign/getUserCampaign", {
@@ -73,23 +71,45 @@ export const getCampaignByIdAPI = async (id) => {
       },
     }
   );
- 
+
   return response?.data?.data;
 };
 
-export const updateUserCampaign = async (id , data) =>  {
-  console.log(data)
+export const updateUserCampaign = async (id, data) => {
+  
 
-  const response = await axiosInstance.put(`api/v1/campaign/${id}/updateCampaign` , data ,
-    {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (key === "productFiles" && Array.isArray(value)) {
+      value.forEach((file) => {
+        formData.append("productFiles", file); // ✅ append each file
+      });
+    } else if (Array.isArray(value)) {
+      formData.append(key, JSON.stringify(value)); // ✅ stringify arrays
+    } else if (typeof value === "object" && value !== null) {
+      formData.append(key, JSON.stringify(value)); // ✅ stringify objects like dateRange
+    } else {
+      formData.append(key, value);
     }
-  )
-  return response?.data;
+  });
 
-}
+  
+ 
+  const token = localStorage.getItem("token");
+
+  const response = await axiosInstance.put(
+    `/api/v1/campaign/${id}/updateCampaign`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data", // ✅ must be set
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response?.data;
+};
+
