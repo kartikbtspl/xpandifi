@@ -120,7 +120,7 @@ const UserDetails = () => {
       {loading && (
         <div className="absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center gap-3">
           <p className="text-[#445E94] text-lg font-semibold animate-pulse">
-            Updating user profile...
+             user profile...
           </p>
           <Loader />
         </div>
