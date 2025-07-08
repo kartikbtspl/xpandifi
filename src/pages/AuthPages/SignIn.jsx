@@ -43,10 +43,10 @@ const SignIn = () => {
 
       if (response.type === "auth/loginUser/fulfilled") {
         dispatch(fetchCampaigns());
-    dispatch(fetchApprovedCampaigns());
+        dispatch(fetchApprovedCampaigns());
         const token = response?.payload?.token;
         if (token) {
-          localStorage.setItem("token", token); 
+          localStorage.setItem("token", token);
           navigate("/");
         }
       } else {

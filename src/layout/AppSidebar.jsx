@@ -1,12 +1,22 @@
+import { useDispatch } from "react-redux";
 import { menuItems } from "../util/appsidebar-menu/menuItems";
 import { retailerMenuItems } from "../util/appsidebar-menu/menuItems";
 import SidebarItem from "./SidebarItem";
 
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { fetchCampaigns } from "../redux/slices/campaignSlice";
+import { fetchApprovedCampaigns } from "../redux/slices/approvedCampaignSlice";
 
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
   const [role, setRole] = useState(null);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+      dispatch(fetchCampaigns())
+        dispatch(fetchApprovedCampaigns());
+  },[dispatch]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
