@@ -9,9 +9,9 @@ const CampaignReports = () => {
   const { campaigns, loading } = useSelector((state) => state.campaign);
   const [rows, setRows] = useState([]);
 
-  useEffect(() => {
-    dispatch(fetchCampaigns());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchCampaigns());
+  // }, [dispatch]);
 
 
 
