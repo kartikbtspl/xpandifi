@@ -3,6 +3,7 @@ import campaignReducer from './slices/campaignSlice'
 import loginReducer from './slices/authSlice'
 import userReducer from './slices/userSlice'
 import campaignDetailReducer from './slices/campaignDetailSlice'
+import approvedCampaignReducer from './slices/approvedCampaignSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     auth: loginReducer, 
     campaignDetail : campaignDetailReducer,
     user : userReducer,
+    approvedCampaigns: approvedCampaignReducer,
   },
 })

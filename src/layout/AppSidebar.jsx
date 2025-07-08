@@ -1,10 +1,25 @@
 import { menuItems } from "../util/appsidebar-menu/menuItems";
 import { retailerMenuItems } from "../util/appsidebar-menu/menuItems";
 import SidebarItem from "./SidebarItem";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { fetchApprovedCampaigns } from "../redux/slices/approvedCampaignSlice";
+
+import { fetchCampaigns } from "../redux/slices/campaignSlice";
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
+
+   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchApprovedCampaigns());
+  }, [dispatch]);
+
+   useEffect(() => {
+       dispatch(fetchCampaigns());
+     }, [dispatch]);
+    
+
   const [role, setRole] = useState(null);
 
   useEffect(() => {
@@ -19,16 +34,9 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
     }
   }, []);
 
-  
-  
-
-  
   const isRetailer = role === "Retailer";
 
-
   const sidebarItems = isRetailer ? retailerMenuItems : menuItems;
-  
-  
 
   return (
     <div
@@ -59,4 +67,3 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
 };
 
 export default AppSidebar;
-

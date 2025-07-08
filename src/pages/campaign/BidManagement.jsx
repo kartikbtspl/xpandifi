@@ -9,10 +9,6 @@ const BidManagement = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchCampaigns());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (campaigns?.data?.length > 0) {
       const formatted = campaigns.data.map((item, index) => ({
         id: index + 1,

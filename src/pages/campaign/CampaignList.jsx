@@ -12,14 +12,11 @@ const CampaignList = () => {
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  // Refresh campaigns data
   const refreshCampaigns = () => {
     dispatch(fetchCampaigns());
   };
 
-  useEffect(() => {
-    refreshCampaigns();
-  }, [dispatch]);
+ 
 
   useEffect(() => {
     if (campaigns?.data?.length > 0) {
@@ -93,7 +90,7 @@ const CampaignList = () => {
           isOpen={isEditOpen}
           onClose={() => setIsEditOpen(false)}
           campaignData={selectedCampaign}
-          onSuccess={refreshCampaigns} // <-- refresh on update
+          onSuccess={refreshCampaigns} 
         />
       )}
     </div>

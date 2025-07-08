@@ -3,12 +3,11 @@ import StatCard from '../../components/card/StatCard'
 import ReusableTable from "../../components/table/ReusableTable";
 import HeaderSection from "../../components/ui/header-section/HeaderSection";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCampaigns } from "../../redux/slices/campaignSlice";
+import { useSelector } from "react-redux";
+
 
 const AdAgencyDashboard = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { campaigns } = useSelector((state) => state.campaign);
   const { profile: user } = useSelector((state) => state.user);
 
@@ -21,9 +20,7 @@ const AdAgencyDashboard = () => {
     { title: "Bid", value: "25.1k", change: "+15%", currency: false },
   ];
 
-  useEffect(() => {
-    dispatch(fetchCampaigns());
-  }, [dispatch]);
+  
 
   useEffect(() => {
     if (campaigns?.data?.length > 0) {
@@ -74,6 +71,7 @@ const AdAgencyDashboard = () => {
         ))}
       </div>
       <ReusableTable columns={columns} rows={rows} />
+
     </div>
   );
 };

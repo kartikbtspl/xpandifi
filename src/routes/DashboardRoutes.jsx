@@ -9,6 +9,7 @@ import BidManagement from "../pages/campaign/BidManagement";
 import UserDetails from "../pages/user/UserDetails";
 import PosDataUpload from "../pages/retailer/PosDataUpload";
 import AdPerformance from "../pages/retailer/AdPerformance";
+import WithdrawEarning from "../pages/retailer/WithdrawEarning"
 
 export const dashboardRoutes = [
   <Route
@@ -28,5 +29,7 @@ export const dashboardRoutes = [
     <Route path="/profile" element = {<UserDetails />} /> 
     <Route path="/pos-upload" element={<PosDataUpload />} />
     <Route path="/ad-performance" element={<AdPerformance />} />
+    <Route path="/withdraw-earning" element={<WithdrawEarning />} />
+    
    </Route>,
 ];
