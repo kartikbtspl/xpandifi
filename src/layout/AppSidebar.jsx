@@ -9,17 +9,20 @@ import { fetchCampaigns } from "../redux/slices/campaignSlice";
 import { fetchApprovedCampaigns } from "../redux/slices/approvedCampaignSlice";
 
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
+  const token = localStorage.getItem("token");
   const [role, setRole] = useState(null);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-      dispatch(fetchCampaigns())
+     if(token) {
+       dispatch(fetchCampaigns())
         dispatch(fetchApprovedCampaigns());
+     }
   },[dispatch]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+
     if (token) {
       try {
         const decoded = jwtDecode(token);
