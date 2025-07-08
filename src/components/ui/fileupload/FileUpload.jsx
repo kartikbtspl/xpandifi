@@ -70,7 +70,7 @@ const FileUpload = ({
     const url = urls[index];
     const isFailed = failedUrls.includes(url);
 
-    // Determine media type
+    
     const isVideo = isString
       ? /\.(mp4|webm|ogg)$/i.test(url)
       : file.type.startsWith('video/');
