@@ -38,10 +38,15 @@ const SignIn = () => {
     setLoading(true);
     try {
       const response = await dispatch(loginUser(data));
-      const token = response?.payload?.data?.token;
-      if (token) {
-        localStorage.setItem("token", token);
-        navigate("/");
+
+      if (response.type === "auth/loginUser/fulfilled") {
+        const token = response?.payload?.token;
+        if (token) {
+          localStorage.setItem("token", token); 
+          navigate("/");
+        }
+      } else {
+        console.error("Login failed:", response?.payload);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -102,6 +107,7 @@ const SignIn = () => {
               )}
             </div>
 
+            {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
@@ -167,7 +173,7 @@ const SignIn = () => {
           </form>
 
           <p className="text-sm text-gray-500 mt-8">
-            Don't have a Ads monetization account?{" "}
+            Don't have an Ads monetization account?{" "}
             <Link to="/contact-us" className="text-blue-600 hover:underline">
               Register here
             </Link>
