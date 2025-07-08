@@ -32,8 +32,6 @@ export const fetchCampaigns = createAsyncThunk(
     
         if (response.length === 0) {
             toast.info("No campaigns found.");
-        } else {
-            toast.success("Campaigns fetched successfully!");
         }
       return response;
     } catch (error) {
