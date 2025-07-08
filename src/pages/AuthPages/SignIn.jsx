@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { loginUser } from "../../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router";
+import { fetchCampaigns } from "../../redux/slices/campaignSlice";
+import { fetchApprovedCampaigns } from "../../redux/slices/approvedCampaignSlice";
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -40,6 +42,8 @@ const SignIn = () => {
       const response = await dispatch(loginUser(data));
 
       if (response.type === "auth/loginUser/fulfilled") {
+        dispatch(fetchCampaigns());
+    dispatch(fetchApprovedCampaigns());
         const token = response?.payload?.token;
         if (token) {
           localStorage.setItem("token", token); 
