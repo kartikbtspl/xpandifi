@@ -10,6 +10,7 @@ import {
 } from "../../api/campaign-api/targetingOptionService";
 import { createCampaign, fetchCampaigns } from "../../redux/slices/campaignSlice";
 import Loader from "../../components/loader/Loader";
+import {fields} from "../../util/Form-menu/campaign-fields"
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ const CreateCampaign = () => {
         onSubmit={handleSubmit}
         dropdowns={dropdowns}
         methods={methods}
+        fields={fields}
       />
     </div>
   );

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import Button from "../ui/button/Button";
-import { fields } from "../../util/Form-menu/campaign-fields";
 import { estimatePrice } from "../../api/campaign-api/targetingOptionService";
 import Loader from "../loader/Loader";
 import { useSelector } from "react-redux";
@@ -14,7 +13,8 @@ const getGridClass = (field, row) => {
   return "col-span-1";
 };
 
-const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loading = false  }) => {
+const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loading = false ,fields }) => {
+  console.log(fields)
   const {
     handleSubmit,
     control,
@@ -49,7 +49,7 @@ const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loadin
   };
 
   // Inject dropdown options dynamically
-  const injectedFields = fields.map((row) =>
+  const injectedFields = fields?.map((row) =>
     row.map((field) =>
       dropdowns[field.name]
         ? { ...field, options: dropdowns[field.name] }

@@ -6,6 +6,7 @@ const Button = ({
   className = '',
   type = 'button',
   loading = false,
+  isIcon=true,
   ...inputProps
 }) => {
   const defaultClass =
@@ -45,7 +46,7 @@ const Button = ({
         </>
       ) : (
         <>
-          <span className="mr-2 text-base">+</span> {label}
+          {isIcon?<span className="mr-2 text-base">+</span>:''} {label}
         </>
       )}
     </button>
