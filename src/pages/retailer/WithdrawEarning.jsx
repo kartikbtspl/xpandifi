@@ -29,7 +29,7 @@ const WithdrawEarning = () => {
  
 
 
-      <div className='flex gap-x-2 bg-white'>
+      <div className='flex gap-x-2 mt-4 mb-4'>
         <div className='flex items-center gap-x-2'>
           <input
         type='checkbox'

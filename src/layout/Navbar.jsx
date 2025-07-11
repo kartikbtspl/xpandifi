@@ -5,6 +5,10 @@ import { jwtDecode } from "jwt-decode";
 import Input from "../components/ui/input/Input";
 import { SearchIcon } from "../icon";
 import UserProfile from "../components/user/UserProfile";
+import Modal from "../components/modal/Modal";
+import { Navigate } from "react-router-dom";
+import { routeMap } from "../routes/routeMaps";
+import { Link } from "react-router-dom";
 
 const languages = [
   { label: "English", code: "en" },
@@ -19,6 +23,30 @@ const Navbar = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const { profile } = useSelector((state) => state.user);
+
+  // const [query, setQuery] = useState();
+  const [result, setResult] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  
+ const handleSearch = (value) => {
+  if (!value) {
+    setResult([]);
+    return;
+  }
+
+
+  const searchResult = routeMap
+    .filter((route) => route.name) // Ensure the route has a name
+    .filter((route) => route.path) // Ensure the route has a path
+    .filter((route) => route.name.toLowerCase().includes(value.toLowerCase()))
+
+  setResult(searchResult);
+  console.log("Search Result:", searchResult);
+  console.log("Search Value:", value);
+};
+
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -57,14 +85,24 @@ const Navbar = ({ toggleSidebar }) => {
         <button className="md:hidden text-xl" onClick={toggleSidebar}>
           ☰
         </button>
-        <Input
+        {/* <Input
           name="search"
           placeholder="Search..."
+          value={query}
+          onChange={(e) => handleSearch(e.target.value)}
+          
+          autoComplete="off"
           inputProps={{ type: "search" }}
           icon={<SearchIcon />}
           iconPosition="left"
           className="mt-2"
-        />
+        /> */}
+        <div
+        onClick={() => setIsOpen(true)}
+         className="border border-gray-300 rounded-lg flex items-center px-3 py-1 w-full space-x-3 justify-between">
+          <SearchIcon className="text-gray-500" />
+          <p>Search..</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -99,6 +137,45 @@ const Navbar = ({ toggleSidebar }) => {
           {showProfile && <UserProfile profile={profile} />}
         </div>
       </div>
+
+
+
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Search Tabs">
+
+        <div >
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+          <div className="mt-4">
+          <ul className="border-none space-y-2">
+            {result.length > 0 ? (
+            result.map((item, index) => (
+              <li className="shadow rounded  hover:bg-gray-200">
+                <Link
+                key={index}
+                to={item.path}
+                onClick={() => {
+                  setIsOpen(false), 
+                  setResult([])
+                }}
+                className="block p-2 hover:bg-gray-100 cursor-pointer text-black"
+              >
+                {item.name}
+              </Link>
+              </li>
+            ))
+          ) : (
+            <div className="p-2 text-gray-500">No results found</div>
+          )}
+          </ul>
+
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

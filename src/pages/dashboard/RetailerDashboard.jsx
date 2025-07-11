@@ -183,9 +183,12 @@ const RetailerDashboard = () => {
 
           {/* Active Ads List */}
           <div className="w-2/3 h-[483px]">
-            <div className="bg-white rounded-xl shadow p-6 h-full">
-              <h3 className="font-bold text-lg text-gray-800 mb-4">Active Ads</h3>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow h-full">
+              <div className="border-b border-gray-300 w-full p-2">
+              <h3 className="font-bold text-lg text-gray-800">Active Ads</h3>
+
+              </div>
+              <div className="space-y-4 max-h-96 overflow-y-auto px-6 py-2">
                 {ads.map((ad, index) => (
                   <div
                     key={index}

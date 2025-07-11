@@ -518,266 +518,245 @@ const UserDetails = () => {
     console.log(user);
   };
 
+
   return (
-    <div className="flex flex-col md:flex-row justify-around rounded-lg shadow-xl bg-gray-50">
-      {loading == true ? (
-        <>
-          <div className="absolute inset-0 bg-white/90 z-30 flex flex-col items-center justify-center gap-3">
-            <Loader />
+  <div className="flex flex-col md:flex-row justify-around rounded-xl shadow-2xl bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden relative">
+    {loading ? (
+      <div className="absolute inset-0 bg-white/90 z-30 flex flex-col items-center justify-center gap-3">
+        <Loader />
+      </div>
+    ) : (
+      <>
+        {/* Left Panel - Profile */}
+        <div className="w-full md:w-1/3 bg-gradient-to-b from-[#1D1F33] to-[#445E94] p-8 text-white flex flex-col items-center space-y-6">
+          {/* Profile Picture */}
+          <div className="relative group">
+            <div
+              className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-cover bg-center overflow-hidden"
+              style={{
+                backgroundImage: `url(${
+                  profilePicPreview || user?.profilePic || "https://i.pravatar.cc/150?u=user"
+                })`,
+              }}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                aria-label="Upload profile picture"
+              />
+            </div>
+            <div className="absolute bottom-1 right-1 bg-white text-gray-700 p-1 rounded-full shadow transition group-hover:scale-105 cursor-pointer">
+              <RiEditBoxLine />
+               <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                aria-label="Upload profile picture"
+              />
+            </div>
           </div>
-        </>
-      ) : (
-        <>
-          <div className="w-full md:w-1/3 bg-gradient-to-t from-[#16122F] to-[#445E94] rounded-l-lg p-6 text-white shadow-md">
-            <div className="flex flex-col items-center">
-              
-              <div className="flex flex-col items-center mb-2">
-                <div
-                  className="relative"
-                  onClick={() =>
-                    setEditMode((prev) => ({ ...prev, profilePic: true }))
-                  }
+
+          {/* Profile Pic Edit Box */}
+          {editMode.profilePic && (
+            <div className="mt-4 w-full max-w-md bg-white p-4 rounded-lg shadow-md text-black">
+              <h3 className="text-lg font-semibold mb-3">Change Profile Picture</h3>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => cancelEdit("profilePic")}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
-                  
-                  <div
-                    className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-cover bg-center relative overflow-hidden"
-                    style={{
-                      backgroundImage: `url(${
-                        profilePicPreview ||
-                        user?.profilePic ||
-                        "https://i.pravatar.cc/150?u=user"
-                      })`,
-                    }}
-                  >
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      aria-label="Upload profile picture"
-                    />
-                    
-                <div className="flex items-center size-6 z-30 absolute bottom-0 right-12 cursor-pointer">
-                    <RiEditBoxLine />
-                </div>
-                  </div>
-                  
-                </div>
-
-                {editMode.profilePic && (
-                  <div className="mt-4 w-full max-w-md bg-white p-4 rounded-lg shadow-md text-black">
-                    <h3 className="text-lg font-semibold mb-3">
-                      Change Profile Picture
-                    </h3>
-
-                    <div className="flex gap-2 justify-end">
-                      <button
-                        onClick={() => cancelEdit("profilePic")}
-                        className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => handleSubmit("profilePic")}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <h2 className="text-2xl font-semibold">
-                {user?.fullName || "John Doe"}
-              </h2>
-              
-
-              <div className="mt-4 text-sm w-full">
-                <p className="font-semibold mb-1">Address</p>
-               
-                <div className="bg-white/10 p-3 rounded space-y-1 text-gray-200 text-sm">
-                 <button
-                onClick={() => setIsOpen(true)}
-                className="text-blue-200 hover:text-blue-300 px-2 py-1 rounded hover:bg-white/10 transition-colors justify-end"
-              >
-                <div className="flex w-full justify-end items-end text-end">
-                    <RiEditBoxLine className="size-6"/>
-                </div>
-              </button>
-                  <p>City: {user.city}</p>
-                  <p>State: {user.state}</p>
-                  <p>Country: {user.country}</p>
-                  <p>Address: {user.address}</p>
-                </div>
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleSubmit("profilePic")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
+                </button>
               </div>
             </div>
+          )}
+
+          {/* Name */}
+          <h2 className="text-2xl font-semibold">{user?.fullName || "John Doe"}</h2>
+
+          {/* Address */}
+          <div className="w-full bg-white/10 p-4 rounded-lg text-sm space-y-1 relative">
+            <button
+              onClick={() => setIsOpen(true)}
+              className="absolute top-2 right-2 text-blue-200 hover:text-blue-300"
+            >
+              <RiEditBoxLine className="w-5 h-5" />
+            </button>
+            <p><span className="font-semibold">City:</span> {user?.city}</p>
+            <p><span className="font-semibold">State:</span> {user?.state}</p>
+            <p><span className="font-semibold">Country:</span> {user?.country}</p>
+            <p><span className="font-semibold">Address:</span> {user?.address}</p>
+          </div>
+        </div>
+
+        {/* Right Panel - Info */}
+        <div className="w-full md:w-2/3 bg-white p-8 space-y-6">
+          <h3 className="text-xl font-bold text-gray-800 border-b pb-3">User Information</h3>
+
+          {/* Phone */}
+          <div className="flex justify-between">
+            <label className="text-gray-700 font-medium">Mobile:</label>
+            <p className="text-gray-600">+91 {user?.phone}</p>
           </div>
 
-          <div className="w-2/3 p-6">
-            <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">
-              User Information
-            </h3>
+          {/* Email */}
+          <div className="flex flex-col space-y-2 md:flex-row md:justify-between md:items-center">
+            <label className="text-gray-700 font-medium">Email:</label>
+            {!editMode.email ? (
+              <div className="flex justify-between items-center gap-4 w-full md:w-auto">
+                <p className="text-gray-600">{user?.email || "N/A"}</p>
+                <button
+                  onClick={() => setEditMode((prev) => ({ ...prev, email: true }))}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col md:flex-row gap-2 w-full md:justify-end">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="p-2 border rounded w-full md:w-auto"
+                  placeholder="Enter new email"
+                />
+                <button
+                  onClick={() => handleSubmit("email")}
+                  className="px-3 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded text-sm"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => cancelEdit("email")}
+                  className="px-3 py-2 text-gray-600 hover:text-gray-800 bg-gray-200 rounded text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
 
-            <div className="mb-4 flex items-center justify-between">
-              <label className="font-medium text-gray-700">Mobile:</label>
-              <p className="text-gray-500">+91 {user.phone}</p>
-            </div>
-
-            <div className="mb-4 flex items-center justify-between">
-              <label className="font-medium text-gray-700">Email:</label>
-              {!editMode.email ? (
-                <>
-                  <p className="text-gray-500">{user?.email || "N/A"}</p>
+          {/* Password */}
+          <div className="space-y-2">
+            <label className="text-gray-700 font-medium">Password:</label>
+            {!editMode.password ? (
+              <div className="flex justify-between items-center">
+                <p className="text-gray-600">••••••••</p>
+                <button
+                  onClick={() => setEditMode((prev) => ({ ...prev, password: true }))}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={formData.currentPassword}
+                  onChange={handleInputChange}
+                  className="p-2 border rounded w-full"
+                  placeholder="Current Password"
+                />
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleInputChange}
+                  className="p-2 border rounded w-full"
+                  placeholder="New Password"
+                />
+                <div className="flex space-x-2">
                   <button
-                    onClick={() =>
-                      setEditMode((prev) => ({ ...prev, email: true }))
-                    }
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    onClick={() => handleSubmit("password")}
+                    className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded text-sm"
                   >
-                    <i className="fas fa-edit mr-1" />
-                    Change
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 w-full">
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="p-2 border rounded w-full md:w-auto"
-                    placeholder="Enter new email"
-                  />
-                  <button
-                    onClick={() => handleSubmit("email")}
-                    className="px-3 py-1 text-white bg-blue-600 hover:bg-blue-700 rounded text-sm"
-                  >
-                    Update
+                    Reset
                   </button>
                   <button
-                    onClick={() => cancelEdit("email")}
-                    className="px-3 py-1 text-gray-600 hover:text-gray-800 bg-gray-200 rounded text-sm"
+                    onClick={() => cancelEdit("password")}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800 bg-gray-200 rounded text-sm"
                   >
                     Cancel
                   </button>
                 </div>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label className="font-medium text-gray-700">Password:</label>
-              {!editMode.password ? (
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-500">••••••••</p>
-                  <button
-                    onClick={() =>
-                      setEditMode((prev) => ({ ...prev, password: true }))
-                    }
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    <i className="fas fa-edit mr-1" />
-                    Change
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <input
-                    type="password"
-                    name="currentPassword"
-                    value={formData.currentPassword}
-                    onChange={handleInputChange}
-                    className="p-2 border rounded w-full"
-                    placeholder="Current Password"
-                  />
-                  <input
-                    type="password"
-                    name="newPassword"
-                    value={formData.newPassword}
-                    onChange={handleInputChange}
-                    className="p-2 border rounded w-full"
-                    placeholder="New Password"
-                  />
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleSubmit("password")}
-                      className="px-3 py-1 text-white bg-blue-600 hover:bg-blue-700 rounded text-sm"
-                    >
-                      Reset
-                    </button>
-                    <button
-                      onClick={() => cancelEdit("password")}
-                      className="px-3 py-1 text-gray-600 hover:text-gray-800 bg-gray-200 rounded text-sm"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
+        </div>
 
-          <Modal
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            title="Edit Address"
-          >
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              className="p-2 border rounded w-full mb-2"
-              placeholder="City"
-            />
-            <input
-              type="text"
-              name="state"
-              value={formData.state}
-              onChange={handleInputChange}
-              className="p-2 border rounded w-full mb-2"
-              placeholder="State"
-            />
-            <input
-              type="text"
-              name="country"
-              value={formData.country}
-              onChange={handleInputChange}
-              className="p-2 border rounded w-full mb-2"
-              placeholder="Country"
-            />
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              className="p-2 border rounded w-full mb-2"
-              placeholder="Full Address"
-            />
-            <div className="flex space-x-2">
-              <button
-                onClick={() => {
-                  handleSubmit("address");
-                  setIsOpen(false);
-                }}
-                className="px-3 py-1 text-white bg-blue-600 hover:bg-blue-700 rounded text-sm"
-              >
-                Save Changes
-              </button>
-              <button
-                onClick={() => {
-                  cancelEdit("address");
-                  setIsOpen(false);
-                }}
-                className="px-3 py-1 text-gray-600 hover:text-gray-800 bg-gray-200 rounded text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </Modal>
-        </>
-      )}
-    </div>
-  );
+        {/* Address Modal */}
+        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Edit Address">
+          <input
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleInputChange}
+            className="p-2 border rounded w-full mb-2"
+            placeholder="City"
+          />
+          <input
+            type="text"
+            name="state"
+            value={formData.state}
+            onChange={handleInputChange}
+            className="p-2 border rounded w-full mb-2"
+            placeholder="State"
+          />
+          <input
+            type="text"
+            name="country"
+            value={formData.country}
+            onChange={handleInputChange}
+            className="p-2 border rounded w-full mb-2"
+            placeholder="Country"
+          />
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleInputChange}
+            className="p-2 border rounded w-full mb-2"
+            placeholder="Full Address"
+          />
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={() => {
+                handleSubmit("address");
+                setIsOpen(false);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded text-sm"
+            >
+              Save Changes
+            </button>
+            <button
+              onClick={() => {
+                cancelEdit("address");
+                setIsOpen(false);
+              }}
+              className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      </>
+    )}
+  </div>
+);
+
 };
 
 export default UserDetails;
