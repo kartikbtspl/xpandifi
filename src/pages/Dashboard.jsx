@@ -3,6 +3,7 @@ import RetailerDashboard from "./dashboard/RetailerDashboard";
 import AdAgencyDashboard from "./dashboard/AdAgencyDashboard";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import Shimmer from "../components/shimmer/Shimmer";
 
 const Dashboard = () => {
   const { profile, loading } = useSelector((state) => state.user);
@@ -22,9 +23,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex text-3xl justify-center items-center h-screen text-[#445E94]">
-        Loading Dashboard...
-      </div>
+      <Shimmer />
     );
   }
 

@@ -1,52 +1,79 @@
-import React, { useState, useEffect } from "react";
-import ReusableTable from "../../components/table/ReusableTable";
-
-const productCategories = ["Electronics", "Clothing", "Groceries", "Beauty", "Home", "Sports"];
-const productNames = [
-  "Wireless Mouse",
-  "T-Shirt",
-  "Organic Apples",
-  "Lipstick",
-  "Vacuum Cleaner",
-  "Football",
-  "Bluetooth Headphones",
-  "Jeans",
-  "Almonds",
-  "Face Cream",
-  "Air Fryer",
-  "Tennis Racket",
-];
-
-// Utility to generate random POS data
-const generateRandomData = (count = 20) => {
-  return Array.from({ length: count }).map((_, index) => ({
-    id: index + 1,
-    productName: productNames[Math.floor(Math.random() * productNames.length)],
-    category: productCategories[Math.floor(Math.random() * productCategories.length)],
-    price: (Math.random() * 1000 + 100).toFixed(2), // ₹100 - ₹1100
-  }));
-};
+import React, { useEffect, useState } from "react";
+import ReusableTable from "../../components/table/ReusableTable"
+import { useSelector } from "react-redux";
+import dayjs from "dayjs";
 
 const PosDataUpload = () => {
+  const { campaigns, loading } = useSelector((state) => state.approvedCampaigns);
+
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const data = generateRandomData(20);
-    setRows(data);
-  }, []);
+    // Transform backend data if needed
+    if (campaigns.length > 0) {
+      const transformed = campaigns.map((campaign) => ({
+        ...campaign,
+        startDate: dayjs(campaign.startDate).format("DD MMM YYYY"),
+        endDate: dayjs(campaign.endDate).format("DD MMM YYYY"),
+        targetDevices: campaign.targetDevices?.join(", ") || "-",
+      }));
+      setRows(transformed);
+    }
+  }, [campaigns]);
 
   const columns = [
-    { id: "productName", label: "Product Name" },
-    { id: "category", label: "Category" },
-    { id: "price", label: "Price (₹)", numeric: true },
+    { id: "campaignName", label: "Campaign Name" },
+    { id: "startDate", label: "Start Date" },
+    { id: "startTime", label: "Start Time" },
+    { id: "endDate", label: "End Date" },
+    { id: "endTime", label: "End Time" },
+    { id: "targetDevices", label: "Target Devices" },
+    {
+      id: "productFile",
+      label: "Video",
+      renderCell: (row) => (
+        <a
+          href={row.productFile}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          View Video
+        </a>
+      ),
+    },
   ];
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">POS Data Upload</h2>
-      <ReusableTable columns={columns} rows={rows} />
+    <div className="">
+      <h2 className="text-xl font-semibold mb-4">POS Data Uploads</h2>
+      <ReusableTable columns={columns} rows={rows} loading={loading} />
     </div>
   );
 };
 
 export default PosDataUpload;
+
+// import React, { useState, useEffect } from "react";
+// import ReusableTable from "../../components/table/ReusableTable";
+// import { useSelector } from "react-redux";
+
+
+
+// const PosDataUpload = () => {
+//   const [rows, setRows] = useState([]);
+ 
+//   const { campaigns, loading, error } = useSelector((state) => state.approvedCampaigns);
+
+//   console.log("Campaigns:", campaigns);
+
+
+//   return (
+//     <div className="">
+//       <h2 className="text-xl font-semibold mb-4">POS Data Upload</h2>
+//       {/* <ReusableTable columns={columns} rows={rows} /> */}
+//     </div>
+//   );
+// };
+
+// export default PosDataUpload;

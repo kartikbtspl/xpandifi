@@ -2,29 +2,35 @@ export const withdrawFields = [
   [
     {
       name: "paymentMethod",
-      label: "Withdraw Method",
-      type: "Checkbox",
+      label: "Payment Method",
+      type: "checkbox",
       options: [
         { label: "UPI", value: "UPI" },
-        { label: "Bank Account", value: "Bank" },
+        { label: "Bank", value: "Bank" }
       ],
       gridSpan: 3,
-    },
+    }
   ],
   [
     {
       name: "amount",
-      label: "Amount",
+      label: "Withdraw Amount",
       type: "input",
-      placeholder: "₹ 0.00",
-      gridSpan: 1,
-    },
+      placeholder: "Enter amount",
+      inputProps: {
+        type: "number",
+        min: 1,
+      },
+      gridSpan: 3,
+    }
+  ],
+  [
     {
       name: "accountNo",
-      label: "Account No.",
+      label: "Account / UPI ID",
       type: "input",
-      placeholder: "Enter Account No.",
-      gridSpan: 1,
-    },
-  ],
+      placeholder: "Enter account number or UPI ID",
+      gridSpan: 3,
+    }
+  ]
 ];

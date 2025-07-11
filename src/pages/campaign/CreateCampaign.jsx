@@ -1,3 +1,4 @@
+import * as yup from "yup";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -8,15 +9,30 @@ import {
   deviceTypes,
   targetRegions,
 } from "../../api/campaign-api/targetingOptionService";
-import { createCampaign, fetchCampaigns } from "../../redux/slices/campaignSlice";
+import {
+  createCampaign,
+  fetchCampaigns,
+} from "../../redux/slices/campaignSlice";
 import Loader from "../../components/loader/Loader";
-import {fields} from "../../util/Form-menu/campaign-fields"
+import { yupResolver } from "@hookform/resolvers/yup";
+import { campaignValidationSchema } from "../../util/validation/campaignValidationSchema";
+import { fields } from "../../util/Form-menu/campaign-fields";
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.campaign);
-  const methods = useForm();
+  const methods = useForm({
+    resolver: yupResolver(campaignValidationSchema),
+  });
+
+  const buildValidationSchema = () => {
+    const shape = {};
+    fields.flat().forEach((field) => {
+      if (field.validation) shape[field.name] = field.validation;
+    });
+    return yup.object().shape(shape);
+  };
 
   const [dropdowns, setDropdowns] = useState({
     product: [],
@@ -79,4 +95,3 @@ const CreateCampaign = () => {
 };
 
 export default CreateCampaign;
-

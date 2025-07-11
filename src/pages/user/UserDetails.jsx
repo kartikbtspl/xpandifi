@@ -520,15 +520,23 @@ const UserDetails = () => {
 
 
   return (
-  <div className="flex flex-col md:flex-row justify-around rounded-xl shadow-2xl bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden relative">
-    {loading ? (
-      <div className="absolute inset-0 bg-white/90 z-30 flex flex-col items-center justify-center gap-3">
-        <Loader />
-      </div>
-    ) : (
-      <>
-        {/* Left Panel - Profile */}
-        <div className="w-full md:w-1/3 bg-gradient-to-b from-[#1D1F33] to-[#445E94] p-8 text-white flex flex-col items-center space-y-6">
+    <div className="relative w-full mx-auto p-6">
+      {loading && (
+        <div className="absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center gap-3">
+          <p className="text-[#445E94] text-lg font-semibold animate-pulse">
+             user profile...
+          </p>
+          <Loader />
+        </div>
+      )}
+
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-[#445E94] to-[#16122F] p-6 text-white">
+          <h2 className="text-3xl font-bold">User Profile</h2>
+          <p className="text-blue-100 mt-1">Manage your personal information</p>
+        </div>
+
+        <div className="p-6">
           {/* Profile Picture */}
           <div className="relative group">
             <div

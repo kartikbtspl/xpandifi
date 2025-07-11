@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import Label from '../label/Label';
 import { FiImage, FiX } from 'react-icons/fi';
@@ -8,7 +8,6 @@ const FileUpload = ({
   label,
   control,
   accept = '.jpg,.png,.mp4',
-  maxSizeMB = 25,
   inputProps = {},
   labelProps = {},
 }) => {
@@ -20,7 +19,6 @@ const FileUpload = ({
   const inputRef = useRef();
   const [failedUrls, setFailedUrls] = useState([]);
 
-  // Sanitize value (filter out {} or invalid files)
   const validFiles = (value || []).filter(
     (file) => file && (typeof file === 'string' || file instanceof File)
   );
@@ -28,24 +26,34 @@ const FileUpload = ({
   const otherFiles = validFiles.slice(1);
   const hasFiles = validFiles.length > 0;
 
+  // Generate object URLs for File objects only, keep strings as-is (S3 URLs)
+  const urls = validFiles.map((file) => {
+    if (typeof file === 'string') return file;
+    return URL.createObjectURL(file);
+  });
+
+  // Cleanup object URLs on unmount or when files change
+  useEffect(() => {
+    return () => {
+      urls.forEach((url, idx) => {
+        if (typeof validFiles[idx] !== 'string') {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [validFiles]); // runs cleanup when validFiles change
+
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    const validNewFiles = files.filter(
-      (file) => file.size / 1024 / 1024 <= maxSizeMB
-    );
-
-    if (validNewFiles.length !== files.length) {
-      alert(`Some files exceed ${maxSizeMB}MB and were not added.`);
-    }
-
-    onChange([...validFiles, ...validNewFiles]);
+    onChange([...validFiles, ...files]);
     e.target.value = '';
   };
 
   const handleRemove = (idx) => {
     const newFiles = validFiles.filter((_, i) => i !== idx);
     onChange(newFiles);
-    setFailedUrls(failedUrls.filter((url) => url !== validFiles[idx]));
+    const removedUrl = urls[idx];
+    setFailedUrls((prev) => prev.filter((url) => url !== removedUrl));
   };
 
   const renderPreview = (file, index) => {
@@ -59,8 +67,16 @@ const FileUpload = ({
     }
 
     const isString = typeof file === 'string';
-    const url = isString ? file : URL.createObjectURL(file);
+    const url = urls[index];
     const isFailed = failedUrls.includes(url);
+
+    
+    const isVideo = isString
+      ? /\.(mp4|webm|ogg)$/i.test(url)
+      : file.type.startsWith('video/');
+    const isImage = isString
+      ? /\.(jpeg|jpg|png|gif|webp)$/i.test(url)
+      : file.type.startsWith('image/');
 
     if (isFailed) {
       return (
@@ -73,7 +89,17 @@ const FileUpload = ({
 
     return (
       <div className="w-full h-full">
-        {isString ? (
+        {isVideo ? (
+          <video
+            src={url}
+            className="w-full h-full object-cover rounded"
+            controls
+            onError={() => {
+              console.error(`Failed to load video: ${url}`);
+              setFailedUrls((prev) => [...prev, url]);
+            }}
+          />
+        ) : isImage ? (
           <img
             src={url}
             alt={`preview-${index}`}
@@ -82,18 +108,6 @@ const FileUpload = ({
               console.error(`Failed to load image: ${url}`);
               setFailedUrls((prev) => [...prev, url]);
             }}
-          />
-        ) : file.type.startsWith('image/') ? (
-          <img
-            src={url}
-            alt={`preview-${index}`}
-            className="w-full h-full object-cover rounded"
-          />
-        ) : file.type.startsWith('video/') ? (
-          <video
-            src={url}
-            className="w-full h-full object-cover rounded"
-            controls
           />
         ) : (
           <div className="flex flex-col items-center justify-center p-2 w-full h-full">
@@ -112,12 +126,8 @@ const FileUpload = ({
         {!hasFiles ? (
           <div className="flex flex-col items-center justify-center py-10">
             <FiImage className="text-4xl text-gray-400 mb-2" />
-            <div className="font-medium text-gray-700 mb-1">
-              Drop image or browse
-            </div>
-            <div className="text-xs text-gray-400 mb-3">
-              Format: .jpeg, .png, .mp4 & Max file size: {maxSizeMB} MB
-            </div>
+            <div className="font-medium text-gray-700 mb-1">Drop image or browse</div>
+            <div className="text-xs text-gray-400 mb-3">Format: .jpeg, .png, .mp4</div>
             <input
               type="file"
               accept={accept}
@@ -206,7 +216,7 @@ const FileUpload = ({
                 Browse Files
               </button>
               <p className="text-xs text-gray-400 mt-1">
-                Format: jpeg, png, mp4. Max file size: {maxSizeMB}MB
+                Format: jpeg, png, mp4. No file size limit.
               </p>
             </div>
           </div>

@@ -11,6 +11,6 @@ export const menuItems = [
     { name: "Dashboard", icon: <GridIcon />, path: "/" },
     { name: "POS Data Upload", icon: <CampaignIcon />, path: "/pos-upload" },
     {name : "Ad Performance", icon: <ReportIcon />, path: "/ad-performance"},
-    {name : "Withdraw Earing", icon: <WithdrawIcon />, path: "/withdraw-earning"},
+  
     
   ];

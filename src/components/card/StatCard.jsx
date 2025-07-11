@@ -5,7 +5,7 @@ const StatCard = ({
   value,
   change,
   changeColor = "text-green-600",
-  bgGradient = "bg-white", 
+  bgGradient = "bg-gradient-to-r from-blue-50 to-red-50", 
   currency = false,
   className = "",
 }) => {

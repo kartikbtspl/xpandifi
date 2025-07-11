@@ -1,14 +1,28 @@
+import { useDispatch } from "react-redux";
 import { menuItems } from "../util/appsidebar-menu/menuItems";
 import { retailerMenuItems } from "../util/appsidebar-menu/menuItems";
 import SidebarItem from "./SidebarItem";
-import { useSelector } from "react-redux";
+
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { fetchCampaigns } from "../redux/slices/campaignSlice";
+import { fetchApprovedCampaigns } from "../redux/slices/approvedCampaignSlice";
+
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
+  const token = localStorage.getItem("token");
   const [role, setRole] = useState(null);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
+     if(token) {
+       dispatch(fetchCampaigns())
+        dispatch(fetchApprovedCampaigns());
+     }
+  },[dispatch]);
+
+  useEffect(() => {
+
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -19,16 +33,9 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
     }
   }, []);
 
-  
-  
-
-  
   const isRetailer = role === "Retailer";
 
-
   const sidebarItems = isRetailer ? retailerMenuItems : menuItems;
-  
-  
 
   return (
     <div
@@ -59,4 +66,3 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
 };
 
 export default AppSidebar;
-
