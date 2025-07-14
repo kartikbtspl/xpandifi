@@ -383,7 +383,6 @@ import {
   updateUser,
 } from "../../redux/slices/userSlice";
 import Loader from "../../components/loader/Loader";
-import { EditIcon } from "../../icon";
 import Modal from "../../components/modal/Modal";
 import { RiEditBoxLine } from "react-icons/ri";
 
@@ -760,8 +759,9 @@ const UserDetails = () => {
             </button>
           </div>
         </Modal>
-      </>
-    )}
+      </div>
+      
+    
   </div>
 );
 

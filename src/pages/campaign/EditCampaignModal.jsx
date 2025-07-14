@@ -1,26 +1,27 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import FormBuilder from "../../components/form/FromBuilder";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+
 import { Modal } from "../../components/ui/modal/Modal";
+import FormBuilder from "../../components/form/FromBuilder";
+import Loader from "../../components/loader/Loader";
+
 import {
   productTypes,
   targetRegions,
   deviceTypes,
+  estimatePrice,
 } from "../../api/campaign-api/targetingOptionService";
-import { useDispatch, useSelector } from "react-redux";
+
 import { updateCampaign } from "../../redux/slices/campaignDetailSlice";
-import Loader from "../../components/loader/Loader";
-import { toast } from "react-toastify";
+import { fields } from "../../util/Form-menu/campaign-fields";
 
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.campaignDetail);
 
-  const methods = useForm({
-    defaultValues: {},
-  });
+  const methods = useForm({ defaultValues: {} });
 
   const [dropdowns, setDropdowns] = useState({
     product: [],
@@ -32,18 +33,9 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     Promise.all([productTypes(), deviceTypes(), targetRegions()]).then(
       ([products, devices, regions]) => {
         setDropdowns({
-          product: (products || []).map((d) => ({
-            label: d.product_type,
-            value: d.product_type,
-          })),
-          targetDevices: (devices || []).map((d) => ({
-            label: d.deviceName,
-            value: d.deviceName,
-          })),
-          regions: (regions || []).map((d) => ({
-            label: d.city,
-            value: d.city,
-          })),
+          product: products.map((d) => ({ label: d.product_type, value: d.product_type })),
+          targetDevices: devices.map((d) => ({ label: d.deviceName, value: d.deviceName })),
+          regions: regions.map((d) => ({ label: d.city, value: d.city })),
         });
       }
     );
@@ -54,7 +46,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
       methods.reset({
         ...campaignData,
         productFiles: campaignData.productFiles || [],
-        timings: campaignData?.timings,
+        timings: campaignData.timings || {},
       });
     }
   }, [campaignData, methods]);
@@ -62,7 +54,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const handleUpdate = async (formData) => {
     await dispatch(updateCampaign({ id: campaignData.id, data: formData }));
     toast.success("Campaign updated successfully");
-    onSuccess?.(); // Refresh campaigns list
+    onSuccess?.();
     onClose();
   };
 
@@ -70,7 +62,6 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <FormProvider {...methods}>
         <div className="relative">
-          {/* Show Loader inside modal content */}
           {loading && (
             <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
               <div className="flex flex-col items-center gap-2">
@@ -81,10 +72,14 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
           )}
           <FormBuilder
             onSubmit={handleUpdate}
+            fieldsConfig={fields}
             dropdowns={dropdowns}
             methods={methods}
             isEdit={true}
             loading={loading}
+            estimateApi={estimatePrice}
+            estimateWatchFields={["product", "regions", "targetDevices"]}
+            estimateSetField="baseBid"
           />
         </div>
       </FormProvider>

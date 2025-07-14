@@ -1,20 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import FieldRenderer from "./FieldRenderer";
 import Button from "../ui/button/Button";
-import { estimatePrice } from "../../api/campaign-api/targetingOptionService";
-import Loader from "../loader/Loader";
-import { useSelector } from "react-redux";
 
+// Util: returns Tailwind grid span based on config
 const getGridClass = (field, row) => {
-  if (field.gridSpan === 3 || row.length === 1)
-    return "col-span-1 md:col-span-3";
+  if (field.gridSpan === 3 || row.length === 1) return "col-span-1 md:col-span-3";
   if (field.gridSpan === 2) return "col-span-1 md:col-span-2";
   return "col-span-1";
 };
 
-const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loading = false ,fields }) => {
-  console.log(fields)
+const FormBuilder = ({
+  onSubmit,
+  fieldsConfig = [],
+  dropdowns = {},
+  methods,
+  isEdit = false,
+  title = "Form",
+  submitLabel = "Submit",
+  loading = false,
+  estimateApi = null,
+  estimateWatchFields = [],
+  estimateSetField = null,
+}) => {
   const {
     handleSubmit,
     control,
@@ -23,37 +31,58 @@ const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loadin
     setValue,
   } = methods || useFormContext();
 
-  const selectedProduct = watch("product");
-  const selectedRegions = watch("regions");
-  const selectedDevices = watch("targetDevices");
+  const debounceRef = useRef(null);
+
+  // Watch only the fields needed for estimation
+  const watchedFields = watch(estimateWatchFields);
 
   useEffect(() => {
-    const shouldFetch =
-      selectedProduct?.length > 0 &&
-      selectedRegions?.length > 0 &&
-      selectedDevices?.length > 0;
+    if (!estimateApi || estimateWatchFields.length === 0 || !estimateSetField) return;
 
-    if (shouldFetch) {
-      estimatePrice({
-        productTypes: selectedProduct,
-        regions: selectedRegions,
-        devices: selectedDevices,
-      }).then((estimatedPrice) => {
-        setValue("baseBid", estimatedPrice);
-      });
-    }
-  }, [selectedProduct, selectedRegions, selectedDevices, setValue]);
+    const allFilled = estimateWatchFields.every((f) => {
+      const val = watchedFields[f];
+      return Array.isArray(val) ? val.length > 0 : !!val;
+    });
 
+    if (!allFilled) return;
+
+    const fieldKeyMap = {
+      product: "productTypes",
+      targetDevices: "devices",
+      regions: "regions",
+    };
+
+    const payload = estimateWatchFields.reduce((acc, field) => {
+      const backendKey = fieldKeyMap[field] || field;
+      const value = watchedFields[field];
+      acc[backendKey] = Array.isArray(value)
+        ? value.filter(Boolean).map((v) => (typeof v === "string" ? v.trim() : v))
+        : value;
+      return acc;
+    }, {});
+
+    // Debounce backend call
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      estimateApi(payload)
+        .then((price) => {
+          setValue(estimateSetField, price);
+        })
+        .catch((err) => {
+          console.error("Estimation error:", err.response?.data || err.message);
+        });
+    }, 500); // 500ms delay
+  }, [watchedFields]);
+
+  // Handle form submit
   const handleFormSubmit = (data) => {
     if (onSubmit) onSubmit(data);
   };
 
-  // Inject dropdown options dynamically
-  const injectedFields = fields?.map((row) =>
+  // Inject dropdown values into fields dynamically
+  const injectedFields = fieldsConfig.map((row) =>
     row.map((field) =>
-      dropdowns[field.name]
-        ? { ...field, options: dropdowns[field.name] }
-        : field
+      dropdowns[field.name] ? { ...field, options: dropdowns[field.name] } : field
     )
   );
 
@@ -63,7 +92,7 @@ const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loadin
       className="p-6 bg-white rounded-xl shadow space-y-6"
     >
       <h2 className="text-xl font-semibold text-gray-800">
-        {isEdit ? "Update Campaign" : "Create Campaign"}
+        {title || (isEdit ? "Update Campaign" : "Create Campaign")}
       </h2>
 
       {injectedFields.map((row, rowIdx) => (
@@ -77,11 +106,15 @@ const FormBuilder = ({ onSubmit, dropdowns = {}, methods, isEdit = false ,loadin
       ))}
 
       <div className="flex justify-end">
-        <Button type="submit" label={isEdit ? "Update Campaign" : "Create Campaign"} loading={loading} />
-
+        <Button
+          type="submit"
+          label={submitLabel || (isEdit ? "Update Campaign" : "Create Campaign")}
+          loading={loading}
+        />
       </div>
     </form>
   );
 };
 
 export default FormBuilder;
+
