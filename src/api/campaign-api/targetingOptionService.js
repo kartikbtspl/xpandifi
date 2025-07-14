@@ -54,6 +54,7 @@ export const targetRegions = async () => {
 
 
 export const estimatePrice = async (data) => {
+  console.log("Estimating price with data:", data);
   const response = await axiosInstance.post("/api/v1/campaign/baseCost", data, {
     headers: {
       "Content-Type": "application/json",

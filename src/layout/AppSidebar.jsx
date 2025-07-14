@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 import { menuItems } from "../util/appsidebar-menu/menuItems";
 import { retailerMenuItems } from "../util/appsidebar-menu/menuItems";
 import SidebarItem from "./SidebarItem";
-
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { fetchCampaigns } from "../redux/slices/campaignSlice";
@@ -11,31 +10,49 @@ import { fetchApprovedCampaigns } from "../redux/slices/approvedCampaignSlice";
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
   const token = localStorage.getItem("token");
   const [role, setRole] = useState(null);
-
+  const [loadingRole, setLoadingRole] = useState(true); // loading state
   const dispatch = useDispatch();
 
+  // Decode the token and set role
   useEffect(() => {
-     if(token) {
-       dispatch(fetchCampaigns())
-        dispatch(fetchApprovedCampaigns());
-     }
-  },[dispatch]);
-
-  useEffect(() => {
-
     if (token) {
       try {
         const decoded = jwtDecode(token);
         setRole(decoded.role);
       } catch (error) {
         console.error("Error decoding token:", error);
+      } finally {
+        setLoadingRole(false); // hide loader regardless of success/failure
       }
+    } else {
+      setLoadingRole(false);
     }
-  }, []);
+  }, [token]);
+
+  
+  useEffect(() => {
+    const delay = 300; 
+    const timer = setTimeout(() => {
+      if (role === "Ad-Agency") {
+        dispatch(fetchCampaigns());
+      } else if (role === "Retailer") {
+        dispatch(fetchApprovedCampaigns());
+      }
+    }, delay);
+
+    return () => clearTimeout(timer); // clear timeout on cleanup
+  }, [role, dispatch]);
 
   const isRetailer = role === "Retailer";
-
   const sidebarItems = isRetailer ? retailerMenuItems : menuItems;
+
+  if (loadingRole) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#16122F] text-white">
+        <p className="text-lg font-medium animate-pulse">Loading Sidebar...</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -66,3 +83,4 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
 };
 
 export default AppSidebar;
+

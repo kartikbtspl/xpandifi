@@ -31,7 +31,7 @@ export const fetchCampaigns = createAsyncThunk(
       const response = await getCampaignsAPI();
     
         if (response.length === 0) {
-            toast.info("No campaigns found.");
+            console.error("No campaigns found.");
         }
       return response;
     } catch (error) {
