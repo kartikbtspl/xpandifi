@@ -11,6 +11,7 @@ import PosDataUpload from "../pages/retailer/PosDataUpload";
 import AdPerformance from "../pages/retailer/AdPerformance";
 import WithdrawEarning from "../pages/retailer/WithdrawEarning";
 import ProductAnalytics from "../pages/retailer/ProductAnalytics";
+import DataPrivacy from "../pages/retailer/DataPrivacy";
 
 export const dashboardRoutes = [
   <Route
@@ -33,5 +34,7 @@ export const dashboardRoutes = [
       <Route path="view-analytics" element={<ProductAnalytics />} />
     </Route>
     <Route path="/withdraw-earning" element={<WithdrawEarning />} />
+    <Route path="/data-privacy" element={<DataPrivacy />} />
+    
   </Route>,
 ];
