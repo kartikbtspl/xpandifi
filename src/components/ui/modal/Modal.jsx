@@ -30,6 +30,8 @@ export const Modal = ({
     return "w-[90vw] sm:w-[600px]";
   };
 
+
+
   return (
     <MUIModal
       open={isOpen}
@@ -49,17 +51,26 @@ export const Modal = ({
       <Box
         onClick={(e) => e.stopPropagation()}
         className={`
-          relative bg-white dark:bg-gray-900 rounded-3xl shadow-lg p-6 
-          max-h-[90vh] overflow-y-auto ${getSizeClass()} ${containerClassName}
+          relative bg-white dark:bg-gray-900 rounded-3xl shadow-lg 
+          max-h-[90vh]  ${getSizeClass()} ${containerClassName}
         `}
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
           ...containerSx,
         }}
       >
+       
+
+       
+       
         {showCloseButton && (
           <IconButton
             onClick={onClose}
@@ -68,7 +79,10 @@ export const Modal = ({
             <CloseIcon />
           </IconButton>
         )}
+        <div className="overflow-y-auto">
+
         {children}
+        </div>
       </Box>
     </MUIModal>
   );

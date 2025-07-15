@@ -22,6 +22,7 @@ const FormBuilder = ({
   estimateApi = null,
   estimateWatchFields = [],
   estimateSetField = null,
+  isIcon=true
 }) => {
   const {
     handleSubmit,
@@ -89,7 +90,7 @@ const FormBuilder = ({
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="p-6 bg-white rounded-xl shadow space-y-6"
+      className="p-4 bg-white rounded-xl shadow space-y-6"
     >
       <h2 className="text-xl font-semibold text-gray-800">
         {title || (isEdit ? "Update Campaign" : "Create Campaign")}
@@ -107,6 +108,7 @@ const FormBuilder = ({
 
       <div className="flex justify-end">
         <Button
+        isIcon={isIcon}
           type="submit"
           label={submitLabel || (isEdit ? "Update Campaign" : "Create Campaign")}
           loading={loading}

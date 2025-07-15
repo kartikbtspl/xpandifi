@@ -8,11 +8,11 @@ export default function Modal({ isOpen, onClose, title, children, bgcolor, title
   
 return (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-black/70 via-black/60 to-black/80 backdrop-blur-sm"
+    className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-black/70 via-black/60 to-black/80 backdrop-blur-sm w-full overflow-y-scroll"
     onClick={onClose}
   >
     <div
-      className={`${bgcolor || 'bg-white'} rounded-lg shadow-2xl max-w-lg w-full relative animate-fade-in`}
+      className={`${bgcolor || 'bg-white'} rounded-lg shadow-2xl max-w-lg w-full relative animate-fade-in overlfow-y-scroll`}
       onClick={(e) => e.stopPropagation()}
     >
       {/* Close Button */}

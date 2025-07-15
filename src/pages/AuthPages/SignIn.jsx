@@ -136,7 +136,7 @@ const SignIn = () => {
             </div>
 
             {/* Role Select */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Select Role
               </label>
@@ -153,7 +153,7 @@ const SignIn = () => {
                   {errors.role.message}
                 </p>
               )}
-            </div>
+            </div> */}
 
             {/* Submit */}
             <button
