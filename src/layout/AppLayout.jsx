@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import AppSidebar from "./AppSidebar";
 import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
 
-const AppLayout = ({ children }) => {
+const AppLayout = ( ) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -17,7 +18,7 @@ const AppLayout = ({ children }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar toggleSidebar={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6"><Outlet /></main>
       </div>
     </div>
   );
