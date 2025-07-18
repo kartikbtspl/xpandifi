@@ -37,7 +37,7 @@ const Breadcrumbs = () => {
           {!crumb.isLast ? (
             <button
               onClick={() => navigate(crumb.path)}
-              className="hover:text-gray-800 hover:underline"
+              className="hover:text-gray-800 hover:underline cursor-pointer"
             >
               {crumb.label}
             </button>

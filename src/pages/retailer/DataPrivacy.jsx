@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-
-
+import { Switch } from '@mui/material'
 
 const DataPrivacy = () => {
   const [isOn,setIsOn]= useState(true)
@@ -13,8 +12,15 @@ const DataPrivacy = () => {
         </span>
         <Switch
           checked={isOn}
+          size='small'
           onChange={() => {console.log("Toggled is working"),setIsOn(!isOn)}}
-          color="primary"
+          sx={{
+            '& .MuiSwitch-switchBase.Mui-checked': {
+              color: '#445E94', 
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: '#445E94',
+            },}}
         />
       
       </div>
