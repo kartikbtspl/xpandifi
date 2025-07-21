@@ -159,7 +159,7 @@ const Navbar = ({ toggleSidebar }) => {
               className="w-8 h-8 rounded-full"
             />
             <span className="text-sm font-medium text-gray-700 hidden sm:block">
-              {name || "Loading..."}
+              {profile?.fullName || "Loading..."}
             </span>
           </div>
 

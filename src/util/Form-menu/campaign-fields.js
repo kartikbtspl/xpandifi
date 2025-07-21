@@ -127,11 +127,12 @@ export const fields = [
       validation: yup.array().min(1, "Select at least one region").required(),
     },
     {
-      type: "input",
+      type: "select",
       name: "pincode",
       label: "Pin Code",
-      placeholder: "Enter pincode",
-      validation: yup.string().required('Pincode is required'),
+      options: [],
+      multi: true,
+      validation: yup.array().min(1, "Select at least one region").required(),
     },
   ],
 
@@ -164,7 +165,8 @@ export const fields = [
       type: "input",
       name: "baseBid",
       label: "Campaign Base Value",
-      placeholder: "Enter base bid",
+      placeholder: "Base Value",
+      disabled: true,
       validation: yup
         .number()
         .typeError("Base Bid must be a number")

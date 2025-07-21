@@ -16,16 +16,54 @@ import Input from "../../components/ui/input/Input";
 import { SearchIcon } from "../../icon";
 import Loader from "../loader/Loader";
 
-
-
-const ReusableTable = ({ columns, rows, sx = {}, onRowClick, loading = false  }) => {
+const ReusableTable = ({
+  columns,
+  rows,
+  sx = {},
+  onRowClick,
+  loading = false,
+  onRefresh
+}) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState(columns[0]?.id || "");
   const [selected, setSelected] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  
-  
-  
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  const filteredAndSortedRows = useMemo(() => {
+    const filterValue = searchQuery.toLowerCase();
+
+    let filtered = rows;
+
+    // Filter by search
+    if (searchQuery) {
+      filtered = filtered.filter((row) =>
+        columns.some((col) => {
+          const rawValue = col.render
+            ? row[col.id] // if rendered JSX, fallback to raw
+            : row[col.id];
+          return String(rawValue).toLowerCase().includes(filterValue);
+        })
+      );
+    }
+
+    // Filter by status (assuming status string exists in `row.raw?.isApproved`)
+    if (filterStatus !== "all") {
+      filtered = filtered.filter(
+        (row) => row.raw?.isApproved?.toUpperCase() === filterStatus
+      );
+    }
+
+    const compare = (a, b) => {
+      if (b[orderBy] < a[orderBy]) return -1;
+      if (b[orderBy] > a[orderBy]) return 1;
+      return 0;
+    };
+
+    return filtered.sort(order === "desc" ? compare : (a, b) => -compare(a, b));
+  }, [rows, columns, orderBy, order, searchQuery, filterStatus]);
+
   const handleSort = (_, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -49,30 +87,32 @@ const ReusableTable = ({ columns, rows, sx = {}, onRowClick, loading = false  })
     onRowClick?.(row); // optional
   };
 
-  const filteredAndSortedRows = useMemo(() => {
-    const filterValue = searchQuery.toLowerCase();
+ 
 
-    const filtered = rows.filter((row) =>
-      columns.some((col) => {
-        const rawValue = col.render
-          ? row[col.id] // fallback to raw value for search if JSX
-          : row[col.id];
 
-        return String(rawValue).toLowerCase().includes(filterValue);
-      })
-    );
+  // const filteredAndSortedRows = useMemo(() => {
+  //   const filterValue = searchQuery.toLowerCase();
 
-    const compare = (a, b) => {
-      if (b[orderBy] < a[orderBy]) return -1;
-      if (b[orderBy] > a[orderBy]) return 1;
-      return 0;
-    };
+  //   const filtered = rows.filter((row) =>
+  //     columns.some((col) => {
+  //       const rawValue = col.render
+  //         ? row[col.id] // fallback to raw value for search if JSX
+  //         : row[col.id];
 
-    return filtered.sort(order === "desc" ? compare : (a, b) => -compare(a, b));
-  }, [rows, columns, orderBy, order, searchQuery]);
+  //       return String(rawValue).toLowerCase().includes(filterValue);
+  //     })
+  //   );
+
+  //   const compare = (a, b) => {
+  //     if (b[orderBy] < a[orderBy]) return -1;
+  //     if (b[orderBy] > a[orderBy]) return 1;
+  //     return 0;
+  //   };
+
+  //   return filtered.sort(order === "desc" ? compare : (a, b) => -compare(a, b));
+  // }, [rows, columns, orderBy, order, searchQuery]);
 
   return (
-    
     <Box>
       {/* Search & Filter Header */}
       <div className="flex justify-between bg-white rounded-2xl items-center p-3 mb-4">
@@ -91,9 +131,39 @@ const ReusableTable = ({ columns, rows, sx = {}, onRowClick, loading = false  })
           />
         </div>
         <div className="flex items-center gap-4 text-gray-500 text-xl">
-          <FiFilter className="cursor-pointer hover:text-black" />
-          <FiArrowDown className="cursor-pointer hover:text-black" />
-          <FiRefreshCw className="cursor-pointer hover:text-black" />
+          {/* <FiFilter className="cursor-pointer hover:text-black" /> */}
+          <div className="relative">
+            <FiFilter
+              className="cursor-pointer hover:text-black"
+              onClick={() => setShowFilterDropdown((prev) => !prev)}
+            />
+
+            {showFilterDropdown && (
+              <div className="absolute right-0 mt-2 w-36 bg-white border rounded-md shadow z-10 text-sm">
+                {["all", "APPROVED", "PENDING"].map((status) => (
+                  <div
+                    key={status}
+                    onClick={() => {
+                      setFilterStatus(status);
+                      setShowFilterDropdown(false);
+                    }}
+                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                      filterStatus === status ? "bg-gray-200 font-semibold" : ""
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() +
+                      status.slice(1).toLowerCase()}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* <FiArrowDown className="cursor-pointer hover:text-black" /> */}
+          <FiRefreshCw
+            className="cursor-pointer hover:text-black"
+            onClick={() => alert('Uder Progress...')}
+          />
         </div>
       </div>
 
@@ -173,7 +243,6 @@ const ReusableTable = ({ columns, rows, sx = {}, onRowClick, loading = false  })
         </Paper>
       </Box>
     </Box>
-    
   );
 };
 

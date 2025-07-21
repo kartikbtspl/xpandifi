@@ -5,7 +5,7 @@ import FileUpload from "../ui/fileupload/FileUpload";
 import RangeDatePicker from "../ui/datePicker/RangeDatePicker";
 import { Controller } from "react-hook-form";
 
-const FieldRenderer = ({ field, control, errors }) => {
+const FieldRenderer = ({ field, control, errors , isEdit=false}) => {
   const errorMsg = errors?.[field.name]?.message;
 
   switch (field.type) {
@@ -15,6 +15,7 @@ const FieldRenderer = ({ field, control, errors }) => {
           name={field.name}
           control={control}
           defaultValue=""
+        
           render={({ field: controllerField }) => (
             <div>
               <Input
@@ -23,6 +24,7 @@ const FieldRenderer = ({ field, control, errors }) => {
                 placeholder={field.placeholder}
                 inputProps={field.inputProps}
                 error={errorMsg}
+                disabled={isEdit?false:field.disabled}
               />
              
             </div>

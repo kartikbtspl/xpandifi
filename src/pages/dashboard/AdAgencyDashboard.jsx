@@ -4,12 +4,16 @@ import ReusableTable from "../../components/table/ReusableTable";
 import HeaderSection from "../../components/ui/header-section/HeaderSection";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import  {getTotalMaxBidCap,getBaseBidSums} from '../../util/helper/sumFunctions'
 
 
 const AdAgencyDashboard = () => {
   const navigate = useNavigate();
   const { campaigns } = useSelector((state) => state.campaign);
   const { profile: user } = useSelector((state) => state.user);
+
+const totalMaxBidCap = getTotalMaxBidCap(campaigns.data);
+const { approvedSum, unapprovedSum } = getBaseBidSums(campaigns.data);
 
   console.log(user);
 
@@ -18,8 +22,8 @@ const AdAgencyDashboard = () => {
   const statsData = [
     { title: "Revenue", value: "25.1k", change: "+15%", currency: true },
     { title: "Ad Clicks", value: "25.1k", change: "+2.5%", currency: false },
-    { title: "Cost", value: "25.1k", change: "+15%", currency: true },
-    { title: "Bid", value: "25.1k", change: "+15%", currency: false },
+    { title: "Campaign Approved Base Values", value: approvedSum, change: "+15%", currency: true },
+    { title: "Approved Successful Bid", value: totalMaxBidCap, change: "+15%", currency: true},
   ];
 
   

@@ -113,7 +113,7 @@ const FormBuilder = ({
         <div key={rowIdx} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {row.map((field) => (
             <div key={field.name} className={getGridClass(field, row)}>
-              <FieldRenderer field={field} control={control} errors={errors} />
+              <FieldRenderer field={field} control={control} errors={errors} isEdit={isEdit} />
             </div>
           ))}
         </div>

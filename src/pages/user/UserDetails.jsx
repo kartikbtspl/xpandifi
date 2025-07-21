@@ -6,7 +6,7 @@ import {
   // uploadProfilePicture, // Optional: define this in your redux slice or service
 } from "../../redux/slices/userSlice";
 import Loader from "../../components/loader/Loader";
-import  Modal  from "../../components/modal/Modal";
+import Modal from "../../components/modal/Modal";
 import { useForm } from "react-hook-form";
 import { FiEdit } from "react-icons/fi";
 
@@ -117,9 +117,9 @@ const UserDetails = () => {
       )}
 
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-[#445E94] to-[#16122F] p-6 text-white text-center">
+        <div className="bg-gradient-to-r from-[#445E94] to-[#16122F] p-6 text-white">
           <h2 className="text-3xl font-bold">Profile</h2>
-          <p className="text-blue-100 mt-1">Manage your personal information</p>
+          <p className="text-blue-100 mt-1">{user?.email||'Manage your personal information'}</p>
         </div>
 
         <div className="p-6">
@@ -144,7 +144,9 @@ const UserDetails = () => {
                 <i className="fas fa-camera" />
               </button>
             </div>
-            <div className="mt-2 text-gray-600">{user?.role || "User"}</div>
+            <div className="mt-2 text-gray-600">
+              {user?.businessName || "User"}
+            </div>
 
             {editMode.profilePic && (
               <div className="mt-4 w-full max-w-md bg-white p-4 rounded-lg shadow-md">
@@ -180,7 +182,7 @@ const UserDetails = () => {
             <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-800">
-                  Personal Information
+                  Personal Information:
                 </h3>
                 <button
                   onClick={() =>
@@ -192,10 +194,10 @@ const UserDetails = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
                 <div className="flex w-full space-x-2">
                   <span className="text-gray-500">Full Name:</span>
-                  <div className="font-medium">{user?.fullName|| "N/A"}</div>
+                  <div className="font-medium">{user?.fullName || "N/A"}</div>
                 </div>
                 <div className="flex w-full space-x-2">
                   <span className="text-gray-500">Mobile Number:</span>
@@ -238,12 +240,15 @@ const UserDetails = () => {
                     placeholder="Full Name"
                   />
                   {errors.name && (
-                    <p className="text-red-500 text-sm">{errors.name.message}</p>
+                    <p className="text-red-500 text-sm">
+                      {errors.name.message}
+                    </p>
                   )}
 
                   <input
                     {...register("email", {
-            required: "Email is required"})}
+                      required: "Email is required",
+                    })}
                     className="w-full p-2 border rounded"
                     placeholder="Email Address"
                   />
@@ -296,6 +301,35 @@ const UserDetails = () => {
                   </div>
                 </form>
               </Modal>
+
+              <div className="flex justify-between items-center mb-4 border-t pt-4">
+                <h3 className="text-xl font-semibold text-gray-800">
+                  Organizations Details:
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Business Name:</span>
+                  <div className="font-medium">
+                    {user?.businessName || "N/A"}
+                  </div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Role:</span>
+                  <div className="font-medium">{user?.role || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">On Board:</span>
+                  <div className="font-medium">{user?.createdAt || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Activated On:</span>
+                  <div className="font-medium">
+                    {user?.activatedAt || "N/A"}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -305,4 +339,3 @@ const UserDetails = () => {
 };
 
 export default UserDetails;
-

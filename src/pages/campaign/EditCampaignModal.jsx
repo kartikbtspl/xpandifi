@@ -59,31 +59,62 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   };
 
   return (
+    // <Modal isOpen={isOpen} onClose={onClose} size="lg">
+    //   <FormProvider {...methods}>
+    //     <div className="relative overflow-y-scroll h-full">
+    //       {loading && (
+    //         <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
+    //           <div className="flex flex-col items-center gap-2">
+    //             <h2 className="text-sm text-gray-700">Updating Campaign...</h2>
+    //             <Loader />
+    //           </div>
+    //         </div>
+    //       )}
+    //       <FormBuilder
+    //         onSubmit={handleUpdate}
+    //         fieldsConfig={fields}
+    //         dropdowns={dropdowns}
+    //         methods={methods}
+    //         isEdit={true}
+    //         loading={loading}
+    //         estimateApi={estimatePrice}
+    //         estimateWatchFields={["product", "regions", "targetDevices"]}
+    //         estimateSetField="baseBid"
+    //       />
+    //     </div>
+    //   </FormProvider>
+    // </Modal>
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
-      <FormProvider {...methods}>
-        <div className="relative">
-          {loading && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
-              <div className="flex flex-col items-center gap-2">
-                <h2 className="text-sm text-gray-700">Updating Campaign...</h2>
-                <Loader />
-              </div>
-            </div>
-          )}
-          <FormBuilder
-            onSubmit={handleUpdate}
-            fieldsConfig={fields}
-            dropdowns={dropdowns}
-            methods={methods}
-            isEdit={true}
-            loading={loading}
-            estimateApi={estimatePrice}
-            estimateWatchFields={["product", "regions", "targetDevices"]}
-            estimateSetField="baseBid"
-          />
+  <FormProvider {...methods}>
+    <div className="max-h-[80vh] overflow-y-auto rounded-lg">
+      {/* loader overlay */}
+      {loading && (
+        <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-sm text-gray-700">Updating Campaign...</h2>
+            <Loader />
+          </div>
         </div>
-      </FormProvider>
-    </Modal>
+      )}
+
+      <FormBuilder
+        onSubmit={handleUpdate}
+        fieldsConfig={fields}
+        dropdowns={dropdowns}
+        methods={methods}
+        isEdit={true}
+        loading={loading}
+        estimateApi={estimatePrice}
+        estimateWatchFields={["product", "regions", "targetDevices"]}
+        estimateSetField="baseBid"
+        isPlus={false}
+        title="Update Campaign"
+        submitLabel="Update"
+      />
+    </div>
+  </FormProvider>
+</Modal>
+
   );
 };
 
