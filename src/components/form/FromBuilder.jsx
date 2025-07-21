@@ -23,6 +23,7 @@ const FormBuilder = ({
   estimateApi = null,
   estimateWatchFields = [],
   estimateSetField = null,
+  isPlus=true
 }) => {
   const {
     handleSubmit,
@@ -103,7 +104,9 @@ const FormBuilder = ({
       className="p-6 bg-white rounded-xl shadow space-y-6"
     >
       <h2 className="text-xl font-semibold text-gray-800">
-        {title || (isEdit ? "Update Campaign" : "Create Campaign")}
+        {/* {title || (isEdit ? "Update Campaign" : "Create Campaign")} */}
+        {title || (isEdit && "Update Campaign")}
+
       </h2>
 
       {injectedFields.map((row, rowIdx) => (
@@ -118,6 +121,8 @@ const FormBuilder = ({
 
       <div className="flex justify-end">
         <Button
+        isIcon={isPlus}
+        className="cursor-pointer"
           type="submit"
           label={submitLabel || (isEdit ? "Update Campaign" : "Create Campaign")}
           loading={loading}

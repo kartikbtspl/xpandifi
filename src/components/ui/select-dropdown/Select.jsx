@@ -2,6 +2,7 @@
 import React from "react";
 import SelectLib from "react-select";
 import { Controller } from "react-hook-form";
+import Label from "../label/Label";
 
 const customStyles = {
   control: (base) => ({
@@ -30,7 +31,9 @@ const Select = ({
 }) => {
   return (
     <div className="flex flex-col space-y-1 w-full ">
-      {label && <label className="font-medium mb-1 mt-2">{label}</label>}
+      {/* {label && <label className="font-medium mb-1 mt-2">{label}</label>} */}
+            <Label text={label} htmlFor={name}  />
+
 
       <Controller
         name={name}

@@ -49,6 +49,7 @@ export const targetRegions = async () => {
       withCredentials: true,
     }
   );
+  console.log("Target Regions:", targetRegions);
   return targetRegions?.data?.data;
 };
 

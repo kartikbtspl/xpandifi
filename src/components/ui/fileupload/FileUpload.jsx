@@ -10,6 +10,8 @@ const FileUpload = ({
   accept = '.jpg,.png,.mp4',
   inputProps = {},
   labelProps = {},
+    maxFileSizeMB = 5,
+
 }) => {
   const {
     field: { onChange, value = [] },
@@ -43,11 +45,37 @@ const FileUpload = ({
     };
   }, [validFiles]); // runs cleanup when validFiles change
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    onChange([...validFiles, ...files]);
-    e.target.value = '';
-  };
+  // const handleFileChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   onChange([...validFiles, ...files]);
+  //   e.target.value = '';
+  // };
+const handleFileChange = (e) => {
+  const files = Array.from(e.target.files);
+  const maxBytes = maxFileSizeMB * 1024 * 1024;
+
+  const [valid, oversized] = files.reduce(
+    ([validFiles, oversizedFiles], file) => {
+      if (file.size <= maxBytes) {
+        return [[...validFiles, file], oversizedFiles];
+      } else {
+        return [validFiles, [...oversizedFiles, file.name]];
+      }
+    },
+    [[], []]
+  );
+
+  if (oversized.length > 0) {
+    alert(
+      `The following files exceed the ${maxFileSizeMB}MB limit and were not added:\n\n${oversized.join(
+        '\n'
+      )}`
+    );
+  }
+
+  onChange([...validFiles, ...valid]);
+  e.target.value = '';
+};
 
   const handleRemove = (idx) => {
     const newFiles = validFiles.filter((_, i) => i !== idx);
@@ -127,7 +155,11 @@ const FileUpload = ({
           <div className="flex flex-col items-center justify-center py-10">
             <FiImage className="text-4xl text-gray-400 mb-2" />
             <div className="font-medium text-gray-700 mb-1">Drop image or browse</div>
-            <div className="text-xs text-gray-400 mb-3">Format: .jpeg, .png, .mp4</div>
+            {/* <div className="text-xs text-gray-400 mb-3">Format: .jpeg, .png, .mp4</div> */}
+            <p className="text-xs text-gray-400 mb-3">
+  Format: jpeg, png, mp4. Max file size: {maxFileSizeMB}MB.
+</p>
+
             <input
               type="file"
               accept={accept}
@@ -139,7 +171,7 @@ const FileUpload = ({
             />
             <button
               type="button"
-              className="px-4 py-1 border border-blue-400 rounded text-blue-500 hover:bg-blue-50 text-sm"
+              className="px-4 py-1 border border-blue-400 rounded text-blue-500 hover:bg-blue-50 text-sm cursor-pointer"
               onClick={() => inputRef.current?.click()}
             >
               Browse Files
@@ -216,8 +248,9 @@ const FileUpload = ({
                 Browse Files
               </button>
               <p className="text-xs text-gray-400 mt-1">
-                Format: jpeg, png, mp4. No file size limit.
-              </p>
+  Format: jpeg, png, mp4. Max file size: {maxFileSizeMB}MB.
+</p>
+
             </div>
           </div>
         )}

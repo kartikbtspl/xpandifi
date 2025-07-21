@@ -11,6 +11,8 @@ const AdAgencyDashboard = () => {
   const { campaigns } = useSelector((state) => state.campaign);
   const { profile: user } = useSelector((state) => state.user);
 
+  console.log(user);
+
   const [rows, setRows] = useState([]);
 
   const statsData = [
@@ -59,7 +61,7 @@ const AdAgencyDashboard = () => {
     <div className="w-full">
       <HeaderSection
         subtitle={user?.fullName || "Ad Agency"}
-        title="Welcome back,"
+        title="Welcome,"
         showButton={true}
         buttonLabel="Create Campaign"
         onButtonClick={() => navigate("/create-campaign")}

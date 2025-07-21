@@ -97,7 +97,7 @@ const RetailerDashboard = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-3 flex justify-between items-center">
         <h1 className="text-2xl font-bold">
-          Welcome Back,
+          Welcome,
           <span className="text-[#445E94] text-md ml-2">{name || "Retailer"}</span>
         </h1>
         <div className="flex items-center rounded-lg">

@@ -106,7 +106,7 @@ const SignIn = () => {
 
             {/* Title */}
             <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-2">
-              Welcome Back
+              Welcome
             </h2>
             <p className="text-sm text-center text-[#697586] mb-6">
               Your ads have been waiting for you
@@ -210,10 +210,7 @@ const SignIn = () => {
         size="sm"
         containerClassName="flex items-center justify-center"
       >
-        <div className="b
-        
-        
-        g-white w-full">
+        <div className="bg-white w-full p-6 rounded-lg shadow-xl">
           <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
             Forgot Password
           </h3>
