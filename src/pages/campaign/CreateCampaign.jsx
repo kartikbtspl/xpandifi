@@ -72,6 +72,9 @@ const CreateCampaign = () => {
   return (
     <div className="max-w-5xl mx-auto py-8">
       <FormBuilder
+
+
+
         onSubmit={handleSubmit}
         fieldsConfig={fields}
         dropdowns={dropdowns}
@@ -79,6 +82,8 @@ const CreateCampaign = () => {
         estimateApi={estimatePrice}
         estimateWatchFields={["product", "regions", "targetDevices"]}
         estimateSetField="baseBid"
+        title="Create Campaign"
+        submitLabel="Submit For Approval"
       />
     </div>
   );
