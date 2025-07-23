@@ -14,6 +14,7 @@ export const Modal = ({
   modalSx = {},
   disableBackdropClick = false,
 }) => {
+  // Prevent background scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
     return () => {
@@ -21,6 +22,7 @@ export const Modal = ({
     };
   }, [isOpen]);
 
+  // Determine modal size classes
   const getSizeClass = () => {
     if (isFullscreen || size === "full") return "w-screen h-screen";
     if (size === "sm") return "w-[300px]";
@@ -30,8 +32,6 @@ export const Modal = ({
     return "w-[90vw] sm:w-[600px]";
   };
 
-
-
   return (
     <MUIModal
       open={isOpen}
@@ -39,10 +39,11 @@ export const Modal = ({
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
       closeAfterTransition
-      disableAutoFocus
-      disableEnforceFocus
+      // ✅ Enable MUI's focus handling to avoid aria-hidden issues
+      // (Remove these two props)
+      // disableAutoFocus
+      // disableEnforceFocus
       sx={{
-        // backdropFilter: "blur(32px)",
         backgroundColor: "rgba(0, 0, 0, 0)",
         zIndex: 1300,
         ...modalSx,
@@ -50,39 +51,37 @@ export const Modal = ({
     >
       <Box
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
         className={`
-          relative bg-white dark:bg-gray-900 rounded-3xl shadow-lg 
-          max-h-[90vh]  ${getSizeClass()} ${containerClassName}
-        `}
+    relative bg-white dark:bg-gray-900 rounded-3xl shadow-lg 
+    max-h-[90vh] overflow-auto ${getSizeClass()} ${containerClassName}
+  `}
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
+          overflow: "auto", // ✅ Enable scrolling
+          scrollbarWidth: "none", // ✅ Firefox
+          msOverflowStyle: "none", // ✅ IE
           "&::-webkit-scrollbar": {
-            display: "none",
+            display: "none", // ✅ Chrome/Safari
           },
           ...containerSx,
         }}
       >
-       
-
-       
-       
         {showCloseButton && (
           <IconButton
             onClick={onClose}
             className="!absolute right-4 top-4 text-gray-400 hover:text-gray-700 dark:hover:text-white z-10"
+            aria-label="Close modal"
           >
             <CloseIcon />
           </IconButton>
         )}
-        <div className="overflow-y-auto">
 
         {children}
-        </div>
       </Box>
     </MUIModal>
   );

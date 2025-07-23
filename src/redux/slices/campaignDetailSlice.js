@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getCampaignByIdAPI, updateUserCampaign } from "../../api/campaign-api/campaignService";
+
+
 export const fetchCampaignById = createAsyncThunk(
   'campaign/fetchById',
   async (id, { rejectWithValue }) => {
@@ -22,6 +24,10 @@ export const updateCampaign = createAsyncThunk(
     }
   }
 );
+
+
+
+
 
 const campaignDetailSlice = createSlice({
   name: 'campaign',
