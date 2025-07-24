@@ -180,7 +180,7 @@ const RetailerDashboard = () => {
 
           {/* Active Ads List */}
           <div className="w-2/3 h-[483px]">
-            <SideCard ads={ads} title={'Ative Ads'}/>
+            <SideCard ads={ads} title={'Active Ads'}/>
           </div>
         </div>
 
