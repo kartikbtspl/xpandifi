@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserProfile,
-  resetPassword,
   updateUser,
+  // uploadProfilePicture, // Optional: define this in your redux slice or service
 } from "../../redux/slices/userSlice";
 import Loader from "../../components/loader/Loader";
+import Modal from "../../components/modal/Modal";
+import { useForm } from "react-hook-form";
+import { FiEdit } from "react-icons/fi";
 
 const UserDetails = () => {
   const dispatch = useDispatch();
@@ -13,22 +16,29 @@ const UserDetails = () => {
 
   const [editMode, setEditMode] = useState({
     profile: false,
-    email: false,
-    password: false,
     profilePic: false,
-  });
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    address: "",
-    phone: "",
-    currentPassword: "",
-    newPassword: "",
   });
 
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [updating, setUpdating] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm({
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+    },
+  });
 
   useEffect(() => {
     dispatch(fetchUserProfile());
@@ -36,21 +46,17 @@ const UserDetails = () => {
 
   useEffect(() => {
     if (user) {
-      setFormData({
+      reset({
         fullName: user.fullName || "",
         email: user.email || "",
-        address: user.address || "",
         phone: user.phone || "",
-        currentPassword: "",
-        newPassword: "",
+        address: user.address || "",
+        city: user.city || "",
+        state: user.state || "",
+        country: user.country || "",
       });
     }
-  }, [user]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [user, reset]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -62,52 +68,36 @@ const UserDetails = () => {
     }
   };
 
-  const handleSubmit = async (type) => {
-    switch (type) {
-      case "profile":
-        await dispatch(
-          updateUser({
-            fullName: formData.fullName,
-            phone: formData.phone,
-            address: formData.address, // ✅ Send full address
-          })
-        );
-        break;
-      case "email":
-        await dispatch(updateUser({ email: formData.email }));
-        break;
-      case "password":
-        await dispatch(
-          resetPassword({
-            currentPassword: formData.currentPassword,
-            newPassword: formData.newPassword,
-          })
-        );
-        break;
-      case "profilePic":
-        if (profilePicFile) {
-          console.log("Upload profile picture to server:", profilePicFile);
-        }
-        break;
-      default:
-        break;
-    }
-
+  const handleProfileSubmit = async (data) => {
+    setUpdating(true);
+    await dispatch(updateUser(data));
     await dispatch(fetchUserProfile());
-    setEditMode((prev) => ({ ...prev, [type]: false }));
+    setUpdating(false);
+    setEditMode((prev) => ({ ...prev, profile: false }));
+  };
+
+  const handleProfilePicSubmit = async () => {
+    if (profilePicFile) {
+      const formData = new FormData();
+      formData.append("profilePic", profilePicFile);
+      // await dispatch(uploadProfilePicture(formData)); // Uncomment when you implement it
+    }
+    await dispatch(fetchUserProfile());
+    setEditMode((prev) => ({ ...prev, profilePic: false }));
     setProfilePicFile(null);
     setProfilePicPreview(null);
   };
 
   const cancelEdit = (type) => {
-    if (user) {
-      setFormData({
+    if (type === "profile") {
+      reset({
         fullName: user.fullName || "",
         email: user.email || "",
-        address: user.address || "",
         phone: user.phone || "",
-        currentPassword: "",
-        newPassword: "",
+        address: user.address || "",
+        city: user.city || "",
+        state: user.state || "",
+        country: user.country || "",
       });
     }
     setEditMode((prev) => ({ ...prev, [type]: false }));
@@ -117,10 +107,10 @@ const UserDetails = () => {
 
   return (
     <div className="relative w-full mx-auto p-6">
-      {loading && (
+      {(loading || updating) && (
         <div className="absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center gap-3">
           <p className="text-[#445E94] text-lg font-semibold animate-pulse">
-             user profile...
+            {updating ? "Updating user profile..." : "Loading profile..."}
           </p>
           <Loader />
         </div>
@@ -128,8 +118,8 @@ const UserDetails = () => {
 
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-gradient-to-r from-[#445E94] to-[#16122F] p-6 text-white">
-          <h2 className="text-3xl font-bold">User Profile</h2>
-          <p className="text-blue-100 mt-1">Manage your personal information</p>
+          <h2 className="text-3xl font-bold">Profile</h2>
+          <p className="text-blue-100 mt-1">{user?.email||'Manage your personal information'}</p>
         </div>
 
         <div className="p-6">
@@ -154,6 +144,9 @@ const UserDetails = () => {
                 <i className="fas fa-camera" />
               </button>
             </div>
+            <div className="mt-2 text-gray-600">
+              {user?.businessName || "User"}
+            </div>
 
             {editMode.profilePic && (
               <div className="mt-4 w-full max-w-md bg-white p-4 rounded-lg shadow-md">
@@ -174,7 +167,7 @@ const UserDetails = () => {
                     Cancel
                   </button>
                   <button
-                    onClick={() => handleSubmit("profilePic")}
+                    onClick={handleProfilePicSubmit}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                   >
                     Save
@@ -184,13 +177,12 @@ const UserDetails = () => {
             )}
           </div>
 
-          {/* Personal Info & Security */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Personal Info */}
+          {/* User Info */}
+          <div className="w-full">
             <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-800">
-                  Personal Information
+                  Personal Information:
                 </h3>
                 <button
                   onClick={() =>
@@ -198,171 +190,144 @@ const UserDetails = () => {
                   }
                   className="text-blue-600 hover:text-blue-800"
                 >
-                  <i className="fas fa-edit mr-1" /> Edit
+                  <FiEdit />
                 </button>
               </div>
 
-              {!editMode.profile ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-gray-500 text-sm">Full Name</label>
-                    <p className="font-medium">{user?.fullName || "N/A"}</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-500 text-sm">
-                      Mobile Number
-                    </label>
-                    <p className="font-medium">{user?.phone || "N/A"}</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-500 text-sm">Address</label>
-                    <p className="font-medium">{formData.address}</p>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Full Name:</span>
+                  <div className="font-medium">{user?.fullName || "N/A"}</div>
                 </div>
-              ) : (
-                <div className="space-y-4">
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Mobile Number:</span>
+                  <div className="font-medium">{user?.phone || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">City:</span>
+                  <div className="font-medium">{user?.city || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">State:</span>
+                  <div className="font-medium">{user?.state || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Country:</span>
+                  <div className="font-medium">{user?.country || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Address:</span>
+                  <div className="font-medium">{user?.address || "N/A"}</div>
+                </div>
+              </div>
+
+              {/* Edit Modal */}
+              <Modal
+                isOpen={editMode.profile}
+                onClose={() => cancelEdit("profile")}
+                size="md"
+              >
+                <h2 className="text-center text-gray-800 font-bold mb-4">
+                  Edit Profile
+                </h2>
+                <form
+                  onSubmit={handleSubmit(handleProfileSubmit)}
+                  className="space-y-4"
+                >
                   <input
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
+                    {...register("fullName", { required: "Name is required" })}
                     className="w-full p-2 border rounded"
                     placeholder="Full Name"
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm">
+                      {errors.name.message}
+                    </p>
+                  )}
+
                   <input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
+                    {...register("email", {
+                      required: "Email is required",
+                    })}
+                    className="w-full p-2 border rounded"
+                    placeholder="Email Address"
+                  />
+
+                  <input
+                    {...register("phone")}
                     className="w-full p-2 border rounded"
                     placeholder="Mobile Number"
                   />
                   <input
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
+                    {...register("city")}
+                    className="w-full p-2 border rounded"
+                    placeholder="City"
+                  />
+                  <input
+                    {...register("state")}
+                    className="w-full p-2 border rounded"
+                    placeholder="State"
+                  />
+                  <input
+                    {...register("country")}
+                    className="w-full p-2 border rounded"
+                    placeholder="Country"
+                  />
+                  <input
+                    {...register("address")}
                     className="w-full p-2 border rounded"
                     placeholder="Address"
                   />
+
                   <div className="flex gap-2 justify-end pt-2">
                     <button
+                      type="button"
                       onClick={() => cancelEdit("profile")}
                       className="px-4 py-2 text-gray-600 hover:text-gray-800"
                     >
                       Cancel
                     </button>
                     <button
-                      onClick={() => handleSubmit("profile")}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      type="submit"
+                      disabled={isSubmitting || !isDirty}
+                      className={`px-4 py-2 rounded text-white ${
+                        isDirty
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
                     >
-                      Save Changes
+                      {isSubmitting ? "Saving..." : "Save Changes"}
                     </button>
                   </div>
-                </div>
-              )}
-            </div>
+                </form>
+              </Modal>
 
-            {/* Account Security */}
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4 border-t pt-4">
                 <h3 className="text-xl font-semibold text-gray-800">
-                  Account Security
+                  Organizations Details:
                 </h3>
               </div>
 
-              <div className="space-y-6">
-                {/* Email */}
-                <div className="border-b pb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-gray-500">Email Address</label>
-                    <button
-                      onClick={() =>
-                        setEditMode((prev) => ({ ...prev, email: true }))
-                      }
-                      className="text-blue-600 hover:text-blue-800 text-sm"
-                    >
-                      <i className="fas fa-edit mr-1" /> Change
-                    </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Business Name:</span>
+                  <div className="font-medium">
+                    {user?.businessName || "N/A"}
                   </div>
-
-                  {!editMode.email ? (
-                    <p className="font-medium">{user?.email || "N/A"}</p>
-                  ) : (
-                    <div>
-                      <input
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border rounded mb-3"
-                        placeholder="Email Address"
-                      />
-                      <div className="flex gap-2 justify-end">
-                        <button
-                          onClick={() => cancelEdit("email")}
-                          className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => handleSubmit("email")}
-                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                        >
-                          Update
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
-
-                {/* Password */}
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-gray-500">Password</label>
-                    <button
-                      onClick={() =>
-                        setEditMode((prev) => ({ ...prev, password: true }))
-                      }
-                      className="text-blue-600 hover:text-blue-800 text-sm"
-                    >
-                      <i className="fas fa-edit mr-1" /> Change
-                    </button>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Role:</span>
+                  <div className="font-medium">{user?.role || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">On Board:</span>
+                  <div className="font-medium">{user?.createdAt || "N/A"}</div>
+                </div>
+                <div className="flex w-full space-x-2">
+                  <span className="text-gray-500">Activated On:</span>
+                  <div className="font-medium">
+                    {user?.activatedAt || "N/A"}
                   </div>
-
-                  {!editMode.password ? (
-                    <p className="font-medium">••••••••</p>
-                  ) : (
-                    <div className="space-y-3">
-                      <input
-                        name="currentPassword"
-                        type="password"
-                        value={formData.currentPassword}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Current Password"
-                      />
-                      <input
-                        name="newPassword"
-                        type="password"
-                        value={formData.newPassword}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="New Password"
-                      />
-                      <div className="flex gap-2 justify-end pt-2">
-                        <button
-                          onClick={() => cancelEdit("password")}
-                          className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => handleSubmit("password")}
-                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                        >
-                          Reset Password
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

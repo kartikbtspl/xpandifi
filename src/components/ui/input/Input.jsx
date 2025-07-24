@@ -15,6 +15,7 @@ const Input = ({
   onChange,
   onBlur,
   ref,
+  disabled
 }) => {
   return (
     <div className="mb-4 mt-1">
@@ -37,6 +38,7 @@ const Input = ({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
+          disabled={disabled}
           ref={ref}
           {...inputProps}
           className={`flex-grow bg-transparent border-none outline-none text-gray-900 placeholder-gray-500 text-base font-normal ${

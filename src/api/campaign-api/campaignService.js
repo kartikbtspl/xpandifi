@@ -110,6 +110,30 @@ export const updateUserCampaign = async (id, data) => {
     }
   );
 
+
+
   return response?.data;
 };
+
+
+
+
+export const deleteCampaignAPI = async (id) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axiosInstance.delete(
+    `/api/v1/campaign/${id}/deleteCampaign`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response?.data;
+};
+
 

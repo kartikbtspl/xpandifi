@@ -1,3 +1,5 @@
+
+
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import {
@@ -13,12 +15,12 @@ import {
 } from "recharts";
 import StatCard from "../../components/card/StatCard";
 import Button from "../../components/ui/button/Button";
+import SideCard from "../../components/card/SideCard";
 
 const RetailerDashboard = () => {
   const [name, setName] = useState("");
   const [selected, setSelected] = useState("Day");
-
-  const options=['Day', 'Week', 'Month']
+  const options = ["Day", "Week", "Month"];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -35,7 +37,6 @@ const RetailerDashboard = () => {
   // Bar chart data
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const data = [10, 20, 15, 30, 25, 35, 5];
-  
   const chartData = days.map((day, index) => ({
     day,
     revenue: data[index],
@@ -96,27 +97,24 @@ const RetailerDashboard = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-3 flex justify-between items-center">
         <h1 className="text-2xl font-bold">
-          Welcome Back,
+          Welcome,
           <span className="text-[#445E94] text-md ml-2">{name || "Retailer"}</span>
         </h1>
         <div className="flex items-center rounded-lg">
-
-          {
-            options.map((option)=>(<Button
-          key={option}
-          label={option}
-          className={`rounded-none ${
-            selected === option
-              ? ""
-              : "bg-gray-200 text-gray-700"
-          }`}
-          onClick={() => setSelected(option)}
-          type="button"
-          loading={false}
-          disabled={false}
-          isIcon={false}
-        />))
-          }
+          {options.map((option) => (
+            <Button
+              key={option}
+              label={option}
+              className={`rounded-none ${
+                selected === option ? "" : "bg-gray-200 text-gray-700"
+              }`}
+              onClick={() => setSelected(option)}
+              type="button"
+              loading={false}
+              disabled={false}
+              isIcon={false}
+            />
+          ))}
         </div>
       </div>
 
@@ -151,7 +149,6 @@ const RetailerDashboard = () => {
             <div className="text-gray-900 text-lg lg:text-xl border-b border-gray-300 px-4 py-2">
               <p className="font-bold">Total Revenue</p>
             </div>
-
             <div className="p-2 h-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
@@ -183,24 +180,7 @@ const RetailerDashboard = () => {
 
           {/* Active Ads List */}
           <div className="w-2/3 h-[483px]">
-            <div className="bg-white rounded-xl shadow p-6 h-full">
-              <h3 className="font-bold text-lg text-gray-800 mb-4">Active Ads</h3>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {ads.map((ad, index) => (
-                  <div
-                    key={index}
-                    className="border-b pb-4 last:border-0 last:pb-0 flex items-center gap-4"
-                  >
-                    <img src={ad.image} alt="" className="h-12 w-12 rounded-md" />
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-gray-800">{ad.title}</h4>
-                      <span className="text-sm text-gray-500">{ad.time}</span>
-                    </div>
-                    <p className="text-gray-600 text-sm whitespace-nowrap">{ad.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <SideCard ads={ads} title={'Ative Ads'}/>
           </div>
         </div>
 
@@ -214,7 +194,10 @@ const RetailerDashboard = () => {
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip
-                  formatter={(value, name) => [`${value}%`, name === "dataUsage" ? "Data Usage" : "Avg Order"]}
+                  formatter={(value, name) => [
+                    `${value}%`,
+                    name === "dataUsage" ? "Data Usage" : "Avg Order",
+                  ]}
                 />
                 <Area
                   type="monotone"

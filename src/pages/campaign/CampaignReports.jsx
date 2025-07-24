@@ -59,7 +59,7 @@ const CampaignReports = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="w-full">
       <h2 className="text-xl font-semibold mb-4">Campaign Reports</h2>
       <ReusableTable columns={columns} rows={rows} loading = {loading} />
     </div>

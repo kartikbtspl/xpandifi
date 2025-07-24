@@ -47,7 +47,7 @@ const BidManagement = () => {
   ];
 
   return (
-    <div className="p-4">
+    <div className="w-full">
       <h2 className="text-xl font-semibold mb-4">Bid Management</h2>
       <ReusableTable columns={columns} rows={rows} loading= {loading} />
     </div>
