@@ -33,7 +33,7 @@ export const fields = [
     {
       type: "input",
       name: "duration",
-      label: "Duration",
+      label: "Duration (in seconds)",
       placeholder: "Enter duration",
       validation: yup
         .number()

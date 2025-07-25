@@ -112,6 +112,7 @@ const AdAgencyDashboard = () => {
         buttonLabel="Create Campaign"
         onButtonClick={() => navigate("/create-campaign")}
         subtitleClass="text-indigo-700 font-bold text-base"
+        buttonClass=" cursor-pointer"
       />
       <div
         className="grid gap-4 w-full mb-6"

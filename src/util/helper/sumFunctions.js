@@ -40,3 +40,10 @@ export const getMaxBidCapSumsByStatus = (campaigns) => {
 
   return { approvedSum, pendingSum, rejectedSum };
 };
+
+// sumFunctions.js
+export const countApprovedCampaigns = (campaigns) => {
+  if (!Array.isArray(campaigns)) return 0;
+  return campaigns.filter(c => c.isApproved === "APPROVED").length;
+};
+
