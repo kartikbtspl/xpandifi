@@ -1,22 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { loginUserApi } from "../../api/user/user-api";
 
-// Async thunk for login
+
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        import.meta.env.VITE_BACKEND_URL+"/api/auth/login",
-        credentials,
-        { withCredentials: true }
-      );
-      const token = response.data.token
-      localStorage.setItem("token", token);
-      const user = response.data.user;
+      const { token, user } = await loginUserApi(credentials);
       return { user, token };
     } catch (err) {
-      
       return rejectWithValue(err.response?.data?.message || "Login failed");
     }
   }
@@ -43,7 +36,8 @@ const loginSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.token=action.payload.token;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

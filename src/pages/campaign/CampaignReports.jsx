@@ -9,16 +9,28 @@ const CampaignReports = () => {
   const { campaigns, loading } = useSelector((state) => state.campaign);
   const [rows, setRows] = useState([]);
 
-  // useEffect(() => {
-  //   dispatch(fetchCampaigns());
-  // }, [dispatch]);
+  // Fetch data initially
+  useEffect(() => {
+    dispatch(fetchCampaigns());
+  }, [dispatch]);
 
+  // Refresh function for the table refresh icon
+  const refreshCampaigns = () => {
+    dispatch(fetchCampaigns());
+  };
 
+  // Export handler
+  const handleExport = (row) => {
+    alert(`Exporting report for: ${row.name} (${row.campaignCode})`);
+    // You can add CSV export or API call here
+  };
 
+  // Format campaign data into table rows
   useEffect(() => {
     if (campaigns?.data?.length > 0) {
       const formatted = campaigns.data.map((item, index) => ({
         id: index + 1,
+        campaignCode: item.campaignCode,
         name: item.campaignName || "Untitled Campaign",
         impressions: item.impressions || Math.floor(Math.random() * 10000 + 1000),
         clicks: item.clicks || Math.floor(Math.random() * 5000 + 500),
@@ -31,8 +43,20 @@ const CampaignReports = () => {
     }
   }, [campaigns]);
 
+  // Table column definitions
   const columns = [
-    { id: "name", label: "Campaign Name", numeric: false },
+    {
+      id: "campaignCode",
+      label: "Campaign ID",
+      numeric: false,
+      renderCell: (row) => <span>{row.campaignCode}</span>,
+    },
+    {
+      id: "name",
+      label: "Campaign Name",
+      numeric: false,
+      renderCell: (row) => <span>{row.name}</span>,
+    },
     { id: "impressions", label: "Impressions", numeric: true },
     { id: "clicks", label: "Clicks", numeric: true },
     { id: "conversions", label: "Conversions", numeric: true },
@@ -53,15 +77,20 @@ const CampaignReports = () => {
     },
   ];
 
-  const handleExport = (row) => {
-    // This can be updated to download a CSV or trigger an export API call
-    alert(`Exporting report for: ${row.name}`);
-  };
-
   return (
     <div className="w-full">
       <h2 className="text-xl font-semibold mb-4">Campaign Reports</h2>
-      <ReusableTable columns={columns} rows={rows} loading = {loading} />
+
+      {/* Optional Debug: Show raw data */}
+      {/* <pre>{JSON.stringify(rows, null, 2)}</pre> */}
+
+      <ReusableTable
+        columns={columns}
+        rows={rows}
+        loading={loading}
+        onRefresh={refreshCampaigns}
+        isFilter={false}
+      />
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { Link } from "react-router";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import LocationFields from "../../components/LocationsDropdown/LocationFields";
+import axiosInstance from "../../config/axiosConfig";
+import Swal from "sweetalert2";
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -35,17 +35,16 @@ const inputWrapper =
 const inputInner = "bg-white rounded-md w-full px-4 py-2 focus:outline-none";
 
 const ContactUsForm = () => {
-  // const { register, handleSubmit, watch, reset, formState } = useForm();
   const {
     register,
     handleSubmit,
     reset,
     watch,
-    formState,
     control,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
+
   const selectedRole = watch("role");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -53,14 +52,21 @@ const ContactUsForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const res = await axios.post(
-        "https://f527c101bc62.ngrok-free.app/api/v1/users/createUser",
+      const response = await axiosInstance.post(
+        "/api/v1/users/createUser",
         data,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+        }
       );
-      console.log(res);
-
-      toast.success("Form submitted successfully!");
+      if (response.data.status === 201 || response.data.status===200) {
+        Swal.fire({
+          icon: "success",
+          title: "Request Submitted!",
+          html: `Your request has been submitted successfully.<br><strong>${data.email}</strong><br>Please check your email for credentials.`,
+          confirmButtonText: "OK",
+        });
+      }
       reset();
       navigate("/signin");
     } catch (err) {
@@ -70,8 +76,6 @@ const ContactUsForm = () => {
       setLoading(false);
     }
   };
-
-
 
   const renderAdditionalInput = () => {
     if (!selectedRole) return null;
@@ -83,9 +87,14 @@ const ContactUsForm = () => {
             type="text"
             className={inputInner}
             placeholder="Legal Name as per your Tax Certificate"
-            {...register("businessName",{ required: 'Business Name is required' })}
+            {...register("businessName", {
+              required: "Business Name is required",
+            })}
           />
         </div>
+        {errors.businessName && (
+          <p className="text-red-500 text-sm">{errors.businessName.message}</p>
+        )}
       </div>
     );
   };
@@ -100,33 +109,32 @@ const ContactUsForm = () => {
           Sell Globally
         </h1>
         <div className="space-y-12">
-          <div className="flex items-start space-x-3">
-            <div className="text-2xl">📦</div>
-            <div>
-              <p className="font-semibold">Seamless Selling</p>
-              <p className="text-sm">
-                Effortlessly expand to European & UK marketplaces.
-              </p>
+          {/* Info cards */}
+          {[
+            {
+              emoji: "📦",
+              title: "Seamless Selling",
+              desc: "Effortlessly expand to European & UK marketplaces.",
+            },
+            {
+              emoji: "🎯",
+              title: "Smart Logistics & Analytics",
+              desc: "Optimize inventory, track orders & gain powerful insights.",
+            },
+            {
+              emoji: "💰",
+              title: "Cross-Border Made Easy",
+              desc: "Simplified compliance, invoicing & fulfillment.",
+            },
+          ].map(({ emoji, title, desc }) => (
+            <div key={title} className="flex items-start space-x-3">
+              <div className="text-2xl">{emoji}</div>
+              <div>
+                <p className="font-semibold">{title}</p>
+                <p className="text-sm">{desc}</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <div className="text-2xl">🎯</div>
-            <div>
-              <p className="font-semibold">Smart Logistics & Analytics</p>
-              <p className="text-sm">
-                Optimize inventory, track orders & gain powerful insights.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <div className="text-2xl">💰</div>
-            <div>
-              <p className="font-semibold">Cross-Border Made Easy</p>
-              <p className="text-sm">
-                Simplified compliance, invoicing & fulfillment.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -147,26 +155,27 @@ const ContactUsForm = () => {
           autoComplete="off"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Input Fields */}
             {[
               {
                 label: "Full Name",
-                placeholder: "John Doe",
-                type: "text",
                 name: "fullName",
+                type: "text",
+                placeholder: "John Doe",
               },
               {
                 label: "Phone",
-                placeholder: "+91 9876543210",
-                type: "tel",
                 name: "phone",
+                type: "tel",
+                placeholder: "+91 9876543210",
               },
               {
                 label: "Email",
-                placeholder: "john@example.com",
-                type: "email",
                 name: "email",
+                type: "email",
+                placeholder: "john@example.com",
               },
-            ].map(({ label, type, name, placeholder }) => (
+            ].map(({ label, name, type, placeholder }) => (
               <div key={name} className="space-y-1">
                 <label className="block text-sm">{label}</label>
                 <div className={inputWrapper}>
@@ -174,13 +183,14 @@ const ContactUsForm = () => {
                     type={type}
                     className={inputInner}
                     placeholder={placeholder}
-                    {...register(name, { required: `${label} is required` })}
+                    {...register(name, {
+                      required: `${label} is required`,
+                    })}
                   />
-
                 </div>
                 {errors[name] && (
-                    <p className="text-red-500 text-sm">{errors[name].message}</p>
-                  )}
+                  <p className="text-red-500 text-sm">{errors[name].message}</p>
+                )}
               </div>
             ))}
 
@@ -189,67 +199,61 @@ const ContactUsForm = () => {
               setValue={setValue}
               watch={watch}
               errors={errors}
-              isPincode={false} // set to true to show pincode input
+              isPincode={false}
               customStyles={inputWrapper}
             />
 
-            {[
-              
-              {
-                label: "Role",
-                name: "role",
-                options: ["Ad-Agency", "Retailer"],
-              },
-            ].map(({ label, name, options }) => (
-              <div key={name} className="space-y-1">
-                <label className="block text-sm">{label}</label>
-                <div className={inputWrapper}>
-                  <select
-                    className={inputInner}
-                    {...register(name,{ required: `${label} is required` } )}
-                  >
-                    <option value="">Select {label}</option>
-                    {options.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                  {errors[name] && (
-                    <p className="text-red-500 text-sm">{errors[name].message}</p>
-                  )}
+            <div className="space-y-1">
+              <label className="block text-sm">Role</label>
+              <div className={inputWrapper}>
+                <select
+                  className={inputInner}
+                  {...register("role", {
+                    required: "Role is required",
+                  })}
+                >
+                  <option value="">Select Role</option>
+                  <option value="Ad-Agency">Ad-Agency</option>
+                  <option value="Retailer">Retailer</option>
+                </select>
               </div>
-            ))}
-
-            
+              {errors.role && (
+                <p className="text-red-500 text-sm">{errors.role.message}</p>
+              )}
+            </div>
 
             <div className="col-span-1 md:col-span-2">
               {renderAdditionalInput()}
             </div>
           </div>
 
+          {/* Message Field */}
           <label className="text-sm">Message</label>
           <div className={inputWrapper}>
             <input
               placeholder="Message"
               className={`${inputInner} h-20 resize-none`}
-              {...register("message",{ required: 'Message is required' })}
+              {...register("message", {
+                required: "Message is required",
+              })}
             />
           </div>
-            {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
+          {errors.message && (
+            <p className="text-red-500 text-sm">{errors.message.message}</p>
+          )}
 
+          {/* Submit Button */}
           <button
             type="submit"
-            disabled={formState.isSubmitting}
+            disabled={loading || isSubmitting}
             className={`bg-[#5F7C95] text-white py-2 px-6 w-full rounded-xl mt-2 flex items-center justify-center gap-2 ${
-              formState.isSubmitting
+              loading || isSubmitting
                 ? "cursor-not-allowed"
                 : "hover:bg-[#445E94]"
             }`}
           >
-            {formState.isSubmitting && <Spinner size="sm" />}
-            {formState.isSubmitting ? "Submitting" : "Send"}
+            {(loading || isSubmitting) && <Spinner size="sm" />}
+            {loading || isSubmitting ? "Submitting" : "Send"}
           </button>
 
           <div className="text-right">

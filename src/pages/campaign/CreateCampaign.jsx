@@ -9,6 +9,7 @@ import Loader from "../../components/loader/Loader";
 
 import { fields } from "../../util/Form-menu/campaign-fields";
 import { campaignValidationSchema } from "../../util/validation/campaignValidationSchema";
+import Swal from "sweetalert2";
 
 import {
   productTypes,
@@ -143,15 +144,26 @@ const CreateCampaign = () => {
     return () => subscription.unsubscribe();
   }, [watch, dropdowns.regionMap, dropdowns.pincodeMap, setValue]);
 
-  const handleSubmit = async (formData) => {
-    if (loading) return;
-    const result = await dispatch(createCampaign(formData));
-    if (createCampaign.fulfilled.match(result)) {
-      await dispatch(fetchCampaigns());
-      methods.reset();
-      navigate("/");
-    }
-  };
+
+const handleSubmit = async (formData) => {
+  if (loading) return;
+
+  const result = await dispatch(createCampaign(formData));
+
+  if (createCampaign.fulfilled.match(result)) {
+    await dispatch(fetchCampaigns());
+    methods.reset();
+
+    await Swal.fire({
+      title: "Success!",
+      text: "Campaign created successfully.",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+
+    navigate("/");
+  }
+};
 
   
 

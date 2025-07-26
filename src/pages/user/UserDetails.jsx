@@ -9,6 +9,9 @@ import Loader from "../../components/loader/Loader";
 import Modal from "../../components/modal/Modal";
 import { useForm } from "react-hook-form";
 import { FiEdit } from "react-icons/fi";
+import {formatDate} from "../../util/helper/formatDate"
+
+
 
 const UserDetails = () => {
   const dispatch = useDispatch();
@@ -321,12 +324,12 @@ const UserDetails = () => {
                 </div>
                 <div className="flex w-full space-x-2">
                   <span className="text-gray-500">On Board:</span>
-                  <div className="font-medium">{user?.createdAt || "N/A"}</div>
+                  <div className="font-medium">{formatDate(user?.createdAt) || "N/A"}</div>
                 </div>
                 <div className="flex w-full space-x-2">
                   <span className="text-gray-500">Activated On:</span>
                   <div className="font-medium">
-                    {user?.activatedAt || "N/A"}
+                    {formatDate(user?.activatedAt) || "N/A"}
                   </div>
                 </div>
               </div>

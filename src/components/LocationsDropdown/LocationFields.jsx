@@ -15,7 +15,6 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
       .then(res => {
         const options = res.data.data.map(c => ({ label: c.name, value: c.name }));
         setCountries(options);
-        console.log(options);
       })
       .catch(err => console.error('Error loading countries', err));
   }, []);

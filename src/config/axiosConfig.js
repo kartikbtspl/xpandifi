@@ -12,29 +12,29 @@ const axiosInstance = axios.create({
 
 
 // Add a request interceptor (optional)
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     // You can add authorization token here if needed
-//     const token = localStorage.getItem('token'); // Or get from Redux/store
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // You can add authorization token here if needed
+    const token = localStorage.getItem('token'); // Or get from Redux/store
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-// // Add a response interceptor (optional)
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     // Handle common errors globally
-//     if (error.response?.status === 401) {
-//       // Redirect to login or refresh token
-//       console.error('Unauthorized');
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+// Add a response interceptor (optional)
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle common errors globally
+    if (error.response?.status === 401) {
+      // Redirect to login or refresh token
+      console.error('Unauthorized');
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

@@ -11,6 +11,7 @@ export const createCampaign = createAsyncThunk(
   "campaign/createCampaign",
   async (data, { rejectWithValue }) => {
     try {
+      console.log(data)
       const response = await createCampaignAPI(data);
       toast.success("Campaign created successfully!");
       return response;

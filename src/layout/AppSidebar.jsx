@@ -5,7 +5,6 @@ import SidebarItem from "./SidebarItem";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { fetchCampaigns } from "../redux/slices/campaignSlice";
-import { fetchApprovedCampaigns } from "../redux/slices/approvedCampaignSlice";
 
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
   const token = localStorage.getItem("token");
@@ -33,10 +32,8 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
   useEffect(() => {
     const delay = 300; 
     const timer = setTimeout(() => {
-      if (role === "Ad-Agency") {
+      if (role) {
         dispatch(fetchCampaigns());
-      } else if (role === "Retailer") {
-        dispatch(fetchApprovedCampaigns());
       }
     }, delay);
 
