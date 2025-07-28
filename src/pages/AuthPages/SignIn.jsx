@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal } from "../../components/ui/modal/Modal";
 import { fetchUserProfile } from "../../redux/slices/userSlice";
+import{fetchCampaigns} from "../../redux/slices/campaignSlice";
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
