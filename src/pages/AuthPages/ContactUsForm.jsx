@@ -162,22 +162,25 @@ const ContactUsForm = () => {
                 name: "fullName",
                 type: "text",
                 placeholder: "John Doe",
+                reqLabel:"*"
               },
               {
                 label: "Phone",
                 name: "phone",
                 type: "tel",
                 placeholder: "+91 9876543210",
+                reqLabel:"*"
               },
               {
                 label: "Email",
                 name: "email",
                 type: "email",
                 placeholder: "john@example.com",
+                reqLabel:"*"
               },
-            ].map(({ label, name, type, placeholder }) => (
+            ].map(({ label, name, type, placeholder,reqLabel }) => (
               <div key={name} className="space-y-1">
-                <label className="block text-sm">{label}</label>
+                <label className="block text-sm">{label}<span className="text-red-500 pl-1 font-semibold text-lg">{reqLabel}</span></label>
                 <div className={inputWrapper}>
                   <input
                     type={type}
@@ -201,10 +204,11 @@ const ContactUsForm = () => {
               errors={errors}
               isPincode={false}
               customStyles={inputWrapper}
+              isRequired={true}
             />
 
             <div className="space-y-1">
-              <label className="block text-sm">Role</label>
+              <label className="block text-sm">Role<span className="text-red-500 pl-1 font-semibold text-lg">*</span></label>
               <div className={inputWrapper}>
                 <select
                   className={inputInner}
@@ -228,7 +232,7 @@ const ContactUsForm = () => {
           </div>
 
           {/* Message Field */}
-          <label className="text-sm">Message</label>
+          <label className="text-sm">Message<span className="text-red-500 pl-1 font-semibold text-lg">*</span></label>
           <div className={inputWrapper}>
             <input
               placeholder="Message"

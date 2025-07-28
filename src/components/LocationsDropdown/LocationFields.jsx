@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Controller } from 'react-hook-form';
 import Select from 'react-select';
 
-const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,customStyles}) => {
+const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,customStyles, isRequired=false}) => {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -109,7 +109,7 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
           render={({ field }) => (
             <div className="space-y-1">
               <label className="block text-sm">
-                Pincode <span className="text-xs text-gray-500">(optional)</span>
+                Pincode <span className="text-xs text-gray-500">(optional)</span> {isRequired===true? (<span className="text-red-500 pl-1 font-semibold text-lg">*</span>):('')}
               </label>
               <input
                 {...field}
@@ -135,7 +135,7 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
         rules={{ required: 'Country is required' }}
         render={({ field }) => (
           <div className="space-y-1">
-            <label className="block text-sm">Country</label>
+            <label className="block text-sm">Country{isRequired===true? (<span className="text-red-500 pl-1 font-semibold text-lg">*</span>):('')}</label>
             <div className={customStyles}>
 
             <Select
@@ -161,7 +161,7 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
         rules={{ required: 'State is required' }}
         render={({ field }) => (
           <div className="space-y-1">
-            <label className="block text-sm">State</label>
+            <label className="block text-sm">State{isRequired===true? (<span className="text-red-500 pl-1 font-semibold text-lg">*</span>):('')}</label>
             <div className={customStyles}>
 
             <Select
@@ -189,7 +189,7 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
         rules={{ required: 'City is required' }}
         render={({ field }) => (
           <div className="space-y-1">
-            <label className="block text-sm">City</label>
+            <label className="block text-sm">City{isRequired===true? (<span className="text-red-500 pl-1 font-semibold text-lg">*</span>):('')}</label>
             <div className={customStyles}>
 
             <Select

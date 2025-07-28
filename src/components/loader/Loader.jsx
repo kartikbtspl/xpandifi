@@ -1,4 +1,5 @@
 const sizeClasses = {
+  vs: "w-4 h-4 border-3",
   small: "w-6 h-6 border-4",
   medium: "w-16 h-16 border-6",
   large: "w-24 h-24 border-8",

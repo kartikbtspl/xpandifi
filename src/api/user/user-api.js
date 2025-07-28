@@ -32,3 +32,22 @@ export const resetUserPassword = async (passwordData) => {
   
   return response.data;
 }
+
+
+
+
+
+export const getforgotPassOTP= async (data)=>{
+  const response = await axiosInstance.post('/api/auth/forgot-password',data,{
+      withCredentials: true,
+  })
+
+  return response.data
+}
+export const submitNewPassOTP= async (data)=>{
+  const response = await axiosInstance.post('/api/auth/reset-password-otp',data,{
+      withCredentials: true,
+  })
+
+  return response.data
+}

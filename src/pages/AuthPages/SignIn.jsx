@@ -3,9 +3,9 @@ import { useForm } from "react-hook-form";
 import { loginUser } from "../../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal } from "../../components/ui/modal/Modal";
 import { fetchUserProfile } from "../../redux/slices/userSlice";
-import{fetchCampaigns} from "../../redux/slices/campaignSlice";
+import { fetchCampaigns } from "../../redux/slices/campaignSlice";
+import ForgotPass from "./ForgotPass";
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -38,13 +38,9 @@ const SignIn = () => {
     register: loginRegister,
     handleSubmit: handleLoginSubmit,
     formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
-    reset: resetLoginForm,
   } = useForm();
 
   const {
-    register: forgotRegister,
-    handleSubmit: handleForgotSubmit,
-    formState: { errors: forgotErrors, isSubmitting: isForgotSubmitting },
     reset: resetForgotForm,
   } = useForm();
 
@@ -56,8 +52,8 @@ const SignIn = () => {
         const token = response?.payload?.token;
         if (token) {
           localStorage.setItem("token", token);
-            dispatch(fetchCampaigns());
-            dispatch(fetchUserProfile())
+          dispatch(fetchCampaigns());
+          dispatch(fetchUserProfile());
           navigate("/");
         }
       } else {
@@ -70,23 +66,7 @@ const SignIn = () => {
     }
   };
 
-  const onForgot = async (data) => {
-    setLoading((prev) => ({ ...prev, forgot: true }));
-    try {
-      console.log("Forgot password for:", data.email);
-      // TODO: Call actual forgot password API here
-    } catch (error) {
-      console.error("Forgot password error:", error);
-    } finally {
-      setLoading((prev) => ({ ...prev, forgot: false }));
-    }
-  };
 
-  const handleCloseModal = () => {
-    resetForgotForm(); // Clear form
-    setIsForgotOpen(false);
-    setLoading((prev) => ({ ...prev, forgot: false }));
-  };
 
   return (
     <>
@@ -202,68 +182,10 @@ const SignIn = () => {
         </div>
       </div>
 
-     {/* Forgot Password Modal */}
-      <Modal
-        isOpen={isForgotOpen}
-        onClose={handleCloseModal}
-        showCloseButton={true}
-        size="sm"
-        containerClassName="flex items-center justify-center"
-      >
-        <div className="bg-white w-full p-6 rounded-lg shadow-xl">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-            Forgot Password
-          </h3>
-
-          <p className="text-sm text-gray-600 mb-6 text-center">
-            Enter your email to receive a password reset link.
-          </p>
-
-          <form
-            onSubmit={handleForgotSubmit(onForgot)}
-            className="space-y-4"
-            noValidate
-          >
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                {...forgotRegister("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Enter a valid email",
-                  },
-                })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {forgotErrors.email && (
-                <p className="text-sm text-red-500 mt-1">
-                  {forgotErrors.email.message}
-                </p>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isForgotSubmitting || loading.forgot}
-              className={`w-full py-2 flex justify-center items-center gap-2 text-white font-medium rounded-lg transition ${
-                isForgotSubmitting || loading.forgot
-                  ? "bg-[#849fb7] cursor-not-allowed"
-                  : "bg-[#5F7C95] hover:bg-[#476279]"
-              }`}
-            >
-              {isForgotSubmitting || loading.forgot ? <Spinner /> : null}
-              {isForgotSubmitting || loading.forgot ? "Sending..." : "Send"}
-            </button>
-          </form>
-        </div>
-      </Modal>
+      <ForgotPass
+        isForgotOpen={isForgotOpen}
+        onClose={() => setIsForgotOpen(false)}
+      />
     </>
   );
 };
