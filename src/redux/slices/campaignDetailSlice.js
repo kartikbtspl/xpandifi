@@ -15,9 +15,9 @@ export const fetchCampaignById = createAsyncThunk(
 );
 export const updateCampaign = createAsyncThunk(
   'campaign/update',
-  async ({ id, data }, { rejectWithValue }) => {
+  async ({ id, data,oldImages }, { rejectWithValue }) => {
     try {
-      const response = await updateUserCampaign(id , data);
+      const response = await updateUserCampaign(id , data, oldImages);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to update campaign');
