@@ -4,13 +4,13 @@ const SideCard = ({
   ads = [],
   title = "Campaigns",
   units = "",
-  onAdClick = () => {}, 
+  onAdClick = () => {}, // ✅ external click handler
 }) => {
   // Transform campaign into display-ready data
   const transformAd = (campaign) => {
     const {
       campaignName,
-      productFiles = [],
+      productFiles = [], // ✅ Correct field name
       startDate,
       endDate,
       startTime,
@@ -18,7 +18,7 @@ const SideCard = ({
       isApproved = "PENDING",
     } = campaign;
 
-    const media = productFiles[0] || "https://via.placeholder.com/48"; 
+    const media = productFiles[0] || "https://via.placeholder.com/48"; // ✅ First file only
     const titleText = campaignName || "Untitled Campaign";
 
     const time = `${new Date(startDate).toLocaleDateString()} ${startTime || ""} - ${new Date(endDate).toLocaleDateString()} ${endTime || ""}`;
@@ -64,7 +64,7 @@ const SideCard = ({
               <div
                 key={index}
                 className="border-b pb-4 last:border-0 last:pb-0 flex items-center gap-4 border-gray-400 cursor-pointer hover:bg-gray-50 transition"
-                onClick={() => onAdClick(ad)}
+                onClick={() => onAdClick(ad)} // ✅ Click handler
               >
                 {/* Ad Media */}
                 {isVideo(media) ? (
