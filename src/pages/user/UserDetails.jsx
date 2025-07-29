@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserProfile,
-  updateUser,
+  // updateUser,
   // uploadProfilePicture, // Optional: define this in your redux slice or service
 } from "../../redux/slices/userSlice";
 import Loader from "../../components/loader/Loader";
-import Modal from "../../components/modal/Modal";
 import { useForm } from "react-hook-form";
-import { FiEdit } from "react-icons/fi";
 import {formatDate} from "../../util/helper/formatDate"
+// import { FiEdit } from "react-icons/fi";
 
 
 
@@ -71,13 +70,13 @@ const UserDetails = () => {
     }
   };
 
-  const handleProfileSubmit = async (data) => {
-    setUpdating(true);
-    await dispatch(updateUser(data));
-    await dispatch(fetchUserProfile());
-    setUpdating(false);
-    setEditMode((prev) => ({ ...prev, profile: false }));
-  };
+  // const handleProfileSubmit = async (data) => {
+  //   setUpdating(true);
+  //   await dispatch(updateUser(data));
+  //   await dispatch(fetchUserProfile());
+  //   setUpdating(false);
+  //   setEditMode((prev) => ({ ...prev, profile: false }));
+  // };
 
   const handleProfilePicSubmit = async () => {
     if (profilePicFile) {
@@ -187,14 +186,14 @@ const UserDetails = () => {
                 <h3 className="text-xl font-semibold text-gray-800">
                   Personal Information:
                 </h3>
-                <button
+                {/* <button
                   onClick={() =>
                     setEditMode((prev) => ({ ...prev, profile: true }))
                   }
                   className="text-blue-600 hover:text-blue-800"
                 >
                   <FiEdit />
-                </button>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
@@ -225,7 +224,7 @@ const UserDetails = () => {
               </div>
 
               {/* Edit Modal */}
-              <Modal
+              {/* <Modal
                 isOpen={editMode.profile}
                 onClose={() => cancelEdit("profile")}
                 size="md"
@@ -303,7 +302,7 @@ const UserDetails = () => {
                     </button>
                   </div>
                 </form>
-              </Modal>
+              </Modal> */}
 
               <div className="flex justify-between items-center mb-4 border-t pt-4">
                 <h3 className="text-xl font-semibold text-gray-800">
