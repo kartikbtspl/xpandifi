@@ -1,3 +1,4 @@
+//src\routes\PublicRoutes.jsx
 import { Route } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import CreateCampaign from "../pages/campaign/CreateCampaign";

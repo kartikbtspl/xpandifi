@@ -1,3 +1,4 @@
+//src\routes\DashboardRoutes.jsx
 import { Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import AppLayout from "../layout/AppLayout";

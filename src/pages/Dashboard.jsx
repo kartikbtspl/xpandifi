@@ -1,3 +1,4 @@
+//src\pages\Dashboard.jsx
 import { useSelector } from "react-redux";
 import RetailerDashboard from "./dashboard/RetailerDashboard";
 import AdAgencyDashboard from "./dashboard/AdAgencyDashboard";
