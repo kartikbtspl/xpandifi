@@ -66,46 +66,6 @@ export const getCampaignByIdAPI = async (id) => {
   return response?.data?.data;
 };
 
-// export const updateUserCampaign = async (id, data) => {
-  
-
-//   const formData = new FormData();
-
-//   Object.entries(data).forEach(([key, value]) => {
-//     if (key === "productFiles" && Array.isArray(value)) {
-//       value.forEach((file) => {
-//         formData.append("productFiles", file); // ✅ append each file
-//       });
-//     } else if (Array.isArray(value)) {
-//       formData.append(key, JSON.stringify(value)); // ✅ stringify arrays
-//     } else if (typeof value === "object" && value !== null) {
-//       formData.append(key, JSON.stringify(value)); // ✅ stringify objects like dateRange
-//     } else {
-//       formData.append(key, value);
-//     }
-//   });
-
-  
- 
-//   const token = localStorage.getItem("token");
-
-//   const response = await axiosInstance.put(
-//     `/api/v1/campaign/${id}/updateCampaign`,
-//     formData,
-//     {
-//       headers: {
-//     'Content-Type': 'multipart/form-data',
-//     Authorization: `Bearer ${token}`,
-//   },
-//       withCredentials: true,
-//     }
-//   );
-
-
-
-//   return response?.data;
-// };
-
 
 
 export const updateUserCampaign = async (id, data, oldImages = []) => {
