@@ -35,10 +35,15 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.3",
     "react-select": "^5.10.2",
+<<<<<<< HEAD
     "react-slick": "^0.30.3",
     "react-toastify": "^11.0.5",
     "recharts": "^3.0.2",
     "slick-carousel": "^1.8.1",
+=======
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.0.2",
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
     "sweetalert2": "^11.22.2",
     "yup": "^1.6.1"
   },

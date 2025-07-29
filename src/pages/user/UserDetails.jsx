@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserProfile,
+<<<<<<< HEAD
   // updateUser,
   // uploadProfilePicture, // Optional: define this in your redux slice or service
 } from "../../redux/slices/userSlice";
@@ -9,6 +10,16 @@ import Loader from "../../components/loader/Loader";
 import { useForm } from "react-hook-form";
 import {formatDate} from "../../util/helper/formatDate"
 // import { FiEdit } from "react-icons/fi";
+=======
+  updateUser,
+  // uploadProfilePicture, // Optional: define this in your redux slice or service
+} from "../../redux/slices/userSlice";
+import Loader from "../../components/loader/Loader";
+import Modal from "../../components/modal/Modal";
+import { useForm } from "react-hook-form";
+import { FiEdit } from "react-icons/fi";
+import {formatDate} from "../../util/helper/formatDate"
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
 
 
 
@@ -70,6 +81,7 @@ const UserDetails = () => {
     }
   };
 
+<<<<<<< HEAD
   // const handleProfileSubmit = async (data) => {
   //   setUpdating(true);
   //   await dispatch(updateUser(data));
@@ -77,6 +89,15 @@ const UserDetails = () => {
   //   setUpdating(false);
   //   setEditMode((prev) => ({ ...prev, profile: false }));
   // };
+=======
+  const handleProfileSubmit = async (data) => {
+    setUpdating(true);
+    await dispatch(updateUser(data));
+    await dispatch(fetchUserProfile());
+    setUpdating(false);
+    setEditMode((prev) => ({ ...prev, profile: false }));
+  };
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
 
   const handleProfilePicSubmit = async () => {
     if (profilePicFile) {
@@ -186,14 +207,22 @@ const UserDetails = () => {
                 <h3 className="text-xl font-semibold text-gray-800">
                   Personal Information:
                 </h3>
+<<<<<<< HEAD
                 {/* <button
+=======
+                <button
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
                   onClick={() =>
                     setEditMode((prev) => ({ ...prev, profile: true }))
                   }
                   className="text-blue-600 hover:text-blue-800"
                 >
                   <FiEdit />
+<<<<<<< HEAD
                 </button> */}
+=======
+                </button>
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
@@ -224,7 +253,11 @@ const UserDetails = () => {
               </div>
 
               {/* Edit Modal */}
+<<<<<<< HEAD
               {/* <Modal
+=======
+              <Modal
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
                 isOpen={editMode.profile}
                 onClose={() => cancelEdit("profile")}
                 size="md"
@@ -302,7 +335,11 @@ const UserDetails = () => {
                     </button>
                   </div>
                 </form>
+<<<<<<< HEAD
               </Modal> */}
+=======
+              </Modal>
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
 
               <div className="flex justify-between items-center mb-4 border-t pt-4">
                 <h3 className="text-xl font-semibold text-gray-800">

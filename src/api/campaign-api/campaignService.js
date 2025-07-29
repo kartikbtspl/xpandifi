@@ -66,6 +66,7 @@ export const getCampaignByIdAPI = async (id) => {
   return response?.data?.data;
 };
 
+<<<<<<< HEAD
 
 
 export const updateUserCampaign = async (id, data, oldImages = []) => {
@@ -91,19 +92,43 @@ export const updateUserCampaign = async (id, data, oldImages = []) => {
       formData.append(key, JSON.stringify(value));
     } else if (typeof value === "object" && value !== null) {
       formData.append(key, JSON.stringify(value));
+=======
+export const updateUserCampaign = async (id, data) => {
+  
+
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (key === "productFiles" && Array.isArray(value)) {
+      value.forEach((file) => {
+        formData.append("productFiles", file); // ✅ append each file
+      });
+    } else if (Array.isArray(value)) {
+      formData.append(key, JSON.stringify(value)); // ✅ stringify arrays
+    } else if (typeof value === "object" && value !== null) {
+      formData.append(key, JSON.stringify(value)); // ✅ stringify objects like dateRange
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
     } else {
       formData.append(key, value);
     }
   });
 
+<<<<<<< HEAD
   const token = localStorage.getItem("token");
 
 
+=======
+  
+ 
+  const token = localStorage.getItem("token");
+
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
   const response = await axiosInstance.put(
     `/api/v1/campaign/${id}/updateCampaign`,
     formData,
     {
       headers: {
+<<<<<<< HEAD
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
@@ -114,6 +139,17 @@ console.log("🧪 FormData contents:");
 for (let pair of formData.entries()) {
   console.log(`${pair[0]}:`, pair[1]);
 }
+=======
+    'Content-Type': 'multipart/form-data',
+    Authorization: `Bearer ${token}`,
+  },
+      withCredentials: true,
+    }
+  );
+
+
+
+>>>>>>> e048f842fa827593a9684113d4b872b9102b0a98
   return response?.data;
 };
 
