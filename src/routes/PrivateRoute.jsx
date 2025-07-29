@@ -1,31 +1,42 @@
-//src\routes\PrivateRoute.jsx
 import { Navigate, useLocation } from "react-router-dom";
-import { routeMap } from "./routeMaps";
 import { jwtDecode } from "jwt-decode";
 
-
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children, allowedRoles = [] }) => {
   const token = localStorage.getItem("token");
+  const location = useLocation();
 
   if (!token) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+    const userRole = decoded.role?.toLowerCase(); // normalize user role
+
+    // Normalize all allowed roles to lowercase for comparison
+    const normalizedAllowedRoles = allowedRoles.map((role) => role.toLowerCase());
+
+    if (normalizedAllowedRoles.length > 0 && !normalizedAllowedRoles.includes(userRole)) {
+      return <Navigate to="/" replace />;
+    }
+
+    return children;
+  } catch (err) {
+    console.error("Invalid token:", err);
     return <Navigate to="/signin" replace />;
   }
-  const location = useLocation();
-  // Decoding token to get user role
-  const decoded = jwtDecode(token);
-  const userRole = decoded.role;
-
-  // To find current route in routeMaps
-  const currentRoute = routeMap.find((route) => route.path === location.pathname);
-
-  if (!currentRoute || !currentRoute.roles.includes(userRole)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-
 };
 
-
-
 export default PrivateRoute;
+
+
+
+
+// import { Navigate } from "react-router-dom";
+
+// const PrivateRoute = ({ children }) => {
+//   const token = localStorage.getItem("token"); 
+//   return token ? children : <Navigate to="/signin" replace />;
+// };
+
+// export default PrivateRoute;
