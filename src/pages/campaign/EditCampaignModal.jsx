@@ -20,6 +20,7 @@ import { fields } from "../../util/Form-menu/campaign-fields";
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.campaignDetail);
+  const [oldImages,setOldImage]= useState([])
 
   const methods = useForm({ defaultValues: {} });
 
@@ -73,6 +74,13 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     fetchDropdowns();
   }, []);
 
+
+    useEffect(() => {
+    const images = [...campaignData.productFiles];
+    setOldImage(images);
+  }, [campaignData]);
+
+  
   // Set default values for edit form
   useEffect(() => {
     if (
@@ -94,7 +102,10 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         pincode: derivedPincodes,
         productFiles: campaignData.productFiles || [],
         timings: campaignData.timings || "",
+
       });
+      // updating the array
+      // setOldImage([]);
     }
   }, [campaignData, dropdowns.regionMap, methods]);
 
@@ -136,17 +147,38 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     return () => subscription.unsubscribe();
   }, [methods, dropdowns.regionMap, dropdowns.pincodeMap]);
 
-  // Submit handler
-  const handleUpdate = async (formData) => {
-    try {
-      await dispatch(updateCampaign({ id: campaignData.id, data: formData }));
-      toast.success("Campaign updated successfully");
-      onSuccess?.();
-      onClose();
-    } catch (err) {
-      toast.error("Failed to update campaign");
-    }
+
+
+
+const handleUpdate = async (formData) => {
+  const allFiles = formData.productFiles || [];
+
+  // ✅ Split into existing (previewed) and new files
+  const oldImages = allFiles.filter((item) => typeof item === 'string');
+  const newFiles = allFiles.filter((item) => item instanceof File);
+
+  // ✅ Keep newFiles in formData so backend can attach them
+  const preparedData = {
+    ...formData,
+    productFiles: newFiles, // only send actual File objects here
   };
+
+  try {
+    await dispatch(updateCampaign({
+      id: campaignData.id,
+      data: preparedData,
+      oldImages, // only visible (not removed) existing image URLs
+    }));
+
+    toast.success("Campaign updated successfully");
+    onSuccess?.();
+    onClose();
+  } catch (err) {
+    toast.error("Failed to update campaign");
+  }
+};
+
+
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
