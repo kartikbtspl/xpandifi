@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-
-import { fetchCampaigns, deleteCampaign } from "../../redux/slices/campaignSlice";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import {
+  fetchCampaigns,
+  deleteCampaign,
+} from "../../redux/slices/campaignSlice";
 import ReusableTable from "../../components/table/ReusableTable";
 import EditCampaignModal from "./EditCampaignModal";
+import Button from "../../components/ui/button/Button";
 
-// 🟢 Helper to render status badge
+
+// Render approval status badge
 const renderStatusBadge = (status) => {
   const normalized = status?.toUpperCase() || "UNKNOWN";
-  const classes = {
-    APPROVED: "bg-green-100 text-green-600",
-    REJECTED: "bg-red-100 text-red-600",
-    PENDING: "bg-yellow-100 text-yellow-600",
-  }[normalized] || "bg-gray-100 text-gray-600";
+  const classes =
+    {
+      APPROVED: "bg-green-100 text-green-600",
+      REJECTED: "bg-red-100 text-red-600",
+      PENDING: "bg-yellow-100 text-yellow-600",
+    }[normalized] || "bg-gray-100 text-gray-600";
 
   return (
     <div className={`p-1 rounded-full text-center ${classes}`}>
@@ -22,7 +28,7 @@ const renderStatusBadge = (status) => {
   );
 };
 
-// 🟢 Helper to format campaign data
+// Format campaigns for table
 const formatCampaigns = (data = []) =>
   data.map((item, index) => ({
     id: index + 1,
@@ -36,30 +42,43 @@ const formatCampaigns = (data = []) =>
   }));
 
 const CampaignList = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const { campaigns, loading } = useSelector((state) => state.campaign);
+
+  const isViewAnalytics = location.pathname.includes("checkout");
 
   const [rows, setRows] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  // 🟢 Refresh and fetch
+  // Fetch campaigns on mount
+  useEffect(() => {
+    dispatch(fetchCampaigns());
+  }, [dispatch]);
+
+  // Filter and sort campaigns by updatedAt (descending)
+  useEffect(() => {
+    const data = campaigns?.data ?? [];
+
+    const filtered = data
+      .filter(
+        (c) => c.isPayment === false || (c.isActive === false || c.isActive === undefined)
+      )
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // latest first
+
+    setRows(formatCampaigns(filtered));
+  }, [campaigns]);
+
   const refreshCampaigns = () => {
     dispatch(fetchCampaigns());
   };
 
-  useEffect(() => {
-    const data = campaigns?.data ?? [];
-    setRows(formatCampaigns(data));
-  }, [campaigns]);
-
-  // 🟢 Handle edit modal
   const handleEdit = (row) => {
     setSelectedCampaign(row.raw);
     setIsEditOpen(true);
   };
 
-  // 🟢 Handle delete
   const handleDelete = (row) => {
     Swal.fire({
       title: "Are you sure you want to delete?",
@@ -77,9 +96,14 @@ const CampaignList = () => {
           .unwrap()
           .then(() => {
             Swal.fire("Deleted!", "The campaign has been deleted.", "success");
+            refreshCampaigns();
           })
           .catch(() => {
-            Swal.fire("Error", "There was a problem deleting the campaign.", "error");
+            Swal.fire(
+              "Error",
+              "There was a problem deleting the campaign.",
+              "error"
+            );
           });
       }
     });
@@ -118,34 +142,45 @@ const CampaignList = () => {
             </button>
           </div>
         ) : (
-          <div className="text-gray-500">No Actions Available</div>
+          <Link
+            to="checkout"
+            state={{ row }}
+          >
+              <Button type={"button"} label={"Make Payment"} isIcon={false} className="cursor-pointer"/>
+          </Link>
         );
       },
     },
   ];
 
   return (
-    <div className="w-full">
-      <h2 className="text-xl font-semibold mb-4">Campaigns</h2>
+    <>
+      {isViewAnalytics ? (
+        <Outlet />
+      ) : (
+        <div className="w-full">
+          <h2 className="text-xl font-semibold mb-4">Campaigns</h2>
 
-      <ReusableTable
-        columns={columns}
-        rows={rows}
-        loading={loading}
-        onRefresh={refreshCampaigns}
-        filterKey="status"
-        filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
-      />
+          <ReusableTable
+            columns={columns}
+            rows={rows}
+            loading={loading}
+            onRefresh={refreshCampaigns}
+            filterKey="status"
+            filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
+          />
 
-      {isEditOpen && selectedCampaign && (
-        <EditCampaignModal
-          isOpen={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          campaignData={selectedCampaign}
-          onSuccess={refreshCampaigns}
-        />
+          {isEditOpen && selectedCampaign && (
+            <EditCampaignModal
+              isOpen={isEditOpen}
+              onClose={() => setIsEditOpen(false)}
+              campaignData={selectedCampaign}
+              onSuccess={refreshCampaigns}
+            />
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

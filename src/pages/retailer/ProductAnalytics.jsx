@@ -14,7 +14,6 @@ const ProductAnalytics = () => {
 
 
   const data ={...location.state?.row};
-  console.log("data:", data); 
 
 
 

@@ -34,9 +34,6 @@ export const resetUserPassword = async (passwordData) => {
 }
 
 
-
-
-
 export const getforgotPassOTP= async (data)=>{
   const response = await axiosInstance.post('/api/auth/forgot-password',data,{
       withCredentials: true,

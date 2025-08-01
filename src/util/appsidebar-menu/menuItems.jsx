@@ -2,6 +2,7 @@ import {  GridIcon , ReportIcon , BidIcon , CampaignIcon, WithdrawIcon,PrivacyIc
 export const menuItems = [
     { name: "Dashboard", icon: <GridIcon />, path: "/" },
     { name: "Campaigns", icon: <CampaignIcon />, path: "/campaigns-list" },
+    { name: "Active Campaigns", icon: <BidIcon />, path: "/active-ads" },
     { name: "Reports", icon: <ReportIcon />, path: "/reports" },
     { name: "Bid Management", icon: <BidIcon />, path: "/bids" },
   ];
