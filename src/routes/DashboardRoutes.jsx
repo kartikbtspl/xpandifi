@@ -12,6 +12,10 @@ import AdPerformance from "../pages/retailer/AdPerformance";
 import WithdrawEarning from "../pages/retailer/WithdrawEarning";
 import ProductAnalytics from "../pages/retailer/ProductAnalytics";
 import DataPrivacy from "../pages/retailer/DataPrivacy";
+import ActiveCampaigns from "../pages/campaign/ActiveCampaigns";
+import CheckoutCampaign from "../pages/campaign/CheckoutCampaign";
+
+
 
 export const dashboardRoutes = [
   <Route
@@ -25,7 +29,9 @@ export const dashboardRoutes = [
     {/* <Route index path="/" element={<Home />} /> */}
     <Route path="/" element={<Dashboard />} />
     <Route path="/create-campaign" element={<CreateCampaign />} />
-    <Route path="/campaigns-list" element={<CampaignList />} />
+    <Route path="/campaigns-list" element={<CampaignList />}>
+    <Route path="checkout" element={<CheckoutCampaign />} />
+    </Route>
     <Route path="/reports" element={<CampaignReports />} />
     <Route path="/bids" element={<BidManagement />} />
     <Route path="/profile" element={<UserDetails />} />
@@ -35,6 +41,9 @@ export const dashboardRoutes = [
     </Route>
     <Route path="/withdraw-earning" element={<WithdrawEarning />} />
     <Route path="/data-privacy" element={<DataPrivacy />} />
+    
+    <Route path="/active-ads" element={<ActiveCampaigns />} />
+    
     
   </Route>,
 ];
