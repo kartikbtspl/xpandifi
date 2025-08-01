@@ -1,32 +1,5 @@
 import React from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
-
-// Custom Arrow Components (gray icon, white background)
-const NextArrow = ({ onClick }) => (
-  <button
-    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-50 bg-white text-gray-700 border border-gray-300 rounded-full p-2 shadow hover:bg-gray-100 cursor-pointer"
-    onClick={onClick}
-    aria-label="Next Slide"
-  >
-    <FaChevronRight className="w-4 h-4" />
-  </button>
-);
-
-const PrevArrow = ({ onClick }) => (
-  <button
-    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-50 bg-white text-gray-700 border border-gray-300 rounded-full p-2 shadow hover:bg-gray-100 cursor-pointer"
-    onClick={onClick}
-    aria-label="Previous Slide"
-  >
-    <FaChevronLeft className="w-4 h-4" />
-  </button>
-);
-
-
+import MediaCarousel from "../../components/ui/carousel/MediaCarousel"; // Adjust path as needed
 
 const CampaignCard = ({ campaign }) => {
   if (!campaign) return null;
@@ -49,19 +22,6 @@ const CampaignCard = ({ campaign }) => {
       day: "numeric",
     });
 
-  const isVideo = (url) => url?.match(/\.(mp4|webm|ogg)$/i);
-
-  const sliderSettings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-  };
-
   return (
     <div className="bg-white rounded-lg shadow p-4 w-full relative mt-10">
       {/* Header */}
@@ -81,27 +41,8 @@ const CampaignCard = ({ campaign }) => {
       </div>
 
       {/* Media Carousel */}
-      <div className="mb-4 relative">
-        <Slider {...sliderSettings}>
-          {productFiles.map((file, idx) => (
-            <div key={idx}>
-              {isVideo(file) ? (
-                <video
-                  src={file}
-                  controls
-                  autoPlay
-                  className="w-full h-100 object-cover rounded"
-                />
-              ) : (
-                <img
-                  src={file}
-                  alt={`Campaign Media ${idx + 1}`}
-                  className="w-full h-100 object-cover rounded"
-                />
-              )}
-            </div>
-          ))}
-        </Slider>
+      <div className="mb-4">
+        <MediaCarousel mediaFiles={productFiles} size="xl" autoplay={true}  />
       </div>
 
       {/* Date & Time */}
