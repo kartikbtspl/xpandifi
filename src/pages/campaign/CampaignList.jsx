@@ -46,6 +46,8 @@ const CampaignList = () => {
   const dispatch = useDispatch();
   const { campaigns, loading } = useSelector((state) => state.campaign);
 
+  console.log("campaings:..", campaigns)
+
   const isViewAnalytics = location.pathname.includes("checkout");
 
   const [rows, setRows] = useState([]);
@@ -62,10 +64,9 @@ const CampaignList = () => {
     const data = campaigns?.data ?? [];
 
     const filtered = data
-      .filter(
-        (c) => c.isPayment === false || (c.isActive === false || c.isActive === undefined)
-      )
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // latest first
+  .filter((c) => c.isPayment === false)
+  .sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // optional
+
 
     setRows(formatCampaigns(filtered));
   }, [campaigns]);
