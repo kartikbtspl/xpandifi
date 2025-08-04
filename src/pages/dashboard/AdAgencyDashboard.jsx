@@ -54,7 +54,8 @@ const AdAgencyDashboard = () => {
 
   useEffect(() => {
     const campaignList = campaigns?.data ?? [];
-    setRows(formatCampaignData(campaignList));
+    // setRows(formatCampaignData(campaignList));
+    setRows(formatCampaignData(campaignList.filter((c) => !c.isPayment)));
     setBaseBidSums(getBaseBidSumsByStatus(campaignList));
     setMaxBidCapSums(getMaxBidCapSumsByStatus(campaignList));
   }, [campaigns]);

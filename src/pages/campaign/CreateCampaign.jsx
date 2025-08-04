@@ -186,6 +186,7 @@ const handleSubmit = async (formData) => {
         title=""
         submitLabel="Submit For Approval"
         isPlus={false}
+        loading={loading}
       />
     </div>
   );
