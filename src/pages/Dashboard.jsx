@@ -2,17 +2,18 @@
 import { useSelector } from "react-redux";
 import RetailerDashboard from "./dashboard/RetailerDashboard";
 import AdAgencyDashboard from "./dashboard/AdAgencyDashboard";
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import Shimmer from "../components/shimmer/Shimmer";
+import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
+import Shimmer from "../components/shimmer/Shimmer";
 import { fetchCampaigns } from "../redux/slices/campaignSlice";
 import { fetchUserProfile } from "../redux/slices/userSlice";
+import PageTitle from "../components/ui/page-title/PageTitle";
 
 const Dashboard = () => {
   const { profile, loading } = useSelector((state) => state.user);
   const [role, setRole] = useState(null);
-  const dispatch =useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,23 +27,28 @@ const Dashboard = () => {
     }
   }, []);
 
-
-   useEffect(() => {
+  useEffect(() => {
     dispatch(fetchCampaigns());
-    dispatch(fetchUserProfile())
+    dispatch(fetchUserProfile());
   }, [dispatch]);
 
-  if (loading) {
-    return (
-      <Shimmer />
-    );
-  }
+  if (loading) return <Shimmer />;
 
-  if (role === "Retailer") {
-    return <RetailerDashboard />;
-  } else if (role === "Ad-Agency") {
-    return <AdAgencyDashboard />;
-  }
+  const title =
+    role === "Ad-Agency"
+      ? "Ad Agency"
+      : role === "Retailer"
+      ? "Retailer"
+      : "Xpandifi";
+
+  return (
+    <>
+      <PageTitle title={title} /> {/* ✅ dynamically set browser tab title */}
+
+      {role === "Retailer" && <RetailerDashboard />}
+      {role === "Ad-Agency" && <AdAgencyDashboard />}
+    </>
+  );
 };
 
 export default Dashboard;

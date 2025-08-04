@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../../redux/slices/userSlice";
 import { fetchCampaigns } from "../../redux/slices/campaignSlice";
 import ForgotPass from "./ForgotPass";
+import PageTitle from "../../components/ui/page-title/PageTitle";
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -70,6 +71,7 @@ const SignIn = () => {
 
   return (
     <>
+    <PageTitle title="Xpandifi" />
       {/* Main Page Layout */}
       <div className="min-h-screen flex flex-col lg:flex-row">
         <div className="w-full p-2 lg:w-1/2 bg-[url('/images/auth/login-img.png')] bg-cover bg-center h-60 sm:h-72 md:h-96 lg:h-auto" />
