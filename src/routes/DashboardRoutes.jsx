@@ -1,3 +1,5 @@
+
+
 // src/routes/DashboardRoutes.jsx
 import { Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
@@ -29,27 +31,64 @@ export const dashboardRoutes = [
       </PrivateRoute>
     }
   >
+
     {/* Shared route */}
     <Route path="/" element={<Dashboard />} />
-    <Route path="/create-campaign" element={<CreateCampaign />} />
-    <Route path="/campaigns-list" element={<CampaignList />}>
-    <Route path="checkout" element={<CheckoutCampaign />} />
+
+    <Route
+      path="/create-campaign"
+      element={
+        <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <CreateCampaign />
+        </PrivateRoute>
+      }
+    />
+
+    <Route path="/campaigns-list" element={
+      <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <CampaignList />
+        </PrivateRoute>}>
+      <Route path="checkout" element={<CheckoutCampaign />} />
     </Route>
-    <Route path="/reports" element={<CampaignReports />} />
-    <Route path="/bids" element={<BidManagement />} />
-    <Route path="/profile" element={<UserDetails />} />
-    <Route path="/pos-upload" element={<PosDataUpload />} />
-    <Route path="/ad-performance" element={<AdPerformance />}>
+
+    <Route path="/reports" element={
+      <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <CampaignReports />
+        </PrivateRoute>} />
+    <Route path="/bids" element={<PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <BidManagement />
+        </PrivateRoute>} />
+    <Route path="/profile" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+          <UserDetails />
+        </PrivateRoute>} />
+    <Route path="/pos-upload" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <PosDataUpload />
+        </PrivateRoute>} />
+
+    <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <AdPerformance />
+        </PrivateRoute>}>
       <Route path="view-analytics" element={<ProductAnalytics />} />
     </Route>
-    <Route path="/withdraw-earning" element={<WithdrawEarning />} />
-    <Route path="/data-privacy" element={<DataPrivacy />} />
-    
-    <Route path="/active-ads" element={<ActiveCampaigns />} />
+
+    <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <WithdrawEarning />
+        </PrivateRoute>} />
+    <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["retailer"]}>
+          <DataPrivacy />
+        </PrivateRoute>} />
+    <Route path="/active-ads" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <ActiveCampaigns />
+        </PrivateRoute>} />
     
     
   </Route>,
 ];
+
+
+
+
+
 
 
 
