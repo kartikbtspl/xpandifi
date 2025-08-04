@@ -3,7 +3,7 @@ import axiosInstance from "../../config/axiosConfig";
 
 export const loginUserApi = async (credentials) => {
   const response = await axiosInstance.post(
-    `/api/auth/login`,
+    `/api/v1/auth/login`,
     credentials
   );
   return response.data;
@@ -26,7 +26,7 @@ export const updateUserProfile = async (data) => {
 
 export const resetUserPassword = async (passwordData) => {
 
-  const response = await axiosInstance.post('/api/auth/reset-password', passwordData , {
+  const response = await axiosInstance.post('/api/v1/auth/reset-password', passwordData , {
       withCredentials: true,
   });
   
@@ -35,14 +35,14 @@ export const resetUserPassword = async (passwordData) => {
 
 
 export const getforgotPassOTP= async (data)=>{
-  const response = await axiosInstance.post('/api/auth/forgot-password',data,{
+  const response = await axiosInstance.post('/api/v1/auth/forgot-password',data,{
       withCredentials: true,
   })
 
   return response.data
 }
 export const submitNewPassOTP= async (data)=>{
-  const response = await axiosInstance.post('/api/auth/reset-password-otp',data,{
+  const response = await axiosInstance.post('/api/v1/auth/reset-password-otp',data,{
       withCredentials: true,
   })
 
