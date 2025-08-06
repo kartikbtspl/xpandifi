@@ -4,7 +4,7 @@ import axiosInstance from "../../config/axiosConfig";
 export const getRetailerCampaigns = async () => {
   try {
     const response = axiosInstance.get(
-      "/api/v1/retailers/fetchApproveCampaigns",
+      "/api/v1/retailers/fetchActiveCampaigns",
       {
         withCredentials: true,
       }
