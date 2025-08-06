@@ -4,36 +4,37 @@ const SideCard = ({
   ads = [],
   title = "Campaigns",
   units = "",
-  onAdClick = () => {}, // ✅ external click handler
+  onAdClick = () => {},
 }) => {
   // Transform campaign into display-ready data
   const transformAd = (campaign) => {
     const {
       campaignName,
-      productFiles = [], // ✅ Correct field name
+      productFiles = [],
       startDate,
       endDate,
       startTime,
       endTime,
-      isApproved = "PENDING",
     } = campaign;
 
-    const media = productFiles[0] || "https://via.placeholder.com/48"; // ✅ First file only
+    const isActive = campaign.isActive ?? campaign.isAcive ?? false;
+
+    const media = productFiles[0] || "https://via.placeholder.com/48";
     const titleText = campaignName || "Untitled Campaign";
 
     const time = `${new Date(startDate).toLocaleDateString()} ${startTime || ""} - ${new Date(endDate).toLocaleDateString()} ${endTime || ""}`;
+    const status = isActive ? "ACTIVE" : "INACTIVE";
 
-    return { media, titleText, time, isApproved };
+    return { media, titleText, time, status, isActive };
   };
 
-  // Style based on approval status
+  // Style based on active status
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case "approved":
+      case "active":
         return "text-green-600 bg-green-100";
-      case "rejected":
-        return "text-red-600 bg-red-100";
-      case "pending":
+      case "inactive":
+        return "text-gray-600 bg-gray-200";
       default:
         return "text-yellow-600 bg-yellow-100";
     }
@@ -57,14 +58,14 @@ const SideCard = ({
           <div className="text-gray-500 text-sm text-center">No data available</div>
         ) : (
           ads.map((ad, index) => {
-            const { media, titleText, time, isApproved } = transformAd(ad);
-            const statusColor = getStatusColor(isApproved);
+            const { media, titleText, time, status, isActive } = transformAd(ad);
+            const statusColor = getStatusColor(status);
 
             return (
               <div
                 key={index}
                 className="border-b pb-4 last:border-0 last:pb-0 flex items-center gap-4 border-gray-400 cursor-pointer hover:bg-gray-50 transition"
-                onClick={() => onAdClick(ad)} // ✅ Click handler
+                onClick={() => onAdClick(ad)}
               >
                 {/* Ad Media */}
                 {isVideo(media) ? (
@@ -89,9 +90,30 @@ const SideCard = ({
                     {titleText}
                   </h4>
                   <span className="text-xs text-gray-500 block">{time}</span>
-                  <span className={`text-xs mt-1 inline-block px-2 py-0.5 rounded ${statusColor}`}>
-                    {isApproved}
-                  </span>
+
+                  {/* Status with pulse */}
+                  <div className="flex items-center gap-2 mt-1">
+                    {/* Pulse dot */}
+                    <span className="relative flex size-3">
+                      <span
+                        className={`absolute inline-flex h-full w-full animate-ping rounded-full ${
+                          isActive ? "bg-green-400" : "bg-gray-400"
+                        } opacity-75`}
+                      ></span>
+                      <span
+                        className={`relative inline-flex size-3 rounded-full ${
+                          isActive ? "bg-green-500" : "bg-gray-500"
+                        }`}
+                      ></span>
+                    </span>
+
+                    {/* Status badge */}
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded-full font-semibold ${statusColor}`}
+                    >
+                      {status}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
