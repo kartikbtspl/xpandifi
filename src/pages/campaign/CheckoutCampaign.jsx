@@ -7,8 +7,8 @@ import { verifyPayment, createOrder } from "../../api/razor-api/razor-api";
 import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchCampaigns } from "../../redux/slices/campaignSlice";
+import { createOrder_cashFree,checkCashfreePaymentStatus } from "../../api/cashFree/cashFree-api";
 
-// Utility to format dates
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
     year: "numeric",
@@ -16,11 +16,10 @@ const formatDate = (date) =>
     day: "numeric",
   });
 
-  const cleanPhone = (phone) => {
-  const digits = phone?.match(/\d{10}$/); // get last 10 digits
+const cleanPhone = (phone) => {
+  const digits = phone?.match(/\d{10}$/);
   return digits ? digits[0] : "";
 };
-
 
 const CheckoutCampaign = () => {
   const location = useLocation();
@@ -44,23 +43,105 @@ const CheckoutCampaign = () => {
     }
   }, [campaignData, navigate]);
 
-
   const handlePayment = useCallback(async () => {
-  if (!campaignData?.raw || !user) {
-    Swal.fire(
-      "Missing Information",
-      "Campaign or user data is not available.",
-      "warning"
-    );
-    return;
-  }
+    if (!campaignData?.raw || !user) {
+      Swal.fire("Missing Information", "Campaign or user data is not available.", "warning");
+      return;
+    }
 
-  if (!window.Razorpay) {
-    Swal.fire(
-      "Payment SDK Error",
-      "Razorpay SDK not loaded. Please refresh and try again.",
-      "error"
-    );
+    if (!window.Razorpay) {
+      Swal.fire("Payment SDK Error", "Razorpay SDK not loaded. Please refresh and try again.", "error");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { raw: campaign } = campaignData;
+      const orderPayload = {
+        campaignId: campaign.id,
+        campaignCode: campaignData.campaignCode,
+        amount: campaign.baseBid,
+        currency: "INR",
+      };
+
+      const { order } = await createOrder(orderPayload);
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: user.businessName || "Your Company",
+        description: campaignData.name || "Campaign Payment",
+        prefill: {
+          name: user?.fullName || "",
+          email: user?.email || "",
+          contact: cleanPhone(user?.phone) || "",
+        },
+        theme: { color: "#3399cc" },
+        modal: {
+          ondismiss: () => {
+            setIsLoading(false);
+            Swal.fire("Payment Cancelled", "You closed the payment popup.", "info");
+          },
+        },
+        handler: async (response) => {
+          try {
+            const verifyRes = await verifyPayment({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              campaignId: campaign.id,
+            });
+
+            if (verifyRes?.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Payment Successful",
+                text: "Your campaign has been activated!",
+                confirmButtonColor: "#3085d6",
+              }).then(() => navigate("/campaigns-list"));
+
+              dispatch(fetchCampaigns());
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Verification Failed",
+                text: "Payment could not be verified. Please contact support.",
+              });
+            }
+          } catch (err) {
+            console.error("Verification error:", err);
+            Swal.fire({
+              icon: "error",
+              title: "Verification Error",
+              text: err?.response?.data?.message || "Something went wrong verifying your payment.",
+            });
+          } finally {
+            setIsLoading(false);
+          }
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Payment Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        text: error?.message || "Unable to process payment. Please try again.",
+      });
+      setIsLoading(false);
+    }
+  }, [campaignData, user, navigate, dispatch]);
+
+
+
+const handleCashfreePayment = useCallback(async () => {
+  if (!campaignData?.raw || !user) {
+    Swal.fire("Missing Info", "Campaign or user data not available", "warning");
     return;
   }
 
@@ -68,81 +149,58 @@ const CheckoutCampaign = () => {
 
   try {
     const { raw: campaign } = campaignData;
+
     const orderPayload = {
       campaignId: campaign.id,
-      campaignCode: campaignData.campaignCode,
       amount: campaign.baseBid,
-      currency: "INR",
     };
 
-    const { order } = await createOrder(orderPayload);
+    const res = await createOrder_cashFree(orderPayload);
+    const sessionId = res?.paymentSessionId;
 
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: order.amount,
-      currency: order.currency,
-      order_id: order.id,
-      name: user.businessName || "Your Company",
-      description: campaignData.name || "Campaign Payment",
-      prefill: {
-        name: user?.fullName || "",
-        email: user?.email || "",
-        contact: cleanPhone(user?.phone) || "",
-      },
-      theme: { color: "#3399cc" },
-      modal: {
-        ondismiss: () => {
-          setIsLoading(false);
-          Swal.fire("Payment Cancelled", "You closed the payment popup.", "info");
-        },
-      },
-      handler: async (response) => {
-        try {
-          const verifyRes = await verifyPayment({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-            campaignId: campaign.id,
-          });
+    if (!sessionId) throw new Error("No paymentSessionId returned");
 
-          if (verifyRes?.success) {
-            Swal.fire({
-              icon: "success",
-              title: "Payment Successful",
-              text: "Your campaign has been activated!",
-              confirmButtonColor: "#3085d6",
-            }).then(() => navigate("/campaigns-list"));
+    const cashfree = window.Cashfree({ mode: "sandbox" }); // Use "production" for live
+    const checkoutOptions = {
+      paymentSessionId: sessionId,
+      redirectTarget: "_modal",
+    };
 
-            dispatch(fetchCampaigns());
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Verification Failed",
-              text: "Payment could not be verified. Please contact support.",
-            });
-          }
-        } catch (err) {
-          console.error("Verification error:", err);
+    cashfree.checkout(checkoutOptions);
+
+    // Start polling
+    let attempts = 0;
+    const maxAttempts = 40; // 2 mins if 3s interval
+    const interval = 3000;
+
+    const poll = setInterval(async () => {
+      attempts++;
+      try {
+        const statusRes = await checkCashfreePaymentStatus(sessionId);
+        if (statusRes?.success && statusRes?.status === "PAID") {
+          clearInterval(poll);
+
           Swal.fire({
-            icon: "error",
-            title: "Verification Error",
-            text: err?.response?.data?.message || "Something went wrong verifying your payment.",
-          });
-        } finally {
-          setIsLoading(false);
-        }
-      },
-    };
+            icon: "success",
+            title: "Payment Successful",
+            text: "Your campaign has been activated!",
+          }).then(() => navigate("/campaigns-list"));
 
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-  } catch (error) {
-    console.error("Payment Error:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Something went wrong",
-      text: error?.message || "Unable to process payment. Please try again.",
-    });
+          dispatch(fetchCampaigns());
+        } else if (attempts >= maxAttempts) {
+          clearInterval(poll);
+          Swal.fire("Timeout", "Payment verification timed out. Please check status later.", "warning");
+        }
+      } catch (err) {
+        clearInterval(poll);
+        console.error("Polling error:", err);
+        Swal.fire("Error", "Something went wrong while verifying payment.", "error");
+      }
+    }, interval);
+  } catch (err) {
+    console.error("Cashfree order error:", err);
+    Swal.fire("Error", err?.message || "Failed to create Cashfree order", "error");
+  } finally {
     setIsLoading(false);
   }
 }, [campaignData, user, navigate, dispatch]);
@@ -150,9 +208,7 @@ const CheckoutCampaign = () => {
 
 
   if (!campaignData) {
-    return (
-      <div className="text-center text-gray-500 mt-20">Redirecting...</div>
-    );
+    return <div className="text-center text-gray-500 mt-20">Redirecting...</div>;
   }
 
   const {
@@ -195,20 +251,30 @@ const CheckoutCampaign = () => {
               <InfoRow label="Regions" value={regions?.join(", ") || "N/A"} />
               <InfoRow
                 label="Schedule"
-                value={`${formatDate(startDate)} (${startTime}) → ${formatDate(
-                  endDate
-                )} (${endTime})`}
+                value={`${formatDate(startDate)} (${startTime}) → ${formatDate(endDate)} (${endTime})`}
               />
               <hr className="my-2 border-gray-300" />
             </div>
 
-            <div className="mt-4 flex justify-end">
-              <Button
+            <div className="mt-4 flex flex-col md:flex-row justify-end gap-3">
+              {/* Razorpay */}
+              {/* <Button
                 type="button"
-                label={`To Pay ₹${baseBid}`}
+                label={`Pay with Razorpay ₹${baseBid}`}
                 isIcon={false}
                 className="cursor-pointer"
                 onClick={handlePayment}
+                loading={isLoading}
+                disabled={isLoading}
+              />  */}
+
+              {/* Cashfree */}
+              <Button
+                type="button"
+                label={`Pay with Cashfree ₹${baseBid}`}
+                isIcon={false}
+                className="cursor-pointer"
+                onClick={handleCashfreePayment}
                 loading={isLoading}
                 disabled={isLoading}
               />
@@ -220,13 +286,10 @@ const CheckoutCampaign = () => {
   );
 };
 
-// InfoRow Component
 const InfoRow = ({ label, value, highlight = false }) => (
   <div className="flex justify-between">
     <span className="font-medium">{label}:</span>
-    <span className={highlight ? "text-blue-600 font-semibold" : ""}>
-      {value}
-    </span>
+    <span className={highlight ? "text-blue-600 font-semibold" : ""}>{value}</span>
   </div>
 );
 
