@@ -12,7 +12,7 @@ import CampaignList from "../pages/campaign/CampaignList";
 import CampaignReports from "../pages/campaign/CampaignReports";
 import BidManagement from "../pages/campaign/BidManagement";
 import UserDetails from "../pages/user/UserDetails";
-import PosDataUpload from "../pages/retailer/PosDataUpload";
+import Devices from "../pages/retailer/Devices";
 import AdPerformance from "../pages/retailer/AdPerformance";
 import WithdrawEarning from "../pages/retailer/WithdrawEarning";
 import ProductAnalytics from "../pages/retailer/ProductAnalytics";
@@ -22,10 +22,7 @@ import CheckoutCampaign from "../pages/campaign/CheckoutCampaign";
 //Retailer Routes
 import Campaigns from "../pages/retailer/Campaigns";
 import Wallets from "../pages/retailer/Wallet";
-import Devices from "../pages/retailer/Devices";
 import Reports from "../pages/retailer/Reports";
-import Ads from "../pages/retailer/Ads";
-import Billings from "../pages/retailer/Billings";
 import Settings from "../pages/retailer/Settings";
 import Support from "../pages/retailer/Support";
 
@@ -71,8 +68,8 @@ export const dashboardRoutes = [
         </PrivateRoute>} />
 
         {/* Retailer routes */}
-      <Route path="/pos-upload" element={<PrivateRoute allowedRoles={["retailer"]}>
-          <PosDataUpload />
+      <Route path="/devices" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <Devices />
         </PrivateRoute>} />
 
     <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["retailer"]}>
@@ -94,18 +91,12 @@ export const dashboardRoutes = [
         <Route path="/wallet" element={ <PrivateRoute allowedRoles={["retailer"]}>
           <Wallets />
         </PrivateRoute>} />
-        <Route path="/devices" element={ <PrivateRoute allowedRoles={["retailer"]}>
-          <Devices />
-        </PrivateRoute>} />
+        
         <Route path="/report" element={ <PrivateRoute allowedRoles={["retailer"]}>
           <Reports />
         </PrivateRoute>} />
-        <Route path="/ads" element={ <PrivateRoute allowedRoles={["retailer"]}>
-          <Ads />
-        </PrivateRoute>} />
-        <Route path="/billings" element={ <PrivateRoute allowedRoles={["retailer"]}>
-          <Billings />
-        </PrivateRoute>} />
+        
+        
         <Route path="/support" element={ <PrivateRoute allowedRoles={["retailer"]}>
           <Support />
         </PrivateRoute>} />
