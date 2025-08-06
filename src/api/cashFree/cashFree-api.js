@@ -13,6 +13,6 @@ export const createOrder_cashFree = async (data) => {
 
 
 export const checkCashfreePaymentStatus = async (paymentSessionId) => {
-  const res = await axios.get(`/api/v1/cashfree/check-status/${paymentSessionId}`);
+  const res = await axiosInstance.get(`/api/v1/cashfree/check-status/${paymentSessionId}`);
   return res.data;
 };
