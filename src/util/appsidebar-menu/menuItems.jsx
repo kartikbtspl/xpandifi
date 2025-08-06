@@ -10,10 +10,16 @@ export const menuItems = [
 
   export const retailerMenuItems = [
     { name: "Dashboard", icon: <GridIcon />, path: "/" },
-    { name: "POS Data Upload", icon: <CampaignIcon />, path: "/pos-upload" },
+    //{ name: "POS Data Upload", icon: <CampaignIcon />, path: "/pos-upload" },
     {name : "Ad Performance", icon: <ReportIcon />, path: "/ad-performance"},
-    {name: "Withdraw Earning", icon: <WithdrawIcon/>, path:"/withdraw-earning"},
+     { name: "Devices", icon: <CampaignIcon />, path: "/devices" },
+    //{name: "Campaigns", icon:<WithdrawIcon />, path:"/campaigns"},
+    {name: "Reports", icon:<WithdrawIcon />, path:"/report"},
+    {name: "Wallet", icon:<WithdrawIcon />, path:"/wallet"},
+    //{name: "Withdraw Earning", icon: <WithdrawIcon/>, path:"/withdraw-earning"},
+    {name: "Settings", icon:<WithdrawIcon />, path:"/settings"},
+     {name: "Support", icon:<WithdrawIcon />, path:"/support"},
     {name: "Data Privacy", icon:<PrivacyIcon />, path:"/data-privacy"},
-  
     
+  
   ];

@@ -29,49 +29,60 @@ const WithdrawEarnings = () => {
     console.log(`Submitted via ${withdrawMethod}:`, data);
   };
 
-  const currentFields = withdrawMethod === "upi" ? upiFields : bankFields;
+  // const currentFields = withdrawMethod === "upi" ? upiFields : bankFields;
 
   return (
-    <div className="w-full h-screen overflow-y-auto">
-      <h1 className="text-xl font-bold mb-6 text-gray-800">Withdraw Earnings</h1>
-
-      <div className="flex items-center space-x-6 mb-8">
-        <label className="flex items-center">
-          <input
-            type="radio"
-            name="withdrawMethod"
-            value="upi"
-            checked={withdrawMethod === "upi"}
-            onChange={() => handleMethodChange("upi")}
-            className="h-4 w-4 text-blue-600"
-          />
-          <span className="ml-2 text-gray-700 text-lg">UPI</span>
-        </label>
-
-        <label className="flex items-center">
-          <input
-            type="radio"
-            name="withdrawMethod"
-            value="bank"
-            checked={withdrawMethod === "bank"}
-            onChange={() => handleMethodChange("bank")}
-            className="h-4 w-4 text-blue-600"
-          />
-          <span className="ml-2 text-gray-700 text-lg">Bank Account</span>
-        </label>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl">
-        <FormBuilder
+    <>
+    <FormBuilder
           methods={methods}
           onSubmit={handleSubmit}
-          fieldsConfig={currentFields}
-          title={`Withdraw via ${withdrawMethod === 'upi' ? 'UPI' : 'Bank Account'}`}
+          fieldsConfig={bankFields}
+          title={"Bank Info"}
           submitLabel="Withdraw"
           isIcon={false}
-        />
-      </div>
-    </div>
+          className
+          /></>
+    // <div className="w-full h-screen overflow-y-auto p-4">
+    //   <h1 className="text-xl font-bold mb-6 text-gray-800">Withdraw Earnings</h1>
+
+    //   <div className="flex items-center space-x-6 mb-8">
+    //     <label className="flex items-center">
+    //       <input
+    //         type="radio"
+    //         name="withdrawMethod"
+    //         value="upi"
+    //         checked={withdrawMethod === "upi"}
+    //         onChange={() => handleMethodChange("upi")}
+    //         className="h-4 w-4 text-blue-600"
+    //       />
+    //       <span className="ml-2 text-gray-700 text-lg">UPI</span>
+    //     </label>
+
+    //     <label className="flex items-center">
+    //       <input
+    //         type="radio"
+    //         name="withdrawMethod"
+    //         value="bank"
+    //         checked={withdrawMethod === "bank"}
+    //         onChange={() => handleMethodChange("bank")}
+    //         className="h-4 w-4 text-blue-600"
+    //       />
+    //       <span className="ml-2 text-gray-700 text-lg">Bank Account</span>
+    //     </label>
+    //   </div>
+
+    //   <div className="bg-white w-full max-w-4xl">
+    //     <FormBuilder
+    //       methods={methods}
+    //       onSubmit={handleSubmit}
+    //       fieldsConfig={currentFields}
+    //       title={`Withdraw via ${withdrawMethod === 'upi' ? 'UPI' : 'Bank Account'}`}
+    //       submitLabel="Withdraw"
+    //       isIcon={false}
+    //       className
+    //     />
+    //   </div>
+    // </div>
   );
 };
 
