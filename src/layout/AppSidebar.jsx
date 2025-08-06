@@ -5,7 +5,6 @@ import SidebarItem from "./SidebarItem";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { fetchCampaigns } from "../redux/slices/campaignSlice";
-import '../index.css'; 
 
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
   const token = localStorage.getItem("token");
@@ -65,8 +64,7 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-      <nav className="flex flex-col gap-4 px-4 pb-6">
+      <nav className="flex flex-col gap-4">
         {sidebarItems.map((item) => (
           <SidebarItem
             key={item.path}
@@ -77,7 +75,6 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
           />
         ))}
       </nav>
-      </div>
     </div>
   );
 };
