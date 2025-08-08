@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import LocationFields from "../../components/LocationsDropdown/LocationFields";
-import axiosInstance from "../../config/axiosConfig";
 import Swal from "sweetalert2";
+import {registerUserApi} from '../../api/user/user-api'
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -52,14 +52,8 @@ const ContactUsForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post(
-        "/api/v1/users/createUser",
-        data,
-        {
-          withCredentials: true,
-        }
-      );
-      if (response.data.status === 201 || response.data.status===200) {
+      const response = await registerUserApi(data);
+      if (response.status === 201 || response.status===200) {
         Swal.fire({
           icon: "success",
           title: "Request Submitted!",

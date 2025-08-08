@@ -42,8 +42,9 @@ export const getMaxBidCapSumsByStatus = (campaigns) => {
 };
 
 // sumFunctions.js
-export const countApprovedCampaigns = (campaigns) => {
+export const countActivCampaigns = (campaigns) => {
   if (!Array.isArray(campaigns)) return 0;
-  return campaigns.filter(c => c.isApproved === "APPROVED").length;
+  // return campaigns.filter(c => c.isActive === true ).length;
+  return campaigns.length;
 };
 
