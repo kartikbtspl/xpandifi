@@ -48,8 +48,10 @@ export const fields = [
       name: "product",
       label: "Product",
       options: [],
-      multi: true,
-      validation: yup.array().min(1, "Select at least one product").required(),
+      multi: false,
+      validation: yup.string().required('Select at least one product'),
+
+      // validation: yup.array().min(1, "Select at least one product").required(),
     },
     {
       type: "select",
@@ -169,8 +171,8 @@ export const fields = [
       disabled: true,
       validation: yup
         .number()
-        .typeError("Base Bid must be a number")
-        .required("Base Bid is required"),
+        .typeError("Base Value must be a number")
+        .required("Base Value is required"),
     },
     {
       type: "input",

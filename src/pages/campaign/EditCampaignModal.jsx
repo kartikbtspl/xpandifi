@@ -9,9 +9,9 @@ import Loader from "../../components/loader/Loader";
 import Swal from "sweetalert2";
 
 import {
-  productTypes,
-  targetRegions,
-  deviceTypes,
+  // productTypes,
+  // targetRegions,
+  // deviceTypes,
   estimatePrice,
 } from "../../api/campaign-api/targetingOptionService";
 
@@ -36,51 +36,51 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   });
 
   // Fetch and prepare dropdowns
-  useEffect(() => {
-    const fetchDropdowns = async () => {
-      try {
-        const [products, devices, regions] = await Promise.all([
-          productTypes(),
-          deviceTypes(),
-          targetRegions(),
-        ]);
+  // useEffect(() => {
+  //   const fetchDropdowns = async () => {
+  //     try {
+  //       const [products, devices, regions] = await Promise.all([
+  //         productTypes(),
+  //         deviceTypes(),
+  //         targetRegions(),
+  //       ]);
 
-        const regionMap = {};
-        const pincodeMap = {};
-        const regionOptions = [];
-        const pincodeOptions = [];
+  //       const regionMap = {};
+  //       const pincodeMap = {};
+  //       const regionOptions = [];
+  //       const pincodeOptions = [];
 
-        regions.forEach(({ city, pincode }) => {
-          regionOptions.push({ label: city, value: city });
-          pincodeOptions.push({ label: pincode, value: pincode });
+  //       regions.forEach(({ city, pincode }) => {
+  //         regionOptions.push({ label: city, value: city });
+  //         pincodeOptions.push({ label: pincode, value: pincode });
 
-          if (!regionMap[city]) regionMap[city] = [];
-          regionMap[city].push(pincode);
+  //         if (!regionMap[city]) regionMap[city] = [];
+  //         regionMap[city].push(pincode);
 
-          pincodeMap[pincode] = city;
-        });
+  //         pincodeMap[pincode] = city;
+  //       });
 
-        setDropdowns({
-          product: products.map((d) => ({
-            label: d.product_type,
-            value: d.product_type,
-          })),
-          targetDevices: devices.map((d) => ({
-            label: d.deviceName,
-            value: d.deviceName,
-          })),
-          regions: regionOptions,
-          pincodes: pincodeOptions,
-          regionMap,
-          pincodeMap,
-        });
-      } catch (error) {
-        console.error("Error loading dropdowns:", error);
-      }
-    };
+  //       setDropdowns({
+  //         product: products.map((d) => ({
+  //           label: d.product_type,
+  //           value: d.product_type,
+  //         })),
+  //         targetDevices: devices.map((d) => ({
+  //           label: d.deviceName,
+  //           value: d.deviceName,
+  //         })),
+  //         regions: regionOptions,
+  //         pincodes: pincodeOptions,
+  //         regionMap,
+  //         pincodeMap,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error loading dropdowns:", error);
+  //     }
+  //   };
 
-    fetchDropdowns();
-  }, []);
+  //   fetchDropdowns();
+  // }, []);
 
   useEffect(() => {
     const images = [...campaignData.productFiles];

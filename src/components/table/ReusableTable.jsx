@@ -10,6 +10,7 @@ import {
   TableRow,
   Checkbox,
   TableSortLabel,
+  TablePagination,
 } from "@mui/material";
 import { FiFilter, FiRefreshCw } from "react-icons/fi";
 import Input from "../../components/ui/input/Input";
@@ -25,7 +26,7 @@ const ReusableTable = ({
   onRefresh,
   filterOptions = ["all"],
   filterKey = "isApproved",
-  isFilter=true
+  isFilter = true,
 }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState(columns[0]?.id || "");
@@ -33,6 +34,10 @@ const ReusableTable = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  // Pagination state
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const filteredAndSortedRows = useMemo(() => {
     const lowerSearch = searchQuery.toLowerCase();
@@ -67,6 +72,12 @@ const ReusableTable = ({
     return filtered.sort(order === "desc" ? compare : (a, b) => -compare(a, b));
   }, [rows, columns, orderBy, order, searchQuery, filterStatus, filterKey]);
 
+  // Slice rows for pagination
+  const paginatedRows = useMemo(() => {
+    const start = page * rowsPerPage;
+    return filteredAndSortedRows.slice(start, start + rowsPerPage);
+  }, [filteredAndSortedRows, page, rowsPerPage]);
+
   const handleSort = (_, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -95,6 +106,16 @@ const ReusableTable = ({
       .replace(/_/g, " ")
       .replace(/\b\w/g, (c) => c.toUpperCase()); // Ex: approved_pending → Approved Pending
 
+  // Pagination handlers
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <Box>
       {/* 🔍 Search & Filter Header */}
@@ -116,40 +137,37 @@ const ReusableTable = ({
 
         <div className="flex items-center gap-4 text-gray-500 text-xl">
           {/* 🧩 Filter */}
-
-          {isFilter===true?
-          (
-          <div className="relative">
-            <FiFilter
-              className="cursor-pointer hover:text-black"
-              onClick={() => setShowFilterDropdown((prev) => !prev)}
-            />
-            {showFilterDropdown && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow z-10 text-sm">
-                {filterOptions.map((status) => (
-                  <div
-                    key={status}
-                    onClick={() => {
-                      setFilterStatus(status);
-                      setShowFilterDropdown(false);
-                    }}
-                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                      filterStatus === status ? "bg-gray-200 font-semibold" : ""
-                    }`}
-                  >
-                    {formatLabel(status)}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          ):''}
+          {isFilter && (
+            <div className="relative">
+              <FiFilter
+                className="cursor-pointer hover:text-black"
+                onClick={() => setShowFilterDropdown((prev) => !prev)}
+              />
+              {showFilterDropdown && (
+                <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow z-10 text-sm">
+                  {filterOptions.map((status) => (
+                    <div
+                      key={status}
+                      onClick={() => {
+                        setFilterStatus(status);
+                        setShowFilterDropdown(false);
+                      }}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                        filterStatus === status ? "bg-gray-200 font-semibold" : ""
+                      }`}
+                    >
+                      {formatLabel(status)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* 🔄 Refresh */}
           <FiRefreshCw
             className="cursor-pointer hover:text-black"
-            onClick={() =>onRefresh()
-            }
+            onClick={() => onRefresh()}
           />
         </div>
       </div>
@@ -199,14 +217,14 @@ const ReusableTable = ({
                       <Loader size="small" />
                     </TableCell>
                   </TableRow>
-                ) : filteredAndSortedRows.length === 0 ? (
+                ) : paginatedRows.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={columns.length + 1} align="center">
                       No data found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredAndSortedRows.map((row) => {
+                  paginatedRows.map((row, index) => {
                     const isSelected = selected.includes(row.id);
                     return (
                       <TableRow
@@ -226,7 +244,11 @@ const ReusableTable = ({
                             key={col.id}
                             align={col.numeric ? "center" : "left"}
                           >
-                            {col.render ? col.render(row) : row[col.id]}
+                            {col.render
+                              ? col.needsIndex
+                                ? col.render(row, index)
+                                : col.render(row)
+                              : row[col.id]}
                           </TableCell>
                         ))}
                       </TableRow>
@@ -236,10 +258,22 @@ const ReusableTable = ({
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* Pagination Controls centered */}
+          <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredAndSortedRows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Box>
         </Paper>
       </Box>
     </Box>
   );
 };
-
 export default ReusableTable;
