@@ -47,12 +47,6 @@ export const getCampaignsAPI = async () => {
   return response?.data;
 };
 
-export const toggleCampaignStatusAPI = async (id, status) => {
-  const response = await axiosInstance.put(`/api/v1/campaign/${id}/status`, {
-    status,
-  });
-  return response.data;
-};
 
 export const getCampaignByIdAPI = async (id) => {
   const response = await axiosInstance.get(
@@ -100,7 +94,7 @@ export const updateUserCampaign = async (id, data, oldImages = []) => {
 
 
   const response = await axiosInstance.put(
-    `/api/v1/campaign/update/${id}`,
+    `/api/v1/campaign/${id}/update`,
     formData,
     {
       headers: {
@@ -122,7 +116,7 @@ for (let pair of formData.entries()) {
 
 export const deleteCampaignAPI = async (id) => {
   const response = await axiosInstance.delete(
-    `/api/v1/campaign/delete/${id}`,
+    `/api/v1/campaign/${id}/delete`,
     {
       withCredentials: true,
     }
