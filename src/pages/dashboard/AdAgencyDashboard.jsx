@@ -33,7 +33,7 @@ const formatCampaignData = (data = []) =>
   data.map((item, index) => ({
     id: index + 1,
     campaignCode: item.campaignCode,
-    name: item.campaignName || "Untitled Campaign",
+    name: item?.name || "Untitled Campaign",
     slot: item.timings || `${item.startTime} - ${item.endTime}`,
     bidAmount: item.baseBid ?? 0,
     bids: item.bidsInSameSlot ?? Math.floor(Math.random() * 100),

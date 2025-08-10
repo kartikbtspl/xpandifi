@@ -5,7 +5,7 @@ export const fields = [
   [
     {
       type: "input",
-      name: "campaignName",
+      name: "name",
       label: "Campaign Name",
       placeholder: "Enter campaign name",
       gridSpan: 3,
