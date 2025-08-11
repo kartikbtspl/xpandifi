@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 export const campaignValidationSchema = yup.object().shape({
-  campaignName: yup.string().required("Campaign name is required"),
+  name: yup.string().required("Campaign name is required"),
   // product: yup.array().min(1, "Select at least one product"),
   product: yup.string().required("Select at least one product"),
   adType: yup.string().required("Ad Type is required"),

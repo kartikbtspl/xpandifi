@@ -9,7 +9,7 @@ import Loader from "../../components/loader/Loader";
 import Select from "react-select";
 
 import { estimatePrice } from "../../api/campaign-api/targetingOptionService";
-import { updateCampaign } from "../../redux/slices/campaignDetailSlice";
+import { updateCampaign } from "../../redux/slices/campaignSlice";
 import { fetchDropdownData } from "../../redux/slices/cityProductDeviceSlice";
 
 import { fields } from "../../util/Form-menu/campaign-fields";
@@ -17,7 +17,7 @@ import { customizePayload } from "../../util/validation/campaignValidationSchema
 
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.campaignDetail);
+  const { loading } = useSelector((state) => state.campaign);
   const { data: dropdownData, loading: dropdownLoading } = useSelector(
     (state) => state.cityProductDevice
   );

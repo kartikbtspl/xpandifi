@@ -158,8 +158,6 @@ const CreateCampaign = () => {
 
     const payload = customizePayload(formData);
 
-    console.log("Submitting campaign data:", payload);
-
     const result = await dispatch(createCampaign(payload));
 
     if (createCampaign.fulfilled.match(result)) {
@@ -190,8 +188,10 @@ const CreateCampaign = () => {
       {loading && <LoaderEmpt size="large" />}
       <h2 className="text-xl lg:2xl font-semibold text-gray-800 mb-4">Create Campaign</h2>
       <FormBuilder
+        
         onSubmit={handleSubmit}
         fieldsConfig={fields}
+        isEdit={false}
         dropdowns={{
           ...dropdowns,
           regions: dropdowns.regions,
@@ -203,7 +203,6 @@ const CreateCampaign = () => {
         estimateSetField="baseBid"
         title=""
         submitLabel="Submit For Approval"
-        isPlus={false}
         loading={loading}
       />
     </div>
