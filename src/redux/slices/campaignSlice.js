@@ -3,9 +3,10 @@ import { toast } from "react-toastify";
 import {
   createCampaignAPI,
   getCampaignsAPI,
-  toggleCampaignStatusAPI,
   deleteCampaignAPI,
 } from "../../api/campaign-api/campaignService";
+// import{  toggleCampaignStatusAPI,
+// } from '../../api/campaign-api/targetingOptionService'
 
 export const createCampaign = createAsyncThunk(
   "campaign/createCampaign",
@@ -43,19 +44,19 @@ export const fetchCampaigns = createAsyncThunk(
   }
 );
 
-export const toggleCampaignStatus = createAsyncThunk(
-  "campaign/toggleCampaignStatus",
-  async ({ id, status }, { rejectWithValue }) => {
-    try {
-      const response = await toggleCampaignStatusAPI(id, status);
-      toast.success(response.message || "Status updated successfully!");
-      return { id, status };
-    } catch (error) {
-      toast.error("Failed to update status");
-      return rejectWithValue(error.response?.data);
-    }
-  }
-);
+// export const toggleCampaignStatus = createAsyncThunk(
+//   "campaign/toggleCampaignStatus",
+//   async ({ id, status }, { rejectWithValue }) => {
+//     try {
+//       const response = await toggleCampaignStatusAPI(id, status);
+//       toast.success(response.message || "Status updated successfully!");
+//       return { id, status };
+//     } catch (error) {
+//       toast.error("Failed to update status");
+//       return rejectWithValue(error.response?.data);
+//     }
+//   }
+// );
 
 export const deleteCampaign = createAsyncThunk(
   "campaign/delete",
@@ -108,14 +109,14 @@ const campaignSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(toggleCampaignStatus.fulfilled, (state, action) => {
-        const index = state.campaigns.findIndex(
-          (c) => c.id === action.payload.id
-        );
-        if (index !== -1) {
-          state.campaigns[index].status = action.payload.status;
-        }
-      })
+      // .addCase(toggleCampaignStatus.fulfilled, (state, action) => {
+      //   const index = state.campaigns.findIndex(
+      //     (c) => c.id === action.payload.id
+      //   );
+      //   if (index !== -1) {
+      //     state.campaigns[index].status = action.payload.status;
+      //   }
+      // })
       .addCase(deleteCampaign.pending, (state) => {
         state.loading = true;
         state.error = null;
