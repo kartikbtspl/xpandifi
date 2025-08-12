@@ -85,10 +85,6 @@ const campaignSlice = createSlice({
       .addCase(createCampaign.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        // Optional: add new campaign to campaigns list
-        if (state.campaigns) {
-          state.campaigns.push(action.payload);
-        }
       })
       .addCase(createCampaign.rejected, (state, action) => {
         state.loading = false;

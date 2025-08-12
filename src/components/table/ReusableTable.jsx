@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import {
   Box,
@@ -16,6 +17,7 @@ import { FiFilter, FiRefreshCw } from "react-icons/fi";
 import Input from "../../components/ui/input/Input";
 import { SearchIcon } from "../../icon/index";
 import Loader from "../../components/loader/Loader";
+import COLORS from "../../constants/Colors";
 
 const ReusableTable = ({
   columns,
@@ -43,7 +45,6 @@ const ReusableTable = ({
     const lowerSearch = searchQuery.toLowerCase();
     let filtered = [...rows];
 
-    // 🔍 Search filtering
     if (searchQuery) {
       filtered = filtered.filter((row) =>
         columns.some((col) => {
@@ -53,7 +54,6 @@ const ReusableTable = ({
       );
     }
 
-    // ✅ Status filtering
     if (filterStatus !== "all") {
       filtered = filtered.filter(
         (row) =>
@@ -62,7 +62,6 @@ const ReusableTable = ({
       );
     }
 
-    // 🔃 Sorting
     const compare = (a, b) => {
       if (b[orderBy] < a[orderBy]) return -1;
       if (b[orderBy] > a[orderBy]) return 1;
@@ -164,11 +163,9 @@ const ReusableTable = ({
             </div>
           )}
 
-          {/* 🔄 Refresh */}
           <FiRefreshCw
             className="cursor-pointer hover:text-black"
-            onClick={() => onRefresh()}
-          />
+            onClick={() => onRefresh()}          />
         </div>
       </div>
 
@@ -177,7 +174,7 @@ const ReusableTable = ({
         <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden" }}>
           <TableContainer>
             <Table sx={{ minWidth: 750 }}>
-              <TableHead sx={{ backgroundColor: "#E3E8F3" }}>
+              <TableHead sx={{ backgroundColor: COLORS.softBackground }}>
                 <TableRow>
                   <TableCell padding="checkbox">
                     <Checkbox
@@ -196,7 +193,7 @@ const ReusableTable = ({
                     <TableCell
                       key={col.id}
                       align={col.numeric ? "center" : "left"}
-                      sx={{ fontWeight: 600, color: "#263238" }}
+                      sx={{ fontWeight: 600, color: COLORS.blueGray }}
                     >
                       <TableSortLabel
                         active={orderBy === col.id}
@@ -212,7 +209,7 @@ const ReusableTable = ({
 
               <TableBody>
                 {loading ? (
-                  <TableRow>
+                  <TableRow sx={{ backgroundColor: "white" }}>
                     <TableCell colSpan={columns.length + 1} align="center">
                       <Loader size="small" />
                     </TableCell>
@@ -231,7 +228,15 @@ const ReusableTable = ({
                         key={row.id}
                         hover
                         selected={isSelected}
-                        sx={{ cursor: "pointer" }}
+                        sx={{
+                          cursor: "pointer",
+                          backgroundColor: isSelected
+                            ? "#F2F5F9 !important"
+                            : "white",
+                          "&:hover": {
+                            backgroundColor: "#F2F5F9 !important",
+                          },
+                        }}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -260,7 +265,7 @@ const ReusableTable = ({
           </TableContainer>
 
           {/* Pagination Controls centered */}
-          <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", p: 1 , backgroundColor: COLORS.softBackground }}>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
@@ -269,6 +274,7 @@ const ReusableTable = ({
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
+            
             />
           </Box>
         </Paper>
@@ -276,4 +282,5 @@ const ReusableTable = ({
     </Box>
   );
 };
+
 export default ReusableTable;
