@@ -6,7 +6,7 @@ export const menuItems = [
     { name: "Reports", icon: <ReportIcon />, path: "/reports" },
     { name: "Bid Management", icon: <BidIcon />, path: "/bids" },
     {name: "Settings", icon:<SettingIcon />, path:"/settings"},
-    {name: "Support", icon:<CustomerSupport />, path:"/support"},
+    {name: "Support", icon:<SupportIcon />, path:"/support"},
     {name: "Data Privacy", icon:<PrivacyIcon />, path:"/data-privacy"},
   ];
 
