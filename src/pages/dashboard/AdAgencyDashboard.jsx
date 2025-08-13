@@ -10,6 +10,7 @@ import {
   getMaxBidCapSumsByStatus,
 } from "../../util/helper/sumFunctions";
 import { fetchCampaigns } from "../../redux/slices/campaignSlice";
+import {fetchDropdownData} from "../../redux/slices/cityProductDeviceSlice"
 
 // Helper: render status badge
 const renderStatusBadge = (status) => {
@@ -32,7 +33,7 @@ const formatCampaignData = (data = []) =>
   data.map((item, index) => ({
     id: index + 1,
     campaignCode: item.campaignCode,
-    name: item.campaignName || "Untitled Campaign",
+    name: item?.name || "Untitled Campaign",
     slot: item.timings || `${item.startTime} - ${item.endTime}`,
     bidAmount: item.baseBid ?? 0,
     bids: item.bidsInSameSlot ?? Math.floor(Math.random() * 100),
@@ -51,6 +52,9 @@ const AdAgencyDashboard = () => {
   const [rows, setRows] = useState([]);
   const [baseBidSums, setBaseBidSums] = useState({});
   const [maxBidCapSums, setMaxBidCapSums] = useState({});
+
+  useEffect(() => {dispatch(fetchDropdownData())}, [dispatch]);
+
 
   useEffect(() => {
     const campaignList = campaigns?.data ?? [];

@@ -34,7 +34,7 @@ const formatCampaigns = (data = []) =>
     id: index + 1,
     campaignCode: item.campaignCode,
     image: item.productFiles,
-    name: item.campaignName || "Untitled Campaign",
+    name: item?.name || "Untitled Campaign",
     start: `${item.startDate} - ${item.startTime}`,
     end: `${item.endDate} - ${item.endTime}`,
     status: item.isApproved || "UNKNOWN",
@@ -76,6 +76,7 @@ const CampaignList = () => {
   };
 
   const handleEdit = (row) => {
+    console.log("row:..", row.raw)
     setSelectedCampaign(row.raw);
     setIsEditOpen(true);
   };

@@ -18,7 +18,7 @@ import {Modal} from "../../components/ui/modal/Modal"
 import CampaignCard from "../../components/card/CampaignCard";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchApprovedCampaigns } from "../../redux/slices/approvedCampaignSlice";
-import { countApprovedCampaigns } from "../../util/helper/sumFunctions";
+import { countActivCampaigns } from "../../util/helper/sumFunctions";
 
 const RetailerDashboard = () => {
   const [name, setName] = useState("");
@@ -44,7 +44,7 @@ const RetailerDashboard = () => {
     }
   }, []);
 
-  const sumActiveAds = countApprovedCampaigns(campaigns);
+  const sumActiveAds = countActivCampaigns(campaigns);
 
   const statCards = [
     {
