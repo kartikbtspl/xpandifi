@@ -3,31 +3,30 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import FormBuilder from "../../components/form/FromBuilder";
-import Loader from "../../components/loader/Loader";
-
-import { fields } from "../../util/Form-menu/campaign-fields";
-import { campaignValidationSchema } from "../../util/validation/campaignValidationSchema";
-import Swal from "sweetalert2";
-
 import {
-  productTypes,
-  deviceTypes,
-  targetRegions,
   estimatePrice,
 } from "../../api/campaign-api/targetingOptionService";
 
-import {
-  createCampaign,
-  fetchCampaigns,
-} from "../../redux/slices/campaignSlice";
+import FormBuilder from "../../components/form/FromBuilder";
 import LoaderEmpt from "../../components/loader/LoaderEmpt";
+
+import { fields } from "../../util/Form-menu/campaign-fields";
+import { campaignValidationSchema,customizePayload } from "../../util/validation/campaignValidationSchema";
+import Swal from "sweetalert2";
+
+import { createCampaign, fetchCampaigns } from "../../redux/slices/campaignSlice";
+import { fetchDropdownData } from "../../redux/slices/cityProductDeviceSlice";
+
+
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const { loading } = useSelector((state) => state.campaign);
+  const { data: dropdownData, loading: dropdownLoading } = useSelector(
+    (state) => state.cityProductDevice
+  );
 
   const methods = useForm({
     resolver: yupResolver(campaignValidationSchema),
@@ -40,56 +39,77 @@ const CreateCampaign = () => {
     targetDevices: [],
     regions: [],
     pincodes: [],
-    regionMap: {}, // city => pincode[]
-    pincodeMap: {}, // pincode => city
+    regionMap: {},
+    pincodeMap: {},
   });
 
+  // Fetch dropdown data from Redux on mount if not present
   useEffect(() => {
-    Promise.all([productTypes(), deviceTypes(), targetRegions()]).then(
-      ([products, devices, regions]) => {
-        const regionOptions = [];
-        const pincodeOptions = [];
-        const regionMap = {};
-        const pincodeMap = {};
+    if (!dropdownData) {
+      dispatch(fetchDropdownData());
+    }
+  }, [dispatch, dropdownData]);
 
-        regions.forEach((r) => {
-          regionOptions.push({ label: r.city, value: r.city });
-          pincodeOptions.push({ label: r.pincode, value: r.pincode });
+  // When dropdownData updates, build options and maps
+  useEffect(() => {
+    if (!dropdownData) return;
 
-          if (regionMap[r.city]) {
-            regionMap[r.city].push(r.pincode);
-          } else {
-            regionMap[r.city] = [r.pincode];
-          }
+    const regionOptions = [];
+    const pincodeOptions = [];
+    const regionMap = {};
+    const pincodeMap = {};
 
-          pincodeMap[r.pincode] = r.city;
-        });
+    dropdownData.locations.forEach((loc) => {
+  if (loc.name) {
+    regionOptions.push({ label: loc.name, value: loc.name });
+  }
+  if (loc.postcode) {
+    pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
+  }
 
-        setDropdowns({
-          product: products.map((d) => ({ label: d.product_type, value: d.product_type })),
-          targetDevices: devices.map((d) => ({ label: d.deviceName, value: d.deviceName })),
-          regions: regionOptions,
-          pincodes: pincodeOptions,
-          regionMap,
-          pincodeMap,
-        });
-      }
-    );
-  }, []);
+  if (regionMap[loc.name]) {
+    if (loc.postcode) regionMap[loc.name].push(loc.postcode);
+  } else {
+    regionMap[loc.name] = loc.postcode ? [loc.postcode] : [];
+  }
 
+  if (loc.postcode) {
+    pincodeMap[loc.postcode] = loc.name;
+  }
+});
+
+
+    const productOptions = dropdownData.products.map((p) => ({
+      label: p.name,
+      value: p.name,
+    }));
+
+    const deviceOptions = dropdownData.devices.map((d) => ({
+      label: d.name,
+      value: d.name,
+    }));
+
+    setDropdowns({
+      product: productOptions,
+      targetDevices: deviceOptions,
+      regions: regionOptions,
+      pincodes: pincodeOptions,
+      regionMap,
+      pincodeMap,
+    });
+  }, [dropdownData]);
+
+  // Sync pincodes ↔ regions selections
   useEffect(() => {
     const subscription = watch((values, { name: changedField }) => {
       const selectedRegions = values.regions || [];
       const selectedPincodes = values.pincode || [];
 
-      // Skip if dropdowns are not loaded yet
       if (!dropdowns.regionMap || Object.keys(dropdowns.regionMap).length === 0) {
         return;
       }
 
-      // Only sync if a specific field changed to avoid infinite loops
-      if (changedField === 'regions') {
-        // Regions changed → Update Pincodes
+      if (changedField === "regions") {
         if (selectedRegions.length > 0) {
           let derivedPincodes = [];
           selectedRegions.forEach((region) => {
@@ -97,46 +117,34 @@ const CreateCampaign = () => {
               derivedPincodes.push(...dropdowns.regionMap[region]);
             }
           });
-          
-          // Remove duplicates
+
           derivedPincodes = [...new Set(derivedPincodes)];
 
-          // Only update if the pincode selection is actually different
           const currentPincodeSorted = [...selectedPincodes].sort();
           const derivedPincodeSorted = [...derivedPincodes].sort();
-          
+
           if (JSON.stringify(currentPincodeSorted) !== JSON.stringify(derivedPincodeSorted)) {
             setValue("pincode", derivedPincodes, { shouldValidate: false });
           }
-        } else {
-          // If no regions selected, clear pincodes
-          if (selectedPincodes.length > 0) {
-            setValue("pincode", [], { shouldValidate: false });
-          }
+        } else if (selectedPincodes.length > 0) {
+          setValue("pincode", [], { shouldValidate: false });
         }
-      } 
-      else if (changedField === 'pincode') {
-        // Pincodes changed → Update Regions
+      } else if (changedField === "pincode") {
         if (selectedPincodes.length > 0) {
           let derivedRegions = selectedPincodes
             .map((pin) => dropdowns.pincodeMap[pin])
-            .filter(Boolean); // remove undefined values
-          
-          // Remove duplicates
+            .filter(Boolean);
+
           derivedRegions = [...new Set(derivedRegions)];
 
-          // Only update if the region selection is actually different
           const currentRegionsSorted = [...selectedRegions].sort();
           const derivedRegionsSorted = [...derivedRegions].sort();
-          
+
           if (JSON.stringify(currentRegionsSorted) !== JSON.stringify(derivedRegionsSorted)) {
             setValue("regions", derivedRegions, { shouldValidate: false });
           }
-        } else {
-          // If no pincodes selected, clear regions
-          if (selectedRegions.length > 0) {
-            setValue("regions", [], { shouldValidate: false });
-          }
+        } else if (selectedRegions.length > 0) {
+          setValue("regions", [], { shouldValidate: false });
         }
       }
     });
@@ -144,40 +152,50 @@ const CreateCampaign = () => {
     return () => subscription.unsubscribe();
   }, [watch, dropdowns.regionMap, dropdowns.pincodeMap, setValue]);
 
+  // Submit handler
+  const handleSubmit = async (formData) => {
+    if (loading) return;
 
-const handleSubmit = async (formData) => {
-  if (loading) return;
+    const payload = customizePayload(formData);
 
-  const result = await dispatch(createCampaign(formData));
+    const result = await dispatch(createCampaign(payload));
 
-  if (createCampaign.fulfilled.match(result)) {
-    await dispatch(fetchCampaigns());
-    methods.reset();
+    if (createCampaign.fulfilled.match(result)) {
+      await dispatch(fetchCampaigns());
+      methods.reset();
 
-    await Swal.fire({
-      title: "Success!",
-      text: "Campaign created successfully.",
-      icon: "success",
-      confirmButtonText: "OK",
-    });
+      await Swal.fire({
+        title: "Success!",
+        text: "Campaign created successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
 
-    navigate("/");
+      navigate("/");
+    }
+  };
+
+
+
+
+  // Show loader while dropdowns loading
+  if (dropdownLoading || !dropdownData) {
+    return <LoaderEmpt size="large" />;
   }
-};
-
-  
 
   return (
     <div className="w-full">
-      {loading?(<LoaderEmpt size="large"/>):''}
+      {loading && <LoaderEmpt size="large" />}
       <h2 className="text-xl lg:2xl font-semibold text-gray-800 mb-4">Create Campaign</h2>
       <FormBuilder
+        
         onSubmit={handleSubmit}
         fieldsConfig={fields}
+        isEdit={false}
         dropdowns={{
           ...dropdowns,
           regions: dropdowns.regions,
-          pincode: dropdowns.pincodes, // hook for FormBuilder
+          pincode: dropdowns.pincodes, // prop name matches expected by FormBuilder
         }}
         methods={methods}
         estimateApi={estimatePrice}
@@ -185,7 +203,6 @@ const handleSubmit = async (formData) => {
         estimateSetField="baseBid"
         title=""
         submitLabel="Submit For Approval"
-        isPlus={false}
         loading={loading}
       />
     </div>

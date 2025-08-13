@@ -1,30 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 import { Modal } from "../../components/ui/modal/Modal";
 import FormBuilder from "../../components/form/FromBuilder";
 import Loader from "../../components/loader/Loader";
-import Swal from "sweetalert2";
+import Select from "react-select";
 
-import {
-  productTypes,
-  targetRegions,
-  deviceTypes,
-  estimatePrice,
-} from "../../api/campaign-api/targetingOptionService";
+import { estimatePrice } from "../../api/campaign-api/targetingOptionService";
+import { updateCampaign } from "../../redux/slices/campaignSlice";
+import { fetchDropdownData } from "../../redux/slices/cityProductDeviceSlice";
 
-import { updateCampaign } from "../../redux/slices/campaignDetailSlice";
 import { fields } from "../../util/Form-menu/campaign-fields";
+import { customizePayload } from "../../util/validation/campaignValidationSchema";
 
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.campaignDetail);
-  const [oldImages, setOldImage] = useState([]);
-  console.log("campaignData: ", campaignData);
-
-  const methods = useForm({ defaultValues: {} });
+  const { loading } = useSelector((state) => state.campaign);
+  const { data: dropdownData, loading: dropdownLoading } = useSelector(
+    (state) => state.cityProductDevice
+  );
 
   const [dropdowns, setDropdowns] = useState({
     product: [],
@@ -35,85 +31,91 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     pincodeMap: {},
   });
 
-  // Fetch and prepare dropdowns
+  const methods = useForm({
+    defaultValues: {},
+  });
+
+  // Fetch dropdown data if not present
   useEffect(() => {
-    const fetchDropdowns = async () => {
-      try {
-        const [products, devices, regions] = await Promise.all([
-          productTypes(),
-          deviceTypes(),
-          targetRegions(),
-        ]);
+    if (!dropdownData) {
+      dispatch(fetchDropdownData());
+    }
+  }, [dispatch, dropdownData]);
 
-        const regionMap = {};
-        const pincodeMap = {};
-        const regionOptions = [];
-        const pincodeOptions = [];
+  // Prepare dropdown options with NAMES as values
+  useEffect(() => {
+    if (!dropdownData) return;
 
-        regions.forEach(({ city, pincode }) => {
-          regionOptions.push({ label: city, value: city });
-          pincodeOptions.push({ label: pincode, value: pincode });
+    const regionOptions = [];
+    const pincodeOptions = [];
+    const regionMap = {};
+    const pincodeMap = {};
 
-          if (!regionMap[city]) regionMap[city] = [];
-          regionMap[city].push(pincode);
+    dropdownData.locations.forEach((loc) => {
+      if (loc.name) regionOptions.push({ label: loc.name, value: loc.name });
+      if (loc.postcode) pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
 
-          pincodeMap[pincode] = city;
-        });
-
-        setDropdowns({
-          product: products.map((d) => ({
-            label: d.product_type,
-            value: d.product_type,
-          })),
-          targetDevices: devices.map((d) => ({
-            label: d.deviceName,
-            value: d.deviceName,
-          })),
-          regions: regionOptions,
-          pincodes: pincodeOptions,
-          regionMap,
-          pincodeMap,
-        });
-      } catch (error) {
-        console.error("Error loading dropdowns:", error);
+      if (regionMap[loc.name]) {
+        if (loc.postcode) regionMap[loc.name].push(loc.postcode);
+      } else {
+        regionMap[loc.name] = loc.postcode ? [loc.postcode] : [];
       }
-    };
 
-    fetchDropdowns();
-  }, []);
+      if (loc.postcode) pincodeMap[loc.postcode] = loc.name;
+    });
 
-  useEffect(() => {
-    const images = [...campaignData.productFiles];
-    setOldImage(images);
-  }, [campaignData]);
+    const productOptions = dropdownData.products.map((p) => ({
+      label: p.name,
+      value: p.name,
+    }));
 
-  // Set default values for edit form
+    const deviceOptions = dropdownData.devices.map((d) => ({
+      label: d.name,
+      value: d.name,
+    }));
+
+    setDropdowns({
+      product: productOptions,
+      targetDevices: deviceOptions,
+      regions: regionOptions,
+      pincodes: pincodeOptions,
+      regionMap,
+      pincodeMap,
+    });
+  }, [dropdownData]);
+
+  // Reset form values when campaignData or dropdowns.regionMap changes
   useEffect(() => {
     if (campaignData && Object.keys(dropdowns.regionMap).length > 0) {
-      const selectedRegions = campaignData.regions || [];
-
-      // Derive pincodes from selected regions
-      const derivedPincodes = [
-        ...new Set(
-          selectedRegions.flatMap((region) => dropdowns.regionMap[region] || [])
-        ),
+      const selectedRegions = [
+        ...new Set(campaignData.cityPostcodes?.map((item) => item.city) || []),
       ];
+      const selectedPincodes = [
+        ...new Set(campaignData.cityPostcodes?.map((item) => item.postcode) || []),
+      ];
+
+      // Map devices and product to their NAMES (not IDs)
+      const selectedTargetDeviceNames = campaignData.devices?.map((d) => d.name) || [];
+      const selectedProductName =
+        campaignData.product?.name || campaignData.product || "";
 
       methods.reset({
         ...campaignData,
-        product: campaignData.product || [],
-        targetDevices: campaignData.targetDevices || [],
+        product: selectedProductName,
+        targetDevices: selectedTargetDeviceNames,
         regions: selectedRegions,
-        pincode: derivedPincodes,
+        pincode: selectedPincodes,
         productFiles: campaignData.productFiles || [],
         timings: campaignData.timings || "",
+        startDate: campaignData.startDate,
+        endDate: campaignData.endDate,
+        startTime: campaignData.startTime,
+        endTime: campaignData.endTime,
       });
-      // updating the array
-      // setOldImage([]);
     }
   }, [campaignData, dropdowns.regionMap, methods]);
 
-  // Bidirectional sync: regions ↔ pincodes
+  // Keep regions and pincodes in sync when changed
   useEffect(() => {
     const subscription = methods.watch((values, { name }) => {
       const selectedRegions = values.regions || [];
@@ -124,9 +126,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
       if (name === "regions") {
         const derivedPincodes = [
           ...new Set(
-            selectedRegions.flatMap(
-              (region) => dropdowns.regionMap[region] || []
-            )
+            selectedRegions.flatMap((region) => dropdowns.regionMap[region] || [])
           ),
         ];
 
@@ -134,9 +134,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         const derivedSorted = [...derivedPincodes].sort();
 
         if (JSON.stringify(currentSorted) !== JSON.stringify(derivedSorted)) {
-          methods.setValue("pincode", derivedPincodes, {
-            shouldValidate: false,
-          });
+          methods.setValue("pincode", derivedPincodes, { shouldValidate: false });
         }
       }
 
@@ -153,9 +151,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         const derivedSorted = [...derivedRegions].sort();
 
         if (JSON.stringify(currentSorted) !== JSON.stringify(derivedSorted)) {
-          methods.setValue("regions", derivedRegions, {
-            shouldValidate: false,
-          });
+          methods.setValue("regions", derivedRegions, { shouldValidate: false });
         }
       }
     });
@@ -163,76 +159,145 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     return () => subscription.unsubscribe();
   }, [methods, dropdowns.regionMap, dropdowns.pincodeMap]);
 
-  // const handleUpdate = async (formData) => {
-  //   const allFiles = formData.productFiles || [];
-
-  //   // ✅ Split into existing (previewed) and new files
-  //   const oldImages = allFiles.filter((item) => typeof item === 'string');
-  //   const newFiles = allFiles.filter((item) => item instanceof File);
-
-  //   // ✅ Keep newFiles in formData so backend can attach them
-  //   const preparedData = {
-  //     ...formData,
-  //     productFiles: newFiles, // only send actual File objects here
-  //   };
-
-  //   try {
-  //     await dispatch(updateCampaign({
-  //       id: campaignData.id,
-  //       data: preparedData,
-  //       oldImages, // only visible (not removed) existing image URLs
-  //     }));
-
-  //     toast.success("Campaign updated successfully");
-  //     onSuccess?.();
-  //     onClose();
-  //   } catch (err) {
-  //     toast.error("Failed to update campaign");
-  //   }
-  // };
-
+  // Handle campaign update submit
   const handleUpdate = async (formData) => {
-    const allFiles = formData.productFiles || [];
+    console.log("Form Data before submit:", formData);
 
-    // ✅ Split into existing (previewed) and new files
+    const allFiles = formData.productFiles || [];
     const oldImages = allFiles.filter((item) => typeof item === "string");
     const newFiles = allFiles.filter((item) => item instanceof File);
 
-    // ✅ Keep newFiles in formData so backend can attach them
-    const preparedData = {
+    // Build cityPostcodes array from selected regions and pincodes
+    const cityPostcodesFromRegions = (formData.regions || []).flatMap((region) =>
+      (dropdowns.regionMap[region] || []).map((postcode) => ({ city: region, postcode }))
+    );
+
+    const cityPostcodesFromPincodes = (formData.pincode || []).map((postcode) => ({
+      city: dropdowns.pincodeMap[postcode],
+      postcode,
+    }));
+
+    // Merge and dedupe cityPostcodes
+    const cityPostcodesMap = new Map();
+    [...cityPostcodesFromRegions, ...cityPostcodesFromPincodes].forEach(({ city, postcode }) => {
+      if (city && postcode) cityPostcodesMap.set(`${city}-${postcode}`, { city, postcode });
+    });
+    const cityPostcodesPayload = Array.from(cityPostcodesMap.values());
+
+    if (!cityPostcodesPayload.length) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Please select at least one target city or postcode.",
+      });
+      return;
+    }
+
+    // Prepare payload matching your backend expectation (names for product & devices)
+    const payload = customizePayload({
       ...formData,
-      productFiles: newFiles, // only send actual File objects here
-    };
+      productFiles: newFiles,
+      cityPostcodes: cityPostcodesPayload,
+      targetDevices: formData.targetDevices,
+      product: formData.product,
+    });
+
+    console.log("Prepared Payload for dispatch:", payload);
 
     try {
-      await dispatch(
-        updateCampaign({
-          id: campaignData.id,
-          data: preparedData,
-          oldImages, // only visible (not removed) existing image URLs
-        })
-      );
-
-      // ✅ Trigger success callback and close modal first
+      await dispatch(updateCampaign({ id: campaignData.id, data: payload, oldImages }));
       onSuccess?.();
       onClose?.();
 
-      // ✅ Then show success message after a short delay (to allow modal to close)
-      setTimeout(() => {
+      setTimeout(() =>
         Swal.fire({
           icon: "success",
           title: "Success",
           text: "Campaign updated successfully",
-        });
-      }, 300); // Adjust delay based on your modal's close animation time
+        }),
+        300
+      );
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Failed to update campaign",
-      });
+      Swal.fire({ icon: "error", title: "Error", text: "Failed to update campaign" });
     }
   };
+
+  // Prepare payload for estimate API: send arrays of names and cityPostcodes
+  const prepareEstimatePayload = (formData) => {
+    const productNames = formData.product ? [formData.product] : [];
+    const deviceNames = formData.targetDevices || [];
+
+    const cityPostcodes = (formData.regions || []).flatMap((region) =>
+      (dropdowns.regionMap[region] || []).map((postcode) => ({ city: region, postcode }))
+    );
+
+    return { productNames, deviceNames, cityPostcodes };
+  };
+
+  if (dropdownLoading || !dropdownData) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <div className="flex items-center justify-center h-48">
+          <Loader />
+        </div>
+      </Modal>
+    );
+  }
+
+  // Deep map fields for dropdowns injection
+  const deepFieldsConfig = fields.map((row) =>
+    row.map((field) => {
+      if (field.name === "product") {
+        return { ...field, options: dropdowns.product };
+      }
+      if (field.name === "targetDevices") {
+        return { ...field, options: dropdowns.targetDevices };
+      }
+      if (field.name === "regions") {
+        return { ...field, options: dropdowns.regions };
+      }
+      if (field.name === "pincode") {
+        return { ...field, options: dropdowns.pincodes };
+      }
+      return field;
+    })
+  );
+
+  // Example custom field rendering for select fields
+  // Use this pattern in your FormBuilder for product and targetDevices
+  const renderProductSelect = (
+    <Controller
+      name="product"
+      control={methods.control}
+      render={({ field }) => (
+        <Select
+          {...field}
+          options={dropdowns.product}
+          isClearable
+          onChange={opt => field.onChange(opt ? opt.value : "")}
+          value={dropdowns.product.find(opt => opt.value === field.value) || null}
+        />
+      )}
+    />
+  );
+
+  const renderTargetDevicesSelect = (
+    <Controller
+      name="targetDevices"
+      control={methods.control}
+      render={({ field }) => (
+        <Select
+          {...field}
+          options={dropdowns.targetDevices}
+          isMulti
+          onChange={opts => field.onChange(opts ? opts.map(opt => opt.value) : [])}
+          value={dropdowns.targetDevices.filter(opt =>
+            Array.isArray(field.value) && field.value.includes(opt.value)
+          )}
+        />
+      )}
+    />
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
@@ -246,42 +311,36 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
               </div>
             </div>
           )}
-          {/* <div className="w-full flex text-left pl-4 py-2">
-            <p className="text-red-500 text-center">
-              {campaignData.remark}
-            </p>
-          </div> */}
 
           <FormBuilder
             onSubmit={handleUpdate}
-            fieldsConfig={fields}
+            fieldsConfig={deepFieldsConfig}
             dropdowns={{
               ...dropdowns,
-              pincode: dropdowns.pincodes, // rename for FormBuilder compatibility
+              pincode: dropdowns.pincodes,
             }}
             methods={methods}
             isEdit={true}
             loading={loading}
             estimateApi={estimatePrice}
-            estimateWatchFields={[
-              "product",
-              "regions",
-              "targetDevices",
-              "pincode",
-            ]}
+            estimateWatchFields={["product", "regions", "targetDevices", "pincode"]}
             estimateSetField="baseBid"
+            estimatePayloadFn={prepareEstimatePayload}
             isPlus={false}
+            submitLabel="Update"
+            customSelectRenderers={{
+              product: renderProductSelect,
+              targetDevices: renderTargetDevicesSelect,
+            }}
             title={
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full pr-12">
-                <span className="text-xl font-bold text-gray-800">
-                  Update Campaign
-                </span>
+                <span className="text-xl font-bold text-gray-800">Update Campaign</span>
 
                 {campaignData.remark && (
                   <div className="flex items-center mt-1 sm:mt-0 text-sm sm:max-w-xs truncate text-right">
-                    <span class="relative flex size-2 mx-2">
-                      <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                      <span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
+                    <span className="relative flex size-2 mx-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex size-2 rounded-full bg-red-500"></span>
                     </span>{" "}
                     <span
                       className="text-red-500 text-md truncate"
@@ -293,7 +352,6 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
                 )}
               </div>
             }
-            submitLabel="Update"
           />
         </div>
       </FormProvider>

@@ -1,40 +1,18 @@
 import axiosInstance from "../../config/axiosConfig";
 
 
-export const deviceTypes = async () => {
-  const deviceTypes = await axiosInstance.get(
-    "/api/v1/campaign/dropdown/devices",
-    {
-      withCredentials : true
-    }
-  );
-
-  
-  return deviceTypes?.data?.data;
-};
-
-export const productTypes = async () => {
-  const productTypes = await axiosInstance.get(
-    "/api/v1/campaign/dropdown/products",
-    {
-      withCredentials : true
-    }
-    
-  );
-  
-
-  return productTypes?.data?.data;
-};
-
-export const targetRegions = async () => {
-  const targetRegions = await axiosInstance.get(
-    "/api/v1/campaign/dropdown/locations",
-    {
+export const getDropDownDataAPI = async () => {
+  try {
+    const response = await axiosInstance.get("/api/v1/campaign/getCampDropData", {
       withCredentials: true,
-    }
-  );
-  return targetRegions?.data?.data;
+    });
+    return response.data.data;  // return only dropdown data { products, locations, devices }
+  } catch (error) {
+    console.error("Error fetching dropdown data:", error);
+    throw error;
+  }
 };
+
 
 
 export const estimatePrice = async (data) => {

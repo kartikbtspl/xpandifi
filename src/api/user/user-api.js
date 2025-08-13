@@ -1,5 +1,15 @@
 import axiosInstance from "../../config/axiosConfig";
 
+export const registerUserApi= async(data)=>{
+  const response = await axiosInstance.post(
+        "/api/v1/auth/createUser",
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+  return response.data;
+};
 
 export const loginUserApi = async (credentials) => {
   const response = await axiosInstance.post(
