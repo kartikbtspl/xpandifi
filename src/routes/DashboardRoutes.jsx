@@ -25,6 +25,7 @@ import Wallets from "../pages/retailer/Wallet";
 import Reports from "../pages/retailer/Reports";
 import Settings from "../pages/retailer/Settings";
 import Support from "../pages/retailer/Support";
+import TicketRaise from "../pages/Ticket/TicketRaise";
 
 export const dashboardRoutes = [
   <Route
@@ -80,11 +81,10 @@ export const dashboardRoutes = [
     <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["retailer"]}>
           <WithdrawEarning />
         </PrivateRoute>} />
-       <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["retailer"]}>
+       <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
           <DataPrivacy />
         </PrivateRoute>} />
-        {/* New Routes into Retailer Dashboard */}
-
+      
         <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["retailer"]}>
           <Campaigns />
         </PrivateRoute>} />
@@ -96,11 +96,13 @@ export const dashboardRoutes = [
           <Reports />
         </PrivateRoute>} />
         
-        
-        <Route path="/support" element={ <PrivateRoute allowedRoles={["retailer"]}>
+        <Route path="/support" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
           <Support />
-        </PrivateRoute>} />
-        <Route path="/settings" element={ <PrivateRoute allowedRoles={["retailer"]}>
+        </PrivateRoute>}>
+      <Route path="raise-ticket" element={<TicketRaise />} />
+    </Route>
+        
+        <Route path="/settings" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
           <Settings />
         </PrivateRoute>} />
         

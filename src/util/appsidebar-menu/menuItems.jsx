@@ -5,6 +5,9 @@ export const menuItems = [
     { name: "Active Campaigns", icon: <BidIcon />, path: "/active-ads" },
     { name: "Reports", icon: <ReportIcon />, path: "/reports" },
     { name: "Bid Management", icon: <BidIcon />, path: "/bids" },
+    {name: "Settings", icon:<SettingIcon />, path:"/settings"},
+    {name: "Support", icon:<CustomerSupport />, path:"/support"},
+    {name: "Data Privacy", icon:<PrivacyIcon />, path:"/data-privacy"},
   ];
 
 
@@ -20,6 +23,7 @@ export const menuItems = [
     {name: "Settings", icon:<SettingIcon />, path:"/settings"},
      {name: "Support", icon:<CustomerSupport />, path:"/support"},
     {name: "Data Privacy", icon:<PrivacyIcon />, path:"/data-privacy"},
+    
     
   
   ];
