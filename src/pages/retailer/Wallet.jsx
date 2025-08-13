@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { EyeIcon } from '@heroicons/react/24/outline';
 import Button from "../../components/ui/button/Button";
 import ReusableTable from '../../components/table/ReusableTable';
 import { ClosedEyeIcon } from '../../icon';
