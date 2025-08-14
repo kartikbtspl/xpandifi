@@ -29,7 +29,7 @@ const CampaignCard = ({ campaign }) => {
     });
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 w-full relative mt-10">
+    <div className="bg-white rounded-lg p-4 w-full relative">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-gray-800 truncate">{campaignName}</h2>
@@ -61,7 +61,7 @@ const CampaignCard = ({ campaign }) => {
 
       {/* Media Carousel */}
       <div className="mb-4">
-        <MediaCarousel mediaFiles={productFiles} size="xl" autoplay={true} />
+        <MediaCarousel mediaFiles={productFiles} size="sm" autoplay={true} />
       </div>
 
       {/* Date & Time */}
