@@ -65,8 +65,7 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-      <nav className="flex flex-col gap-4 px-4 pb-6">
+      <nav className="flex flex-col gap-4 overflow-auto pb-2">
         {sidebarItems.map((item) => (
           <SidebarItem
             key={item.path}
@@ -77,7 +76,7 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
           />
         ))}
       </nav>
-      </div>
+    
     </div>
   );
 };

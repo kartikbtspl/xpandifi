@@ -68,13 +68,13 @@ const MediaCarousel = ({ mediaFiles = [], size = "md", autoplay = false }) => {
                   autoPlay={autoplay}
                   loop
                   muted
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               ) : (
                 <img
                   src={file}
                   alt={`Media ${idx + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               )}
             </div>

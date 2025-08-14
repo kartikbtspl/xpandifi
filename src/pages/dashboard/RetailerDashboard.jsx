@@ -14,7 +14,8 @@ import {
 import StatCard from "../../components/card/StatCard";
 import Button from "../../components/ui/button/Button";
 import SideCard from "../../components/card/SideCard";
-import {Modal} from "../../components/ui/modal/Modal"
+import Modal from "../../components/modal/Modal"
+// import {Modal} from "../../components/ui/modal/Modal"
 import CampaignCard from "../../components/card/CampaignCard";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchApprovedCampaigns } from "../../redux/slices/approvedCampaignSlice";
@@ -183,11 +184,10 @@ const RetailerDashboard = () => {
             <Modal
               isOpen={isModalOpen}
               onClose={handleClose}
-              title="Campaign Details"
               bgcolor="bg-white"
               titleStyle="text-gray-900"
               key={selectedCampaign?.id} // Reset scroll on modal open
-              size="lg"
+              size="xl"
               
             >
               {selectedCampaign && <CampaignCard campaign={selectedCampaign} />}
