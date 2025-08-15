@@ -1,4 +1,5 @@
 import React from "react";
+import StatusBadge from "../../components/ui/badges/StatusBadge"
 
 const SideCard = ({
   ads = [],
@@ -90,30 +91,7 @@ const SideCard = ({
                     {titleText}
                   </h4>
                   <span className="text-xs text-gray-500 block">{time}</span>
-
-                  {/* Status with pulse */}
-                  <div className="flex items-center gap-2 mt-1">
-                    {/* Pulse dot */}
-                    <span className="relative flex size-3">
-                      <span
-                        className={`absolute inline-flex h-full w-full animate-ping rounded-full ${
-                          isActive ? "bg-green-400" : "bg-gray-400"
-                        } opacity-75`}
-                      ></span>
-                      <span
-                        className={`relative inline-flex size-3 rounded-full ${
-                          isActive ? "bg-green-500" : "bg-gray-500"
-                        }`}
-                      ></span>
-                    </span>
-
-                    {/* Status badge */}
-                    <span
-                      className={`px-2 py-0.5 text-xs rounded-full font-semibold ${statusColor}`}
-                    >
-                      {status}
-                    </span>
-                  </div>
+                    <StatusBadge isActive={isActive} size={10}/>
                 </div>
               </div>
             );

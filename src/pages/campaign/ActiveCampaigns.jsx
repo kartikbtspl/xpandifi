@@ -2,23 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCampaigns } from "../../redux/slices/campaignSlice";
 import ReusableTable from "../../components/table/ReusableTable";
+import StatusBadge from "../../components/ui/badges/StatusBadge"
 
-//  Render badge for ACTIVE/INACTIVE based on isActive
-const renderStatusBadge = (row) => {
-  const status = row.isActive ? "ACTIVE" : "INACTIVE";
-  const classes = {
-    ACTIVE: "bg-green-100 text-green-600",
-    INACTIVE: "bg-red-100 text-red-600",
-  }[status];
 
-  return (
-    <div className={`p-1 rounded-full text-center ${classes}`}>
-      <p>{status}</p>
-    </div>
-  );
-};
-
-//  Format campaign objects into table rows
 const formatActiveCampaigns = (data = []) =>
   data.map((item, index) => ({
     id: index + 1,
@@ -32,14 +18,16 @@ const formatActiveCampaigns = (data = []) =>
 
 const ActiveCampaigns = () => {
   const dispatch = useDispatch();
-  const { campaigns, loading } = useSelector((state) => state.campaign);
+  const { campaigns, loading,fetched } = useSelector((state) => state.campaign);
 
   const [rows, setRows] = useState([]);
 
   //  Fetch on mount
-  useEffect(() => {
-    dispatch(fetchCampaigns());
-  }, [dispatch]);
+ useEffect(() => {
+     if(!fetched && !loading){
+       dispatch(fetchCampaigns());
+     }
+   }, [fetched, loading, dispatch]);
 
   //  Filter campaigns: isApproved === "APPROVED" && isPayment === true
   useEffect(() => {
@@ -62,7 +50,7 @@ const ActiveCampaigns = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => renderStatusBadge(row), //  return the badge
+      render: (row) => <StatusBadge isActive={row.isActive} size={11}/>, //  return the badge
     },
   ];
 
