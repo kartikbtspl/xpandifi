@@ -59,7 +59,7 @@ const MediaCarousel = ({ mediaFiles = [], size = "md", autoplay = false }) => {
     <div className="relative px-6 m-1">
       <Slider {...settings}>
         {mediaFiles.map((file, idx) => (
-          <div key={`${file}-${idx}`}>
+          <div key={`${file}-${idx}`} className="w-full h-full">
             <div className={`w-full overflow-hidden rounded ${heightClass}`}>
               {isVideo(file) ? (
                 <video
@@ -68,13 +68,13 @@ const MediaCarousel = ({ mediaFiles = [], size = "md", autoplay = false }) => {
                   autoPlay={autoplay}
                   loop
                   muted
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain object-center"
                 />
               ) : (
                 <img
                   src={file}
                   alt={`Media ${idx + 1}`}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain object-center"
                 />
               )}
             </div>

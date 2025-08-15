@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCampaigns } from "../../redux/slices/campaignSlice";
 import ReusableTable from "../../components/table/ReusableTable";
 
-// 🟢 Render badge for ACTIVE/INACTIVE based on isActive
-const renderStatusBadge = (isActive) => {
-  const status = isActive ? "ACTIVE" : "INACTIVE";
+//  Render badge for ACTIVE/INACTIVE based on isActive
+const renderStatusBadge = (row) => {
+  const status = row.isActive ? "ACTIVE" : "INACTIVE";
   const classes = {
     ACTIVE: "bg-green-100 text-green-600",
     INACTIVE: "bg-red-100 text-red-600",
@@ -18,15 +18,15 @@ const renderStatusBadge = (isActive) => {
   );
 };
 
-// 🟢 Format campaign objects into table rows
+//  Format campaign objects into table rows
 const formatActiveCampaigns = (data = []) =>
   data.map((item, index) => ({
     id: index + 1,
     campaignCode: item.campaignCode,
-    name: item.campaignName || "Untitled Campaign",
+    name: item.campaignName || item.name || "Untitled Campaign",
     start: `${item.startDate} - ${item.startTime}`,
     end: `${item.endDate} - ${item.endTime}`,
-    isActive: item.isActive,
+    isActive: item.isActive, //  directly from backend
     raw: item,
   }));
 
@@ -36,19 +36,17 @@ const ActiveCampaigns = () => {
 
   const [rows, setRows] = useState([]);
 
-  // 🟢 Fetch on mount
+  //  Fetch on mount
   useEffect(() => {
     dispatch(fetchCampaigns());
   }, [dispatch]);
 
-  // 🟢 Filter campaigns: isApproved === "APPROVED" && isPayment === true
+  //  Filter campaigns: isApproved === "APPROVED" && isPayment === true
   useEffect(() => {
     const allCampaigns = campaigns?.data ?? [];
-
     const filtered = allCampaigns.filter(
       (c) => c.isApproved === "APPROVED" && c.isPayment === true
     );
-
     setRows(formatActiveCampaigns(filtered));
   }, [campaigns]);
 
@@ -64,14 +62,13 @@ const ActiveCampaigns = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => renderStatusBadge(row.isActive),
+      render: (row) => renderStatusBadge(row), //  return the badge
     },
   ];
 
   return (
     <div className="w-full">
       <h2 className="text-xl font-semibold mb-4">Active Campaigns</h2>
-
       <ReusableTable
         columns={columns}
         rows={rows}
