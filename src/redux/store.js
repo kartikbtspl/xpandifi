@@ -7,6 +7,7 @@ import approvedCampaignReducer from './slices/approvedCampaignSlice';
 import ticketsReducer from './slices/ticketsSlice';
 import cityProductDeviceReducer from './slices/cityProductDeviceSlice';
 
+import walletReducer from './slices/walletSlice'
 
 export const store = configureStore({
   reducer: {
@@ -16,7 +17,7 @@ export const store = configureStore({
     user : userReducer,
     approvedCampaigns: approvedCampaignReducer,
     tickets: ticketsReducer,
-        cityProductDevice: cityProductDeviceReducer,
-
+    cityProductDevice: cityProductDeviceReducer,
+    wallet: walletReducer,
   },
 })
