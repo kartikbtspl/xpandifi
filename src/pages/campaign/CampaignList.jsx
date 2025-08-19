@@ -9,24 +9,7 @@ import {
 import ReusableTable from "../../components/table/ReusableTable";
 import EditCampaignModal from "./EditCampaignModal";
 import Button from "../../components/ui/button/Button";
-
-
-// Render approval status badge
-const renderStatusBadge = (status) => {
-  const normalized = status?.toUpperCase() || "UNKNOWN";
-  const classes =
-    {
-      APPROVED: "bg-green-100 text-green-600",
-      REJECTED: "bg-red-100 text-red-600",
-      PENDING: "bg-yellow-100 text-yellow-600",
-    }[normalized] || "bg-gray-100 text-gray-600";
-
-  return (
-    <div className={`p-1 rounded-full text-center ${classes}`}>
-      <p>{normalized}</p>
-    </div>
-  );
-};
+import ApprovalBadge from "../../components/ui/badges/ApprovalBadge";
 
 // Format campaigns for table
 const formatCampaigns = (data = []) =>
@@ -44,9 +27,7 @@ const formatCampaigns = (data = []) =>
 const CampaignList = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { campaigns, loading } = useSelector((state) => state.campaign);
-
-  console.log("campaings:..", campaigns)
+  const { campaigns, loading,fetched } = useSelector((state) => state.campaign);
 
   const isViewAnalytics = location.pathname.includes("checkout");
 
@@ -56,17 +37,19 @@ const CampaignList = () => {
 
   // Fetch campaigns on mount
   useEffect(() => {
-    dispatch(fetchCampaigns());
-  }, [dispatch]);
+    console.log("fetched:", fetched, "Loading ", loading)
+    if(!fetched && !loading){
+      dispatch(fetchCampaigns());
+    }
+  }, [fetched, loading, dispatch]);
 
   // Filter and sort campaigns by updatedAt (descending)
   useEffect(() => {
     const data = campaigns?.data ?? [];
 
     const filtered = data
-  .filter((c) => c.isPayment === false)
-  .sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // optional
-
+      .filter((c) => c.isPayment === false)
+      .sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // optional
 
     setRows(formatCampaigns(filtered));
   }, [campaigns]);
@@ -76,7 +59,7 @@ const CampaignList = () => {
   };
 
   const handleEdit = (row) => {
-    console.log("row:..", row.raw)
+    console.log("row:..", row.raw);
     setSelectedCampaign(row.raw);
     setIsEditOpen(true);
   };
@@ -119,7 +102,7 @@ const CampaignList = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => renderStatusBadge(row.status),
+      render: (row) => <ApprovalBadge status={row.status} size={12} />,
     },
     {
       id: "actions",
@@ -144,11 +127,13 @@ const CampaignList = () => {
             </button>
           </div>
         ) : (
-          <Link
-            to="checkout"
-            state={{ row }}
-          >
-              <Button type={"button"} label={"Make Payment"} isIcon={false} className="cursor-pointer"/>
+          <Link to="checkout" state={{ row }}>
+            <Button
+              type={"button"}
+              label={"Make Payment"}
+              isIcon={false}
+              className="cursor-pointer"
+            />
           </Link>
         );
       },

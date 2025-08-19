@@ -11,22 +11,8 @@ import {
 } from "../../util/helper/sumFunctions";
 import { fetchCampaigns } from "../../redux/slices/campaignSlice";
 import {fetchDropdownData} from "../../redux/slices/cityProductDeviceSlice"
+import ApprovalBadge from "../../components/ui/badges/ApprovalBadge"
 
-// Helper: render status badge
-const renderStatusBadge = (status) => {
-  const normalized = status?.toUpperCase() ?? "UNKNOWN";
-  const statusClass = {
-    APPROVED: "bg-green-100 text-green-700",
-    PENDING: "bg-yellow-100 text-yellow-700",
-    REJECTED: "bg-red-100 text-red-700",
-  }[normalized] || "bg-gray-100 text-gray-700";
-
-  return (
-    <span className={`px-3 py-1 rounded text-sm ${statusClass}`}>
-      {normalized}
-    </span>
-  );
-};
 
 // Helper: format rows for table
 const formatCampaignData = (data = []) =>
@@ -52,6 +38,7 @@ const AdAgencyDashboard = () => {
   const [rows, setRows] = useState([]);
   const [baseBidSums, setBaseBidSums] = useState({});
   const [maxBidCapSums, setMaxBidCapSums] = useState({});
+
 
   useEffect(() => {dispatch(fetchDropdownData())}, [dispatch]);
 
@@ -90,7 +77,7 @@ const AdAgencyDashboard = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => renderStatusBadge(row.status),
+      render: (row) => <ApprovalBadge status={row.status} size={12}/>,
     },
     { id: "resultIn", label: "Result In" },
   ];

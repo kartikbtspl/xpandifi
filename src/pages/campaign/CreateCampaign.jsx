@@ -16,6 +16,8 @@ import Swal from "sweetalert2";
 
 import { createCampaign, fetchCampaigns } from "../../redux/slices/campaignSlice";
 import { fetchDropdownData } from "../../redux/slices/cityProductDeviceSlice";
+import { text } from "@fortawesome/fontawesome-svg-core";
+import { icons } from "antd/es/image/PreviewGroup";
 
 
 
@@ -173,6 +175,14 @@ const CreateCampaign = () => {
 
       navigate("/");
     }
+    if (createCampaign.rejected.match(result)) {
+    await Swal.fire({
+      title: 'Error', //  Title should be in quotes
+      text: "Something went wrong.", //  Proper error access
+      icon: 'warning',
+      confirmButtonText: "OK"
+    });
+  }
   };
 
 

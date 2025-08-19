@@ -14,7 +14,7 @@ import {
 import StatCard from "../../components/card/StatCard";
 import Button from "../../components/ui/button/Button";
 import SideCard from "../../components/card/SideCard";
-import Modal from "../../components/modal/Modal"
+import Modal from "../../components/modal/Modal";
 // import {Modal} from "../../components/ui/modal/Modal"
 import CampaignCard from "../../components/card/CampaignCard";
 import { useSelector, useDispatch } from "react-redux";
@@ -28,12 +28,12 @@ const RetailerDashboard = () => {
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const dispatch = useDispatch();
 
-  const campaigns = useSelector((state) => state.approvedCampaigns.campaigns) || [];
+  const { campaigns, loading, fetched } =
+    useSelector((state) => state.approvedCampaigns) || [];
 
-  console.log(campaigns)
+  console.log(campaigns);
 
   useEffect(() => {
-    dispatch(fetchApprovedCampaigns());
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -44,6 +44,12 @@ const RetailerDashboard = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (!fetched && !loading) {
+      dispatch(fetchApprovedCampaigns());
+    }
+  }, [fetched, loading, dispatch]);
 
   const sumActiveAds = countActivCampaigns(campaigns);
 
@@ -110,7 +116,9 @@ const RetailerDashboard = () => {
             <Button
               key={option}
               label={option}
-              className={`rounded-none ${selected === option ? "" : "bg-gray-200 text-gray-700"}`}
+              className={`rounded-none ${
+                selected === option ? "" : "bg-gray-200 text-gray-700"
+              }`}
               onClick={() => setSelected(option)}
               type="button"
               loading={false}
@@ -188,7 +196,6 @@ const RetailerDashboard = () => {
               titleStyle="text-gray-900"
               key={selectedCampaign?.id} // Reset scroll on modal open
               size="xl"
-              
             >
               {selectedCampaign && <CampaignCard campaign={selectedCampaign} />}
             </Modal>

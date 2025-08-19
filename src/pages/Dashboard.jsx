@@ -12,6 +12,7 @@ import PageTitle from "../components/ui/page-title/PageTitle";
 
 const Dashboard = () => {
   const { profile, loading } = useSelector((state) => state.user);
+  const { fetched } = useSelector((state) => state.campaign);
   const [role, setRole] = useState(null);
   const dispatch = useDispatch();
 
@@ -28,11 +29,13 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchCampaigns());
+    if (!fetched && !loading) {
+      dispatch(fetchCampaigns());
+    }
+  }, [fetched, loading, dispatch]);
+  useEffect(() => {
     dispatch(fetchUserProfile());
   }, [dispatch]);
-
-  if (loading) return <Shimmer />;
 
   const title =
     role === "Ad-Agency"
@@ -44,7 +47,6 @@ const Dashboard = () => {
   return (
     <>
       <PageTitle title={title} /> {/* ✅ dynamically set browser tab title */}
-
       {role === "Retailer" && <RetailerDashboard />}
       {role === "Ad-Agency" && <AdAgencyDashboard />}
     </>

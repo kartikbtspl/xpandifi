@@ -7,6 +7,8 @@ import {
   deleteCampaignAPI,
 } from "../../api/campaign-api/campaignService";
 
+// Thunks
+
 export const createCampaign = createAsyncThunk(
   "campaign/createCampaign",
   async (data, { rejectWithValue }) => {
@@ -66,6 +68,8 @@ export const deleteCampaign = createAsyncThunk(
   }
 );
 
+// Slice
+
 const campaignSlice = createSlice({
   name: "campaign",
   initialState: {
@@ -73,11 +77,12 @@ const campaignSlice = createSlice({
     error: null,
     data: null,
     campaigns: [],
+    fetched: false, // <-- fetched flag added
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Create campaign
+      // Create
       .addCase(createCampaign.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -91,7 +96,7 @@ const campaignSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch campaigns
+      // Fetch
       .addCase(fetchCampaigns.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -99,13 +104,15 @@ const campaignSlice = createSlice({
       .addCase(fetchCampaigns.fulfilled, (state, action) => {
         state.loading = false;
         state.campaigns = action.payload;
+        state.fetched = true; // <-- set fetched true on success
       })
       .addCase(fetchCampaigns.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.fetched = true; // <-- reset fetched on failure
       })
 
-      // Update campaign
+      // Update
       .addCase(updateCampaign.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -113,13 +120,12 @@ const campaignSlice = createSlice({
       .addCase(updateCampaign.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        if (state.campaigns?.length) {
-          const index = state.campaigns.findIndex(
-            (c) => c._id === action.payload._id || c.id === action.payload.id
-          );
-          if (index !== -1) {
-            state.campaigns[index] = action.payload;
-          }
+        const updated = action.payload;
+        const index = state.campaigns.findIndex(
+          (c) => c._id === updated._id || c.id === updated.id
+        );
+        if (index !== -1) {
+          state.campaigns[index] = updated;
         }
       })
       .addCase(updateCampaign.rejected, (state, action) => {
@@ -127,19 +133,17 @@ const campaignSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Delete campaign
+      // Delete
       .addCase(deleteCampaign.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteCampaign.fulfilled, (state, action) => {
         state.loading = false;
-        if (Array.isArray(state.campaigns)) {
-          state.campaigns = state.campaigns.filter((campaign) => {
-            const campaignId = campaign._id || campaign.id || campaign.campaignId;
-            return campaignId !== action.payload;
-          });
-        }
+        state.campaigns = state.campaigns.filter((campaign) => {
+          const campaignId = campaign._id || campaign.id || campaign.campaignId;
+          return campaignId !== action.payload;
+        });
       })
       .addCase(deleteCampaign.rejected, (state, action) => {
         state.loading = false;
@@ -149,6 +153,158 @@ const campaignSlice = createSlice({
 });
 
 export default campaignSlice.reducer;
+
+// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// import { toast } from "react-toastify";
+// import {
+//   createCampaignAPI,
+//   getCampaignsAPI,
+//   updateUserCampaign,
+//   deleteCampaignAPI,
+// } from "../../api/campaign-api/campaignService";
+
+// export const createCampaign = createAsyncThunk(
+//   "campaign/createCampaign",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       const response = await createCampaignAPI(data);
+//       toast.success("Campaign created successfully!");
+//       return response;
+//     } catch (error) {
+//       toast.error(
+//         error.response?.data?.errors?.[0]?.message ||
+//           error.response?.data?.message ||
+//           "An error occurred while creating the campaign."
+//       );
+//       return rejectWithValue(error.response?.data);
+//     }
+//   }
+// );
+
+// export const fetchCampaigns = createAsyncThunk(
+//   "campaign/fetchCampaigns",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await getCampaignsAPI();
+//       return response;
+//     } catch (error) {
+//       toast.error("Failed to fetch campaigns.");
+//       return rejectWithValue(error.response?.data);
+//     }
+//   }
+// );
+
+// export const updateCampaign = createAsyncThunk(
+//   "campaign/updateCampaign",
+//   async ({ id, data, oldImages = [], oldVideos = [] }, { rejectWithValue }) => {
+//     try {
+//       const response = await updateUserCampaign(id, data, oldImages, oldVideos);
+//       toast.success("Campaign updated successfully!");
+//       return response;
+//     } catch (err) {
+//       toast.error(err.response?.data?.message || "Failed to update campaign");
+//       return rejectWithValue(err.response?.data);
+//     }
+//   }
+// );
+
+// export const deleteCampaign = createAsyncThunk(
+//   "campaign/deleteCampaign",
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       await deleteCampaignAPI(id);
+//       toast.success("Campaign deleted successfully!");
+//       return id;
+//     } catch (err) {
+//       toast.error(err.response?.data?.message || "Failed to delete campaign");
+//       return rejectWithValue(err.response?.data);
+//     }
+//   }
+// );
+
+// const campaignSlice = createSlice({
+//   name: "campaign",
+//   initialState: {
+//     loading: false,
+//     error: null,
+//     data: null,
+//     campaigns: [],
+//   },
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder
+//       // Create campaign
+//       .addCase(createCampaign.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(createCampaign.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.data = action.payload;
+//       })
+//       .addCase(createCampaign.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+
+//       // Fetch campaigns
+//       .addCase(fetchCampaigns.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchCampaigns.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.campaigns = action.payload;
+//       })
+//       .addCase(fetchCampaigns.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+
+//       // Update campaign
+//       .addCase(updateCampaign.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(updateCampaign.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.data = action.payload;
+//         if (state.campaigns?.length) {
+//           const index = state.campaigns.findIndex(
+//             (c) => c._id === action.payload._id || c.id === action.payload.id
+//           );
+//           if (index !== -1) {
+//             state.campaigns[index] = action.payload;
+//           }
+//         }
+//       })
+//       .addCase(updateCampaign.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+
+//       // Delete campaign
+//       .addCase(deleteCampaign.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(deleteCampaign.fulfilled, (state, action) => {
+//         state.loading = false;
+//         if (Array.isArray(state.campaigns)) {
+//           state.campaigns = state.campaigns.filter((campaign) => {
+//             const campaignId = campaign._id || campaign.id || campaign.campaignId;
+//             return campaignId !== action.payload;
+//           });
+//         }
+//       })
+//       .addCase(deleteCampaign.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       });
+//   },
+// });
+
+// export default campaignSlice.reducer;
 
 
 
