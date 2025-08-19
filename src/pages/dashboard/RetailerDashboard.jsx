@@ -51,9 +51,8 @@ const RetailerDashboard = () => {
     return campaignEndDateTime <= new Date();
   });
 
-  console.log("Today active campaigns  ", activeCampaigns);
-
-  console.log("Campaigns", campaigns);
+  // console.log("Today active campaigns  ", activeCampaigns);
+  // console.log("Campaigns", campaigns);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
