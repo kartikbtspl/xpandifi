@@ -11,7 +11,20 @@
 } */
 
 
+.spin-animation {
+  animation: spin 1.1s linear infinite;
+  /* Adjust duration and timing as needed */
+}
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* For WebKit browsers (Chrome, Edge, Safari) */
 *::-webkit-scrollbar {
