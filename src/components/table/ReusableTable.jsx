@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import {
   Box,
@@ -19,7 +18,7 @@ import { SearchIcon } from "../../icon/index";
 import Loader from "../../components/loader/Loader";
 import COLORS from "../../constants/Colors";
 
-const ReusableTable = ({
+const   ReusableTable = ({
   columns,
   rows,
   sx = {},
@@ -49,7 +48,11 @@ const ReusableTable = ({
       filtered = filtered.filter((row) =>
         columns.some((col) => {
           const value = col.render ? col.render(row) : row[col.id];
-          return String(value ?? "").toLowerCase().includes(lowerSearch);
+          // col.render might return React element — so stringify carefully
+          if (typeof value === "string" || typeof value === "number") {
+            return String(value).toLowerCase().includes(lowerSearch);
+          }
+          return false;
         })
       );
     }
@@ -92,11 +95,17 @@ const ReusableTable = ({
     }
   };
 
-  const handleRowClick = (row) => {
+  // Checkbox selection only — does NOT trigger onRowClick
+  const handleCheckboxClick = (e, row) => {
+    e.stopPropagation(); // Prevent row click
     const isSelected = selected.includes(row.id);
     setSelected((prev) =>
       isSelected ? prev.filter((id) => id !== row.id) : [...prev, row.id]
     );
+  };
+
+  // Row click triggers onRowClick and toggles selection
+  const handleRowClick = (row) => {
     onRowClick?.(row);
   };
 
@@ -165,7 +174,8 @@ const ReusableTable = ({
 
           <FiRefreshCw
             className="cursor-pointer hover:text-black"
-            onClick={() => onRefresh()}          />
+            onClick={() => onRefresh()}
+          />
         </div>
       </div>
 
@@ -216,7 +226,11 @@ const ReusableTable = ({
                   </TableRow>
                 ) : paginatedRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={columns.length + 1} align="center">
+                    <TableCell
+                      colSpan={columns.length + 1}
+                      align="center"
+                      sx={{ backgroundColor: "white" }}
+                    >
                       No data found
                     </TableCell>
                   </TableRow>
@@ -237,12 +251,10 @@ const ReusableTable = ({
                             backgroundColor: "#F2F5F9 !important",
                           },
                         }}
+                        onClick={() => handleRowClick(row)}
                       >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isSelected}
-                            onChange={() => handleRowClick(row)}
-                          />
+                        <TableCell padding="checkbox" onClick={(e) => handleCheckboxClick(e, row)}>
+                          <Checkbox checked={isSelected} />
                         </TableCell>
                         {columns.map((col) => (
                           <TableCell
@@ -265,7 +277,14 @@ const ReusableTable = ({
           </TableContainer>
 
           {/* Pagination Controls centered */}
-          <Box sx={{ display: "flex", justifyContent: "center", p: 1 , backgroundColor: COLORS.softBackground }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              p: 1,
+              backgroundColor: COLORS.softBackground,
+            }}
+          >
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
@@ -274,7 +293,6 @@ const ReusableTable = ({
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-            
             />
           </Box>
         </Paper>
