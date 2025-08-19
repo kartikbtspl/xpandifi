@@ -30,8 +30,29 @@ const RetailerDashboard = () => {
 
   const { campaigns, loading, fetched } =
     useSelector((state) => state.approvedCampaigns) || [];
+  const activeCampaigns = campaigns.filter(campaign => {
+    // Create full datetime for campaign end
+    const endDateStr = campaign.endDate.split('T')[0]; // "2025-08-19"
+    const endTimeStr = campaign.endTime; // "2AM"
 
-  console.log(campaigns);
+    // Convert "2AM" to "02:00:00" format
+    const timeParts = endTimeStr.match(/(\d+)(AM|PM)/i);
+    if (!timeParts) return false;
+
+    let hours = parseInt(timeParts[1]);
+    const period = timeParts[2].toUpperCase();
+
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+
+    const formattedTime = `${hours.toString().padStart(2, '0')}:00:00`;
+    const campaignEndDateTime = new Date(`${endDateStr}T${formattedTime}`);
+
+    return campaignEndDateTime <= new Date();
+  });
+
+  // console.log("Today active campaigns  ", activeCampaigns);
+  // console.log("Campaigns", campaigns);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -116,9 +137,8 @@ const RetailerDashboard = () => {
             <Button
               key={option}
               label={option}
-              className={`rounded-none ${
-                selected === option ? "" : "bg-gray-200 text-gray-700"
-              }`}
+              className={`rounded-none ${selected === option ? "" : "bg-gray-200 text-gray-700"
+                }`}
               onClick={() => setSelected(option)}
               type="button"
               loading={false}
@@ -138,10 +158,10 @@ const RetailerDashboard = () => {
             value={
               card.currency
                 ? new Intl.NumberFormat("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                    maximumFractionDigits: 2,
-                  }).format(card.value)
+                  style: "currency",
+                  currency: "INR",
+                  maximumFractionDigits: 2,
+                }).format(card.value)
                 : new Intl.NumberFormat().format(card.value)
             }
             change={card.change}
@@ -181,7 +201,7 @@ const RetailerDashboard = () => {
           {/* Active Ads List */}
           <div className="w-full lg:w-2/3 h-[483px]">
             <SideCard
-              ads={campaigns}
+              ads={activeCampaigns}
               title="Active Ads"
               onAdClick={(campaign) => {
                 setIsModalOpen(true);

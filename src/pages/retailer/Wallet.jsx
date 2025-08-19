@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FaRedo } from 'react-icons/fa';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import Button from "../../components/ui/button/Button";
 import ReusableTable from '../../components/table/ReusableTable';
@@ -15,6 +16,7 @@ const Wallets = () => {
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false); // State for refresh animation
 
     const dispatch = useDispatch();
     const {
@@ -31,6 +33,19 @@ const Wallets = () => {
         dispatch(fetchWalletBalance());
         dispatch(fetchWithdrawalRequests());
     }, [dispatch]);
+
+    // Function to handle refresh button click
+    const handleRefreshBalance = async () => {
+        setIsRefreshing(true);
+        try {
+            await dispatch(fetchWalletBalance()).unwrap();
+            // Animation will run for at least 1 second (matches CSS animation duration)
+            setTimeout(() => setIsRefreshing(false), 1000);
+        } catch (error) {
+            setIsRefreshing(false);
+            console.error("Failed to refresh balance:", error);
+        }
+    };
 
     const formatBalance = (amount) =>
         new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
@@ -113,25 +128,26 @@ const Wallets = () => {
         },
         { id: "action", label: "Action" },
     ];
-const rows = (withdrawalRequests || []).map((row) => ({
-  ...row,
-  _statusRaw: row.status,
-  action: row.status === "PENDING" ? (
-    cancellationLoading ? (
-      <Loader size="vs" />
-    ) : (
-      <button
-        className="px-3 py-1 rounded-lg text-white text-sm font-medium bg-red-800 hover:bg-red-700 hover:cursor-pointer"
-        onClick={(e) => handleCancelRequest(row.walletId, e)}
-        disabled={cancellationLoading}
-      >
-        Cancel Request
-      </button>
-    )
-  ) : (
-    <span className="text-gray-500 italic">No Action Available</span>
-  ),
-}));
+    
+    const rows = (withdrawalRequests || []).map((row) => ({
+      ...row,
+      _statusRaw: row.status,
+      action: row.status === "PENDING" ? (
+        cancellationLoading ? (
+          <Loader size="vs" />
+        ) : (
+          <button
+            className="px-3 py-1 rounded-lg text-white text-sm font-medium bg-red-800 hover:bg-red-700 hover:cursor-pointer"
+            onClick={(e) => handleCancelRequest(row.walletId, e)}
+            disabled={cancellationLoading}
+          >
+            Cancel Request
+          </button>
+        )
+      ) : (
+        <span className="text-gray-500 italic">No Action Available</span>
+      ),
+    }));
 
     return (
         <div className="p-4">
@@ -144,7 +160,10 @@ const rows = (withdrawalRequests || []).map((row) => ({
                 <div>
                     <div className="flex items-center gap-2 mb-1">
                         <h2 className="text-lg font-semibold">Current Balance</h2>
-
+                        <FaRedo 
+                            className={`h-3 w-3 hover:cursor-pointer ${isRefreshing ? 'spin-animation' : ''}`}
+                            onClick={handleRefreshBalance}
+                        />
                     </div>
                     <div className="flex items-center gap-2 mb-1">
                         {loading ? (
@@ -211,6 +230,8 @@ const rows = (withdrawalRequests || []).map((row) => ({
                     </div>
                 )}
             </Modal>
+            
+        
         </div>
     );
 };
