@@ -11,7 +11,7 @@ const CampaignCard = ({ campaign }) => {
     endDate,
     startTime,
     endTime,
-    targetDevices = [],
+    // targetDevices = [],
     isActive
   } = campaign;
 
@@ -46,10 +46,10 @@ const CampaignCard = ({ campaign }) => {
       </div>
 
       {/* Target Devices */}
-      <div className="text-sm text-gray-700">
+      {/* <div className="text-sm text-gray-700">
         <strong>Target Devices:</strong>{" "}
         <span className="text-gray-600">{targetDevices.join(", ")}</span>
-      </div>
+      </div> */}
     </div>
   );
 };

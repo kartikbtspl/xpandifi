@@ -34,7 +34,7 @@ export default function Modal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-red-600 transition-colors p-2 rounded-full bg-gray-100 hover:bg-gray-200 shadow"
+          className="absolute top-4 right-4 text-gray-400 hover:text-red-600 transition-colors p-2 rounded-full bg-gray-100 hover:bg-gray-200 shadow cursor-pointer"
           aria-label="Close modal"
         >
           <IoClose className="text-2xl" />
