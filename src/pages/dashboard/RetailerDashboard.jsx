@@ -74,7 +74,7 @@ const RetailerDashboard = () => {
     }
   }, [fetched, loading, dispatch]);
 
-  const sumActiveAds = countActivCampaigns(campaigns);
+  const sumActiveAds = countActivCampaigns(activeCampaigns);
 
   const statCards = [
     {
