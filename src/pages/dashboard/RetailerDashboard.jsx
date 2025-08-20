@@ -31,25 +31,27 @@ const RetailerDashboard = () => {
   const { campaigns, loading, fetched } =
     useSelector((state) => state.approvedCampaigns) || [];
   const activeCampaigns = campaigns.filter(campaign => {
-    // Create full datetime for campaign end
-    const endDateStr = campaign.endDate.split('T')[0]; // "2025-08-19"
-    const endTimeStr = campaign.endTime; // "2AM"
+  // Create full datetime for campaign end
+  const endDateStr = campaign.endDate.split('T')[0]; // "2025-08-19"
+  const endTimeStr = campaign.endTime; // "2AM"
 
-    // Convert "2AM" to "02:00:00" format
-    const timeParts = endTimeStr.match(/(\d+)(AM|PM)/i);
-    if (!timeParts) return false;
+  // Convert "2AM" to "02:00:00" format
+  const timeParts = endTimeStr.match(/(\d+)(AM|PM)/i);
+  if (!timeParts) return false;
 
-    let hours = parseInt(timeParts[1]);
-    const period = timeParts[2].toUpperCase();
+  let hours = parseInt(timeParts[1]);
+  const period = timeParts[2].toUpperCase();
 
-    if (period === 'PM' && hours !== 12) hours += 12;
-    if (period === 'AM' && hours === 12) hours = 0;
+  if (period === 'PM' && hours !== 12) hours += 12;
+  if (period === 'AM' && hours === 12) hours = 0;
 
-    const formattedTime = `${hours.toString().padStart(2, '0')}:00:00`;
-    const campaignEndDateTime = new Date(`${endDateStr}T${formattedTime}`);
+  const formattedTime = `${hours.toString().padStart(2, '0')}:00:00`;
+  const campaignEndDateTime = new Date(`${endDateStr}T${formattedTime}`);
 
-    return campaignEndDateTime <= new Date();
-  });
+  // ✅ Keep campaigns that haven't ended yet
+  return campaignEndDateTime >= new Date();
+});
+
 
   // console.log("Today active campaigns  ", activeCampaigns);
   // console.log("Campaigns", campaigns);
