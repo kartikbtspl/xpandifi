@@ -13,21 +13,22 @@ const formatActiveCampaigns = (data = []) =>
     start: `${item.startDate} - ${item.startTime}`,
     end: `${item.endDate} - ${item.endTime}`,
     isActive: item.isActive, //  directly from backend
+    status: item.isActive ? "ACTIVE" : "INACTIVE",  // ✅ add explicit status
     raw: item,
   }));
 
 const ActiveCampaigns = () => {
   const dispatch = useDispatch();
-  const { campaigns, loading,fetched } = useSelector((state) => state.campaign);
+  const { campaigns, loading, fetched } = useSelector((state) => state.campaign);
 
   const [rows, setRows] = useState([]);
 
   //  Fetch on mount
- useEffect(() => {
-     if(!fetched && !loading){
-       dispatch(fetchCampaigns());
-     }
-   }, [fetched, loading, dispatch]);
+  useEffect(() => {
+    if (!fetched && !loading) {
+      dispatch(fetchCampaigns());
+    }
+  }, [fetched, loading, dispatch]);
 
   //  Filter campaigns: isApproved === "APPROVED" && isPayment === true
   useEffect(() => {
@@ -50,7 +51,7 @@ const ActiveCampaigns = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => <StatusBadge isActive={row.isActive} size={11}/>, //  return the badge
+      render: (row) => <StatusBadge isActive={row.isActive} size={11} />, //  return the badge
     },
   ];
 
