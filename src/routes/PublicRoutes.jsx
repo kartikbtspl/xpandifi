@@ -1,7 +1,7 @@
 // src/routes/PublicRoutes.jsx 
 import { Route, Navigate, useLocation } from "react-router-dom";
-import ContactUsForm from "../pages/AuthPages/ContactUsForm";
-import SignIn from "../pages/AuthPages/SignIn";
+import ContactUsForm from "../pages/User_Pages/AuthPages/ContactUsForm";
+import SignIn from "../pages/User_Pages/AuthPages/SignIn";
 import {jwtDecode} from "jwt-decode";
 
 const isLoggedIn = () => {
