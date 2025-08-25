@@ -1,11 +1,11 @@
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import Input from "../../../components/ui/input/Input";
-import { Modal } from "../../../components/ui/modal/Modal";
-import Loader from "../../../components/ui/loader/Loader";
-import { createTier } from "../../../redux/slices/tierSlice"; // Adjust path
+import Button from "../../../../components/ui/button/Button";
+import Input from "../../../../components/ui/input/Input";
+import { Modal } from "../../../../components/ui/modal/Modal";
+import Loader from "../../../../components/loader/Loader";
+import { createTier } from "../../../../redux/slices/Admin/tierSlice"; 
 
 const AddTierModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import moment from "moment";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
-import { Modal } from "../../components/ui/modal/Modal"; // update path if needed
-import Button from "../../components/ui/button/Button";
+import ReusableTable from "../../../components/table/ReusableTable";
+import { Modal } from "../../../components/ui/modal/Modal";
+import Button from "../../../components/ui/button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPayouts,
   updateWithdrawStatus,
-} from "../../redux/slices/payoutSlice";
+} from "../../../redux/slices/Admin/payoutSlice";
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();

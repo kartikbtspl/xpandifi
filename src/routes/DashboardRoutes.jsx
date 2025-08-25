@@ -23,17 +23,17 @@ import Support from "../pages/User_Pages/retailer/Support";
 import TicketRaise from "../pages/User_Pages/Ticket/TicketRaise";
 
 // ================= ADMIN ROUTES =================
-import AdminDashboard from "../pages/Admin_Pages/Dashboard"; // renamed
+import AdminDashboard from "../pages/Admin_Pages/Dashboard"; 
 import UserManagement from "../pages/Admin_Pages/userManagement/UserManagement";
 import CampaignRequest from "../pages/Admin_Pages/campaign/CampaignRequest";
 import BidReview from "../pages/Admin_Pages/bidsReview/BidReview";
 import RevenuePayouts from "../pages/Admin_Pages/revenuePayouts/RevenuePayouts";
-import AdminUserDetails from "../pages/Admin_Pages/User/UserDetails"; // renamed
+import AdminUserDetails from "../pages/Admin_Pages/User/UserDetails"; 
 import Setting from "../pages/Admin_Pages/setting/Setting";
 import ConfigurationManagement from "../pages/Admin_Pages/configManagement/ConfigurationManagement";
 import ActivateCampaigns from "../pages/Admin_Pages/liveCampaings/ActivateCampaigns";
 import TicketSystem from "../pages/Admin_Pages/TicketSystem/TicketSystem";
-import AdminMyEarnings from "../pages/Admin_Pages/earn/MyEarnigs"; // renamed
+import AdminMyEarnings from "../pages/Admin_Pages/earn/MyEarnigs"; 
 import PayoutCheckout from "../pages/Admin_Pages/revenuePayouts/PayoutCheckout";
 import WithdrawalRequest from "../pages/Admin_Pages/revenuePayouts/WithdrawalRequest";
 

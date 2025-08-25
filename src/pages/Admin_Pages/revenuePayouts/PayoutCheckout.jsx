@@ -1,11 +1,11 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Breadcrumbs from "../../components/ui/bread-crumb/Breadcrumbs";
-import Button from "../../components/ui/button/Button";
-import { makePayoutAPI } from "../../api/payout/payout-api";
+import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
+import Button from "../../../components/ui/button/Button";
+import { makePayoutAPI } from "../../../api/Admin_API/payout/payout-api";
 import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { fetchPayouts } from "../../redux/slices/payoutSlice";
+import { fetchPayouts } from "../../../redux/slices/Admin/payoutSlice";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -36,7 +36,7 @@ const PayoutCheckout = () => {
 
   useEffect(() => {
     if (!requestData) {
-      navigate("/revenue-payouts"); // Redirect to payouts list instead of campaigns-list
+      navigate("/admin/revenue-payouts"); // Redirect to payouts list instead of campaigns-list
     }
   }, [requestData, navigate]);
 

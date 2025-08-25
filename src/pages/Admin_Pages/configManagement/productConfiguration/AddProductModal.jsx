@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import Input from "../../../components/ui/input/Input";
-import { Modal } from "../../../components/ui/modal/Modal";
-import { createProduct } from "../../../redux/slices/productSlice";
+import Button from "../../../../components/ui/button/Button";
+import Input from "../../../../components/ui/input/Input";
+import { Modal } from "../../../../components/ui/modal/Modal";
+import { createProduct } from "../../../../redux/slices/Admin/productSlice";
 
 const AddProductModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();

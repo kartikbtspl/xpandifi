@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
+import ReusableTable from "../../../components/table/ReusableTable";
 import { FiChevronRight } from "react-icons/fi";
 
 const Setting = () => {

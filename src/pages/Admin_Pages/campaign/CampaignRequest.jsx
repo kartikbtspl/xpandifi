@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCampaigns,
   campaignApproval,
-} from "../../redux/slices/campaignSlice";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
+} from "../../../redux/slices/Admin/campaignSlice";
+import ReusableTable from "../../../components/table/ReusableTable";
 import CampaignDetailsModal from "./CampaignDetailsModal";
 import RejectCampaignModal from "./RejectCampaignModal";
 import getCampaignColumns from "./columns";

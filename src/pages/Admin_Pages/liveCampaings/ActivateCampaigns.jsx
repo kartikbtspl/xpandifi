@@ -2,11 +2,11 @@ import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import getColumns from "./Columns";
 import { useEffect, useMemo, useState } from "react";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
+import ReusableTable from "../../../components/table/ReusableTable";
 import {
   fetchCampaigns,
   toggleCampaignStatus,
-} from "../../redux/slices/campaignSlice";
+} from "../../../redux/slices/Admin/campaignSlice";
 
 const ActivateCampaigns = () => {
   const dispatch = useDispatch();

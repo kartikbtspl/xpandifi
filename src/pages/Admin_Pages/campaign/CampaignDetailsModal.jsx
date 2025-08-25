@@ -1,7 +1,5 @@
 
-
-import React from "react";
-import { Modal } from "../../components/ui/modal/Modal";
+import { Modal } from "../../../components/ui/modal/Modal";
 import {
   FaCalendarAlt,
   FaStore,
@@ -11,8 +9,10 @@ import {
   FaMoneyBillWave,
   FaIndustry
 } from "react-icons/fa";
-import ProductMedia from "../../components/campaign/ProductMedia";
-import { formatScheduleDate } from "../../util/Form-menu/DateUtils";
+import ProductMedia from "../../../components/campaign/ProductMedia";
+//import { formatScheduleDate } from "../../../util/Form-menu/";
+
+import { formatScheduleDate } from "../../../util/Form-menu/dateUtils";
 
 const CampaignDetailsModal = ({
   isOpen,

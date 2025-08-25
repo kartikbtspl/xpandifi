@@ -1,11 +1,11 @@
 import { useMemo, useEffect } from "react";
-import StatCard from "../components/atoms/card/StatCard";
-import ReusableTable from "../components/atoms/table/ReusableTable";
-import HeaderSection from "../components/ui/header-section/HeaderSection";
+import StatCard from "../../components/card/StatCard";
+import ReusableTable from "../../components/table/ReusableTable";
+import HeaderSection from "../../components/ui/header-section/HeaderSection";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCampaigns } from "../redux/slices/campaignSlice";
-import { fetchUserProfile } from "../redux/slices/userProfileSlice";
+import { fetchCampaigns } from "../../redux/slices/Admin/campaignSlice";
+import { fetchUserProfile } from "../../redux/slices/Admin/userProfileSlice";
 
 const AdminDashboard  = () => {
   const navigate = useNavigate();

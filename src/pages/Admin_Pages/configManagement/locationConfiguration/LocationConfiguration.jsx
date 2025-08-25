@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import ReusableTable from "../../../components/atoms/table/ReusableTable";
+import Button from "../../../../components/ui/button/Button";
+import ReusableTable from "../../../../components/table/ReusableTable";
 
 import {
   fetchTier,
   createTier,
   updateTier,
-} from "../../../redux/slices/tierSlice";
+} from "../../../../redux/slices/Admin/tierSlice";
 import { getTierColumns } from "../Columns";
 
 import AddTierModal from "./AddTierModal";

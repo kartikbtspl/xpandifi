@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Typography, Chip } from "@mui/material";
-import StatCard from "../../components/atoms/card/StatCard";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
+import StatCard from "../../../components/card/StatCard";
+import ReusableTable from "../../../components/table/ReusableTable";
 import TicketDetailsModal from "./TicketDetailsModal";
 import { ticketCounts, ticketRows } from "./ticketData";
-import COLORS from "../../constants/Colors";
+import COLORS from "../../../constants/Colors";
 import { toast , ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -225,7 +225,7 @@ export default TicketSystem;
 // import { useState } from "react";
 // import { Typography, Chip } from "@mui/material";
 // import StatCard from "../../components/atoms/card/StatCard";
-// import ReusableTable from "../../components/atoms/table/ReusableTable";
+// import ReusableTable from "../../../components/table/ReusableTable";
 // import TicketDetailsModal from "./TicketDetailsModal";
 // import { ticketCounts, ticketRows } from "./ticketData";
 // import COLORS from "../../constants/Colors";

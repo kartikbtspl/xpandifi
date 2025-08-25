@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../components/ui/button/Button";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
+import Button from "../../../components/ui/button/Button";
+import ReusableTable from "../../../components/table/ReusableTable";
 import {
   fetchUsers,
   toggleUserStatus,
-} from "../../redux/slices/userManagementSlice";
+} from "../../../redux/slices/Admin/userManagementSlice";
 
 import AddUserModal from "./AddUserModal";
 import { columns } from "./UserColumns";

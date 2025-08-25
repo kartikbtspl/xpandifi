@@ -2,9 +2,9 @@
 import React from "react";
 import { Typography } from "@mui/material";
 import { useSelector } from "react-redux";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
+import ReusableTable from "../../../components/table/ReusableTable";
 import { useDispatch } from "react-redux";
-import {fetchCampaigns} from "../../redux/slices/campaignSlice"
+import {fetchCampaigns} from "../../../redux/slices/Admin/campaignSlice"
 
 const BidReview = () => {
   const { campaigns, loading } = useSelector((state) => state.campaign);

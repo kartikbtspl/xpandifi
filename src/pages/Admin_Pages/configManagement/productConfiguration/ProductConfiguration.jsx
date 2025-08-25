@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import ReusableTable from "../../../components/atoms/table/ReusableTable";
+import Button from "../../../../components/ui/button/Button";
+import ReusableTable from "../../../../components/table/ReusableTable";
 
-import { fetchProducts } from "../../../redux/slices/productSlice";
+import { fetchProducts } from "../../../../redux/slices/Admin/productSlice";
 import { getProductColumns } from "../Columns";
 
 import AddProductModal from "./AddProductModal";

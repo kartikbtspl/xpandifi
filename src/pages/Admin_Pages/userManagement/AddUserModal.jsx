@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 
-import { Modal } from "../../components/ui/modal/Modal";
-import Input from "../../components/ui/input/Input";
-import Button from "../../components/ui/button/Button";
-import Loader from "../../components/ui/loader/Loader";
-import { createUser, fetchUsers } from "../../redux/slices/userManagementSlice";
+import { Modal } from "../../../components/ui/modal/Modal";
+import Input from "../../../components/ui/input/Input";
+import Button from "../../../components/ui/button/Button";
+import Loader from "../../../components/loader/Loader";
+import { createUser, fetchUsers } from "../../../redux/slices/Admin/userManagementSlice";
 import { Switch } from "@mui/material";
 import { toast } from "react-toastify";
 

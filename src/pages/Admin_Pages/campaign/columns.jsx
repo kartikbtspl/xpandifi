@@ -1,4 +1,4 @@
-import ApprovalBadge from "../../components/ui/badges/ApprovalBadge"
+import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge"
 
 
 const getCampaignColumns = () => [

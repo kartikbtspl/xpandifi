@@ -2,14 +2,14 @@ import { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import ReusableTable from "../../../components/atoms/table/ReusableTable";
+import Button from "../../../../components/ui/button/Button";
+import ReusableTable from "../../../../components/table/ReusableTable";
 
 import {
   fetchDevices,
   createDevice,
   updateDevice,
-} from "../../../redux/slices/deviceSlice";
+} from "../../../../redux/slices/Admin/deviceSlice";
 
 import { getDeviceColumns } from "../Columns";
 import AddDeviceModal from "./AddDeviceModal";

@@ -1,7 +1,7 @@
 
 import { Chip, Switch } from "@mui/material";
-import Loader from "../../components/ui/loader/Loader"
-import COLORS from "../../constants/Colors";
+import Loader from "../../../components/loader/Loader"
+import COLORS from "../../../constants/Colors";
 export const columns = (handleStatusChange,switchLoading) => [
   { id: "fullName", label: "Full Name" },
   { id: "email", label: "Email" },

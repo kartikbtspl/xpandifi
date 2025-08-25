@@ -1,4 +1,4 @@
-import { Modal } from "../../components/ui/modal/Modal";
+import { Modal } from "../../../components/ui/modal/Modal";
 
 const RejectCampaignModal = ({
   isOpen,

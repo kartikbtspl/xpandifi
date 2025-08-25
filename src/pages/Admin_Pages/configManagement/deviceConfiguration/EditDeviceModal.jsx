@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import Input from "../../../components/ui/input/Input";
-import { Modal } from "../../../components/ui/modal/Modal";
+import Button from "../../../../components/ui/button/Button";
+import Input from "../../../../components/ui/input/Input";
+import { Modal } from "../../../../components/ui/modal/Modal";
 import Select from "react-select";
 
-import { updateDevice } from "../../../redux/slices/deviceSlice";
+import { updateDevice } from "../../../../redux/slices/Admin/deviceSlice";
 
 const deviceOptions = [
   { label: "Cube", value: "Cube" },

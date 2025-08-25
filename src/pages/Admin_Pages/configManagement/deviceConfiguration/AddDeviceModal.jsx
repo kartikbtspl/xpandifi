@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import Button from "../../../components/ui/button/Button";
-import { Modal } from "../../../components/ui/modal/Modal";
+import Button from "../../../../components/ui/button/Button";
+import { Modal } from "../../../../components/ui/modal/Modal";
 import Select from "react-select";
-import { createDevice } from "../../../redux/slices/deviceSlice";
+import { createDevice } from "../../../../redux/slices/Admin/deviceSlice";
 
 const deviceOptions = [
   { label: "Cube", value: "Cube" },

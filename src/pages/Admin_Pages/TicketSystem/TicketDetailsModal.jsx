@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "../../components/ui/modal/Modal";
+import { Modal } from "../../../components/ui/modal/Modal";
 import { toast } from "react-hot-toast";
-import MediaCarousel from "../../components/Media/MediaCarousel";
+import MediaCarousel from "../../../components/ui/carousel/MediaCarousel";
 
 const TicketDetailsModal = ({
   isOpen,

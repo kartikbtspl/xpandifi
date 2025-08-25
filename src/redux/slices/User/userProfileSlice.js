@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchUserAPI,updateUserAPI } from '../../api/user-api/user-api';
+//import { fetchUserAPI,updateUserAPI } from '../../api/user-api/user-api';
+
+import { fetchUserAPI,updateUserAPI } from '../../../api/Admin_API/user-api/user-api';
 
 const initialState = {
   user: null,

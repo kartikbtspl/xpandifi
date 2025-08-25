@@ -3,10 +3,10 @@ import React, { useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Typography, CircularProgress } from "@mui/material";
 import moment from "moment";
-import ReusableTable from "../../components/atoms/table/ReusableTable";
-import Button from "../../components/ui/button/Button";
+import ReusableTable from "../../../components/table/ReusableTable";
+import Button from "../../../components/ui/button/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPayouts } from "../../redux/slices/payoutSlice";
+import { fetchPayouts } from "../../../redux/slices/Admin/payoutSlice";
 import Swal from "sweetalert2";
 
 const RevenuePayouts = () => {
@@ -116,11 +116,11 @@ const RevenuePayouts = () => {
       </Typography>
 
       {/* ✅ Error State */}
-      {error && (
+      {/* {error && (
         <div className="text-red-600 bg-red-100 px-4 py-2 rounded">
           {error}
         </div>
-      )}
+      )} */}
 
       {/* ✅ Data Table */}
       {!error && (

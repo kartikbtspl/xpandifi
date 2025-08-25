@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchUserProfile,
+  fetchUser,
   updateUser,
   // updateUserProfilePic, // <-- You need to implement this in Redux or API
-} from "../../redux/slices/userProfileSlice";
-import Loader from "../../components/ui/loader/Loader";
-import { Modal } from "../../components/ui/modal/Modal";
+} from "../../../redux/slices/User/userProfileSlice";
+import Loader from "../../../components/loader/Loader";
+import { Modal } from "../../../components/ui/modal/Modal";
 import { useForm } from "react-hook-form";
 import { FiEdit } from "react-icons/fi";
-import { resetUserPassword } from "../../api/user-api/user-api";
+import { resetUserPassword } from "../../../api/Admin_API/user-api/user-api";
 import Swal from "sweetalert2";
-import Button from "../../components/ui/button/Button";
+import Button from "../../../components/ui/button/Button";
 
 const AdminUserDetails = () => {
   const dispatch = useDispatch();
@@ -47,7 +47,7 @@ const AdminUserDetails = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchUserProfile());
+    dispatch(fetchUser());
   }, [dispatch]);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const AdminUserDetails = () => {
   const handleProfileSubmit = async (data) => {
     setUpdating(true);
     await dispatch(updateUser(data));
-    await dispatch(fetchUserProfile());
+    await dispatch(fetchUser());
     setUpdating(false);
     setEditMode((prev) => ({ ...prev, profile: false }));
   };
@@ -87,7 +87,7 @@ const AdminUserDetails = () => {
       const formData = new FormData();
       formData.append("profilePic", profilePicFile);
       await dispatch(updateUserProfilePic(formData)); // <-- Implement in Redux/API
-      await dispatch(fetchUserProfile());
+      await dispatch(fetchUser());
     }
     setEditMode((prev) => ({ ...prev, profilePic: false }));
     setProfilePicFile(null);

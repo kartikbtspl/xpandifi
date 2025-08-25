@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getRevenue } from "../../api/user-api/user-api";
+import { getRevenue } from "../../../api/Admin_API/user-api/user-api";
 
 const AdminMyEarnings  = () => {
   // Enhanced static data

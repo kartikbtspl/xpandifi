@@ -1,6 +1,6 @@
 import { Switch } from "@mui/material";
-import Loader from "../../components/ui/loader/Loader";
-import StatusBadge from "../../components/ui/badges/StatusBadge";
+import Loader from "../../../components/loader/Loader";
+import StatusBadge from "../../../components/ui/badges/StatusBadge";
 
 const getColumns = (handleActivate, switchLoading) => [
   { id: "campaignCode", label: "Campaign ID" },
