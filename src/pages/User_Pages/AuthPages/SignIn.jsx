@@ -54,7 +54,7 @@ const SignIn = () => {
     setLoading((prev) => ({ ...prev, login: true }));
     try {
       // Decide role by email (backend should enforce it anyway)
-      const isAdmin = data.email.includes("admin");
+      const isAdmin = data.email.includes("orgadmin@example.com");
 
       const loginAction = isAdmin ? loginAdminAction : loginUserAction;
       const response = await dispatch(loginAction(data));

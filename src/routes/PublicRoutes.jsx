@@ -1,8 +1,8 @@
-// src/routes/PublicRoutes.jsx 
+// src/routes/PublicRoutes.jsx
 import { Route, Navigate, useLocation } from "react-router-dom";
 import ContactUsForm from "../pages/User_Pages/AuthPages/ContactUsForm";
 import SignIn from "../pages/User_Pages/AuthPages/SignIn";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const isLoggedIn = () => {
   const token = localStorage.getItem("token");
@@ -17,7 +17,7 @@ const isLoggedIn = () => {
         return false; // token expired
       }
     }
-    return true;
+    return decoded; // return decoded token instead of true
   } catch (err) {
     console.warn("Invalid token in isLoggedIn check:", err);
     return false;
@@ -26,10 +26,16 @@ const isLoggedIn = () => {
 
 const PublicRoute = ({ children }) => {
   const location = useLocation();
-  if (isLoggedIn()) {
-    // Already authenticated: don't allow access to public pages.
+  const decoded = isLoggedIn();
+
+  if (decoded) {
+    const role = decoded.role?.toLowerCase();
+    if (role === "SUPERADMIN") {
+      return <Navigate to="/admin" state={{ from: location }} replace />;
+    }
     return <Navigate to="/" state={{ from: location }} replace />;
   }
+
   return children;
 };
 
@@ -53,16 +59,3 @@ export const publicRoutes = [
     }
   />,
 ];
-
-
-///src\routes\PublicRoutes.jsx
-// import { Route } from "react-router-dom";
-// import Dashboard from "../pages/Dashboard";
-// import CreateCampaign from "../pages/campaign/CreateCampaign";
-// import ContactUsForm from "../pages/AuthPages/ContactUsForm";
-// import SignIn from "../pages/AuthPages/SignIn";
-// export const publicRoutes = [
-//   <Route key="signin" path="/signin" element={<SignIn />} />,
-//   <Route path="/contact-us" element={<ContactUsForm />} />,
-
-// ]

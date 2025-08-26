@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux";
-import { menuItems } from "../util/appsidebar-menu/menuItems";
-import { retailerMenuItems } from "../util/appsidebar-menu/menuItems";
+import { menuItems, retailerMenuItems, adminMenuItems } from "../util/appsidebar-menu/menuItems";
 import SidebarItem from "./SidebarItem";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
@@ -10,39 +9,46 @@ import '../index.css';
 const AppSidebar = ({ isOpen, toggleSidebar }) => {
   const token = localStorage.getItem("token");
   const [role, setRole] = useState(null);
-  const [loadingRole, setLoadingRole] = useState(true); // loading state
+  const [loadingRole, setLoadingRole] = useState(true);
   const dispatch = useDispatch();
 
-  // Decode the token and set role
+  // Decode token and set role
   useEffect(() => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setRole(decoded.role);
+        setRole(decoded.role); // should be "SUPERADMIN", "Retailer", or "AdAgency"
       } catch (error) {
         console.error("Error decoding token:", error);
       } finally {
-        setLoadingRole(false); // hide loader regardless of success/failure
+        setLoadingRole(false);
       }
     } else {
       setLoadingRole(false);
     }
   }, [token]);
 
-  
+  // Fetch campaigns only for AdAgency + Retailer
   useEffect(() => {
-    const delay = 300; 
+    const delay = 300;
     const timer = setTimeout(() => {
-      if (role) {
+      if (role === "AdAgency" || role === "Retailer") {
         dispatch(fetchCampaigns());
       }
     }, delay);
 
-    return () => clearTimeout(timer); // clear timeout on cleanup
+    return () => clearTimeout(timer);
   }, [role, dispatch]);
 
-  const isRetailer = role === "Retailer";
-  const sidebarItems = isRetailer ? retailerMenuItems : menuItems;
+  // Sidebar menu selection based on role
+  let sidebarItems = [];
+  if (role === "SUPERADMIN") {
+    sidebarItems = adminMenuItems;
+  } else if (role === "Retailer") {
+    sidebarItems = retailerMenuItems;
+  } else if (role === "Ad-Agency") {
+    sidebarItems = menuItems; // Ad Agency menu
+  }
 
   if (loadingRole) {
     return (
@@ -58,13 +64,15 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
         isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       }`}
     >
+      {/* Logo Header */}
       <div className="flex justify-center items-center p-6 mb-7 bg-gradient-to-r from-[#16122F] to-[#445E94]">
         <img src="/images/Logo.svg" alt="xpandifi-logo" />
-        <button className="md:hidden" onClick={toggleSidebar}>
+        <button className="md:hidden ml-2" onClick={toggleSidebar}>
           ❌
         </button>
       </div>
 
+      {/* Sidebar Items */}
       <nav className="flex flex-col gap-4 overflow-auto pb-2">
         {sidebarItems.map((item) => (
           <SidebarItem
@@ -76,10 +84,105 @@ const AppSidebar = ({ isOpen, toggleSidebar }) => {
           />
         ))}
       </nav>
-    
     </div>
   );
 };
 
 export default AppSidebar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useDispatch } from "react-redux";
+// import { menuItems , retailerMenuItems, adminMenuItems } from "../util/appsidebar-menu/menuItems";
+// import SidebarItem from "./SidebarItem";
+// import { jwtDecode } from "jwt-decode";
+// import { useEffect, useState } from "react";
+// import { fetchCampaigns } from "../redux/slices/User/campaignSlice";
+// import '../index.css'; 
+
+// const AppSidebar = ({ isOpen, toggleSidebar }) => {
+//   const token = localStorage.getItem("token");
+//   const [role, setRole] = useState(null);
+//   const [loadingRole, setLoadingRole] = useState(true); // loading state
+//   const dispatch = useDispatch();
+
+//   // Decode the token and set role
+//   useEffect(() => {
+//     if (token) {
+//       try {
+//         const decoded = jwtDecode(token);
+//         setRole(decoded.role);
+//       } catch (error) {
+//         console.error("Error decoding token:", error);
+//       } finally {
+//         setLoadingRole(false); // hide loader regardless of success/failure
+//       }
+//     } else {
+//       setLoadingRole(false);
+//     }
+//   }, [token]);
+
+  
+//   useEffect(() => {
+//     const delay = 300; 
+//     const timer = setTimeout(() => {
+//       if (role) {
+//         dispatch(fetchCampaigns());
+//       }
+//     }, delay);
+
+//     return () => clearTimeout(timer); // clear timeout on cleanup
+//   }, [role, dispatch]);
+
+//   const isRetailer = role === "Retailer";
+//   const sidebarItems = isRetailer ? retailerMenuItems : menuItems;
+
+//   if (loadingRole) {
+//     return (
+//       <div className="flex justify-center items-center h-screen bg-[#16122F] text-white">
+//         <p className="text-lg font-medium animate-pulse">Loading Sidebar...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div
+//       className={`fixed md:static top-0 left-0 h-full z-40 bg-[#16122F] text-white w-64 flex flex-col transition-transform duration-300 ease-in-out ${
+//         isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+//       }`}
+//     >
+//       <div className="flex justify-center items-center p-6 mb-7 bg-gradient-to-r from-[#16122F] to-[#445E94]">
+//         <img src="/images/Logo.svg" alt="xpandifi-logo" />
+//         <button className="md:hidden" onClick={toggleSidebar}>
+//           ❌
+//         </button>
+//       </div>
+
+//       <nav className="flex flex-col gap-4 overflow-auto pb-2">
+//         {sidebarItems.map((item) => (
+//           <SidebarItem
+//             key={item.path}
+//             label={item.name}
+//             icon={item.icon}
+//             path={item.path}
+//             toggleSidebar={toggleSidebar}
+//           />
+//         ))}
+//       </nav>
+    
+//     </div>
+//   );
+// };
+
+// export default AppSidebar;
 

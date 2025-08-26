@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
-
+import PrivateRoute from "./PrivateRoute";
 // ================= USER ROUTES =================
 import Dashboard from "../pages/User_Pages/Dashboard";
 import CreateCampaign from "../pages/User_Pages/campaign/CreateCampaign";
@@ -39,46 +39,191 @@ import WithdrawalRequest from "../pages/Admin_Pages/revenuePayouts/WithdrawalReq
 
 
 export const dashboardRoutes = [
-  <Route key="layout" element={<AppLayout />}>
-    {/* USER ROUTES */}
+    <Route
+    key="layout"
+    element={
+      <PrivateRoute allowedRoles={["retailer", "Ad-Agency", "SUPERADMIN"]}>
+        <AppLayout />
+      </PrivateRoute>
+    }
+  >
+
+    {/* Shared route */}
     <Route path="/" element={<Dashboard />} />
-    <Route path="/create-campaign" element={<CreateCampaign />} />
-    <Route path="/campaigns-list" element={<CampaignList />}>
+
+    <Route
+      path="/create-campaign"
+      element={
+        <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <CreateCampaign />
+        </PrivateRoute>
+      }
+    />
+    <Route path="/campaigns-list" element={
+      <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <CampaignList />
+        </PrivateRoute>}>
       <Route path="checkout" element={<CheckoutCampaign />} />
     </Route>
-    <Route path="/reports" element={<CampaignReports />} />
-    <Route path="/bids" element={<BidManagement />} />
-    <Route path="/profile" element={<UserDetails />} />
-    <Route path="/active-ads" element={<ActiveCampaigns />} />
-    <Route path="/devices" element={<Devices />} />
-    <Route path="/ad-performance" element={<AdPerformance />}>
+    <Route path="/reports" element={
+      <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <CampaignReports />
+        </PrivateRoute>} />
+    <Route path="/bids" element={<PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <BidManagement />
+        </PrivateRoute>} />
+    <Route path="/profile" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+          <UserDetails />
+        </PrivateRoute>} />
+        <Route path="/active-ads" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <ActiveCampaigns />
+        </PrivateRoute>} />
+
+        {/* Retailer routes */}
+      <Route path="/devices" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <Devices />
+        </PrivateRoute>} />
+
+    <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <AdPerformance />
+        </PrivateRoute>}>
       <Route path="view-analytics" element={<ProductAnalytics />} />
     </Route>
-    <Route path="/withdraw-earning" element={<WithdrawEarning />} />
-    <Route path="/data-privacy" element={<DataPrivacy />} />
-    <Route path="/campaigns" element={<Campaigns />} />
-    <Route path="/wallet" element={<Wallets />} />
-    <Route path="/report" element={<Reports />} />
-    <Route path="/support" element={<Support />}>
+    <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["retailer"]}>
+          <WithdrawEarning />
+        </PrivateRoute>} />
+       <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+          <DataPrivacy />
+        </PrivateRoute>} />
+      
+        <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["retailer"]}>
+          <Campaigns />
+        </PrivateRoute>} />
+        <Route path="/wallet" element={ <PrivateRoute allowedRoles={["retailer"]}>
+          <Wallets />
+        </PrivateRoute>} />
+        
+        <Route path="/report" element={ <PrivateRoute allowedRoles={["retailer"]}>
+          <Reports />
+        </PrivateRoute>} />
+        
+        <Route path="/support" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+          <Support />
+        </PrivateRoute>}>
       <Route path="raise-ticket" element={<TicketRaise />} />
     </Route>
-    <Route path="/settings" element={<Settings />} />
+        
+        <Route path="/settings" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+          <Settings />
+        </PrivateRoute>} />
 
     {/* ADMIN ROUTES */}
-    <Route path="/admin" element={<AdminDashboard />} />
-    <Route path="/admin/user-management" element={<UserManagement />} />
-    <Route path="/admin/campaign-request" element={<CampaignRequest />} />
-    <Route path="/admin/live-campaigns" element={<ActivateCampaigns />} />
-    <Route path="/admin/bids" element={<BidReview />} />
-    <Route path="/admin/request-withdrawal" element={<WithdrawalRequest />} />
-    <Route path="/admin/revenue-payouts" element={<RevenuePayouts />}>
-      <Route path="pay" element={<PayoutCheckout />} />
-    </Route>
-    <Route path="/admin/config-management" element={<ConfigurationManagement />} />
-    <Route path="/admin/setting" element={<Setting />} />
-    <Route path="/admin/user-details" element={<AdminUserDetails />} />
-    <Route path="/admin/ticket" element={<TicketSystem />} />
-    <Route path="/admin/earning" element={<AdminMyEarnings />} />
+      <Route 
+        path="/admin" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <AdminDashboard />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/user-management" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <UserManagement />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/campaign-request" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <CampaignRequest />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/live-campaigns" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <ActivateCampaigns />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/bids" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <BidReview />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/request-withdrawal" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <WithdrawalRequest />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/revenue-payouts" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <RevenuePayouts />
+          </PrivateRoute>
+        } 
+      >
+        <Route 
+          path="pay" 
+          element={
+            <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+              <PayoutCheckout />
+            </PrivateRoute>
+          } 
+        />
+      </Route>
+      <Route 
+        path="/admin/config-management" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <ConfigurationManagement />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/setting" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <Setting />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/user-details" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <AdminUserDetails />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/ticket" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <TicketSystem />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/admin/earning" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <AdminMyEarnings />
+          </PrivateRoute>
+        } 
+      />
+
   </Route>,
 ];
 

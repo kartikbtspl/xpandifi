@@ -139,7 +139,7 @@ const AdminDashboard  = () => {
 
   return (
     <div className="w-full">
-      <div>
+      {/* <div>
         <HeaderSection
           subtitle={profile?.name}
           showButton={true}
@@ -147,7 +147,7 @@ const AdminDashboard  = () => {
           onButtonClick={() => navigate("/create-campaign")}
           subtitleClass="text-[#445E94] font-bold text-xl"
         />
-      </div>
+      </div> */}
       <div
         className="grid gap-4 w-full"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}
