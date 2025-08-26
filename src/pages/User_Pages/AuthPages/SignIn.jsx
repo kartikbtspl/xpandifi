@@ -15,7 +15,6 @@ import { fetchUserProfile as fetchAdminProfile } from "../../../redux/slices/Adm
 import { fetchCampaigns as fetchAdminCampaigns } from "../../../redux/slices/Admin/campaignSlice";
 
 import ForgotPass from "./ForgotPass";
-import PageTitle from "../../../components/ui/page-title/PageTitle";
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -53,9 +52,7 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     setLoading((prev) => ({ ...prev, login: true }));
     try {
-      // Decide role by email (backend should enforce it anyway)
       const isAdmin = data.email.includes("orgadmin@example.com");
-
       const loginAction = isAdmin ? loginAdminAction : loginUserAction;
       const response = await dispatch(loginAction(data));
 
@@ -64,7 +61,6 @@ const SignIn = () => {
         if (token) {
           localStorage.setItem("token", token);
 
-          // Fetch profile + campaigns
           if (isAdmin) {
             dispatch(fetchAdminProfile());
             dispatch(fetchAdminCampaigns());
@@ -121,27 +117,39 @@ const SignIn = () => {
 
   return (
     <>
-      <PageTitle title="Xpandifi" />
-      {/* Main Page Layout */}
-      <div className="min-h-screen flex flex-col lg:flex-row">
-        <div className="w-full p-2 lg:w-1/2 bg-[url('/images/auth/login-img.png')] bg-cover bg-center h-60 sm:h-72 md:h-96 lg:h-auto" />
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 md:p-16 lg:p-20 xl:p-24 bg-white">
-          <div className="w-full max-w-md">
-            {/* Logo */}
-            <div className="flex justify-center mb-6">
-              <img
-                src="/images/logo/xpandifi-logo.svg"
-                alt="Xpandifi Logo"
-                className="h-10"
-              />
-            </div>
+      <div className="min-h-screen flex">
+        {/* Left Section */}
+        <div className="w-1/2 hidden lg:flex flex-col justify-center items-center bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-10">
+          <img
+            src="/images/Logo.svg"
+            alt="Xpandifi Logo"
+            className="h-10 mb-4"
+          />
+          <h1 className="text-2xl font-bold mb-2 text-center">
+            One Platform to Streamline <br /> All Product Analytics
+          </h1>
+          <p className="text-sm text-center opacity-75">
+            Your Revenue are set to grow by 20% next month.
+            <br />
+            Your Revenue is increased by next month.
+          </p>
+        </div>
 
-            {/* Title */}
-            <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-2">
+        {/* Right Section */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-6">
+          <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-8 relative">
+            {/* Mascot Image */}
+            <img
+              src="/images/auth/head.svg"
+              alt="Mascot"
+              className="absolute -top-28 left-1/2 transform -translate-x-1/2 w-50 h-35 object-contain"
+            />
+
+            <h2 className="text-2xl font-semibold text-center mt-12">
               Welcome
             </h2>
-            <p className="text-sm text-center text-[#697586] mb-6">
-              Your ads have been waiting for you
+            <p className="text-sm text-center text-gray-600 mb-6">
+              Let’s manage together
             </p>
 
             {/* Login Form */}
@@ -165,7 +173,7 @@ const SignIn = () => {
                       message: "Enter a valid email",
                     },
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {loginErrors.email && (
                   <p className="text-sm text-red-500 mt-1">
@@ -189,7 +197,7 @@ const SignIn = () => {
                       message: "Password must be at least 3 characters",
                     },
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {loginErrors.password && (
                   <p className="text-sm text-red-500 mt-1">
@@ -198,7 +206,7 @@ const SignIn = () => {
                 )}
               </div>
 
-              {/* Login Button */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoginSubmitting || loading.login}
@@ -208,12 +216,14 @@ const SignIn = () => {
                     : "bg-[#5F7C95] hover:bg-[#445E94]"
                 }`}
               >
-                {isLoginSubmitting || loading.login ? <Spinner /> : null}
-                {isLoginSubmitting || loading.login ? "Logging in..." : "Login"}
+                {(isLoginSubmitting || loading.login) && <Spinner />}
+                <span>
+                  {isLoginSubmitting || loading.login ? "Signing in..." : "Login"}
+                </span>
               </button>
 
               {/* Forgot Password */}
-              <div className="text-right">
+              <div className="text-right mt-2">
                 <span
                   className="text-sm text-blue-600 hover:underline cursor-pointer"
                   onClick={() => setIsForgotOpen(true)}
@@ -223,13 +233,12 @@ const SignIn = () => {
               </div>
             </form>
 
-            {/* Footer */}
-            <p className="text-sm text-gray-500 mt-8">
-              Don't have an Ads monetization account?{" "}
-              <Link to="/contact-us" className="text-blue-600 hover:underline">
-                Register here
-              </Link>
-            </p>
+            {/* Tail Image */}
+            <img
+              src="/images/auth/tail.svg"
+              alt="Mascot"
+              className="absolute top-100 left-1/2 transform -translate-x-1/2 w-24 h-24 object-contain"
+            />
           </div>
         </div>
       </div>
@@ -243,7 +252,6 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
 
 
 
