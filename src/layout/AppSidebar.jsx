@@ -4,7 +4,7 @@ import { retailerMenuItems } from "../util/appsidebar-menu/menuItems";
 import SidebarItem from "./SidebarItem";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import { fetchCampaigns } from "../redux/slices/campaignSlice";
+import { fetchCampaigns } from "../redux/slices/User/campaignSlice";
 import '../index.css'; 
 
 const AppSidebar = ({ isOpen, toggleSidebar }) => {

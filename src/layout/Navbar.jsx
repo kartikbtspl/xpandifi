@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUserProfile } from "../redux/slices/userSlice";
+import { fetchUserProfile } from "../redux/slices/User/userSlice";
 import { jwtDecode } from "jwt-decode";
 import Input from "../components/ui/input/Input";
 import { SearchIcon } from "../icon";
