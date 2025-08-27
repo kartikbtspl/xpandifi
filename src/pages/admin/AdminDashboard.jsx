@@ -21,7 +21,7 @@ const AdminDashboard  = () => {
 
   useEffect(() => {
     dispatch(fetchUserProfile());
-  }, [, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!fetched && !loading) {

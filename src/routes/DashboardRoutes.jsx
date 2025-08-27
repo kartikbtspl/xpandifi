@@ -35,7 +35,6 @@ import TicketSystem from "../pages/admin/TicketSystem/TicketSystem";
 import AdminMyEarnings from "../pages/admin/earn/MyEarnigs"; 
 import PayoutCheckout from "../pages/admin/revenuePayouts/PayoutCheckout";
 import WithdrawalRequest from "../pages/admin/revenuePayouts/WithdrawalRequest";
-import Profile from "../pages/shared/Profile"
 
 export const dashboardRoutes = [
     <Route

@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 const UserProfile = ({ profile, onAddAdminClick }) => {
   const navigate = useNavigate();
-console.log(profile)
   const handleLogout = () => {
     localStorage.removeItem("token"); // Clear auth token
     navigate("/signin"); // Redirect to signin
@@ -13,7 +12,7 @@ console.log(profile)
       {/* Header */}
       <div className="px-4 py-3 border-b">
         <p className="text-sm font-semibold text-gray-800">
-          {profile?.name ||profile?.fullName||"John Smith"}
+          {profile?.name || profile?.fullName || "John Smith"}
         </p>
         <p className="text-xs text-gray-500">
           {profile?.email || "john@example.com"}
@@ -22,18 +21,27 @@ console.log(profile)
 
       {/* Menu */}
       <ul className="py-1 text-sm text-gray-700">
-
-
         {profile?.role === "SUPERADMIN" && onAddAdminClick && (
+          // <button
+          //   onClick={onAddAdminClick}
+          //   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+          // >
+          //   Add Admin
+          // </button>
           <button
-            onClick={onAddAdminClick}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent dropdown outside click logic from triggering
+              onAddAdminClick();
+            }}
             className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
           >
             Add Admin
           </button>
         )}
         <Link to="/profile">
-          <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer">Profile</li>
+          <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer">
+            Profile
+          </li>
         </Link>
         <li
           onClick={handleLogout}

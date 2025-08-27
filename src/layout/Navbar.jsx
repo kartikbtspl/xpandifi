@@ -8,7 +8,7 @@ import { Modal } from "../components/ui/modal/Modal";
 import AddAdminForm from "../components/ui/user/AddAdminForm";
 import UserProfile from "../components/ui/user/UserProfile";
 import { fetchUser } from "../redux/slices/user/userProfileSlice";
-import { fetchAdmin } from "../redux/slices/admin/userProfileSlice";
+import { fetchUserProfile } from "../redux/slices/admin/userProfileSlice";
 
 const languages = [
   { label: "English", code: "en" },
@@ -39,7 +39,7 @@ const Navbar = ({ toggleSidebar }) => {
   // fetch correct profile depending on role
   useEffect(() => {
     if (isAdmin) {
-      dispatch(fetchAdmin());
+      dispatch(fetchUserProfile());
     } else {
       dispatch(fetchUser());
     }
@@ -52,8 +52,8 @@ const Navbar = ({ toggleSidebar }) => {
         setShowProfile(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside); // not mousedown
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const handleSearch = (value) => {
@@ -66,8 +66,6 @@ const Navbar = ({ toggleSidebar }) => {
       );
     setResult(filtered);
   };
-
-  // const ProfileComponent = isAdmin ? AdminProfile : UserProfile;
 
   return (
     <div className="h-16 bg-white shadow-md flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">
@@ -139,9 +137,7 @@ const Navbar = ({ toggleSidebar }) => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src={
-                user?.avatar || user?.profile_url || "/images/profile.jpeg"
-              }
+              src={user?.avatar || user?.profile_url || "/images/profile.jpeg"}
               alt="User Avatar"
               className="w-8 h-8 rounded-full"
             />
@@ -153,20 +149,19 @@ const Navbar = ({ toggleSidebar }) => {
             <UserProfile
               profile={user}
               onAddAdminClick={() => {
-                setIsModalOpen(true);
+                setIsModalOpen(true),
                 setShowProfile(false);
               }}
-            />
-          )}
+              />
+            )}
         </div>
       </div>
-
       {/* Admin-only modal */}
-      {isAdmin && (
+      {role==='SUPERADMIN' && (
         <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          size="md"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="md"
         >
           <AddAdminForm onClose={() => setIsModalOpen(false)} />
         </Modal>
