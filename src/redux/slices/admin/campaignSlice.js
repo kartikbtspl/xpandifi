@@ -5,7 +5,7 @@ import {
   getCampaignsAPI,
   toggleCampaignStatusAPI,
   campaignApprovalApi,
-} from "../../../api/Admin_API/campaign-api/campaignService";
+} from "../../../api/admin/campaign-api/campaignService";
 
 export const createCampaign = createAsyncThunk(
   "campaign/createCampaign",

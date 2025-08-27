@@ -5,7 +5,7 @@ import {
   getCampaignsAPI,
   updateUserCampaign,
   deleteCampaignAPI,
-} from "../../../api/User_API/campaign-api/campaignService";
+} from "../../../api/user/campaign-api/campaignService";
 
 // Thunks
 

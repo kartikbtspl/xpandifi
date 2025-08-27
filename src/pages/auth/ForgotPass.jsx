@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Loader from "../../components/loader/Loader";
-import { getforgotPassOTP, submitNewPassOTP } from "../../api/User_API/user/user-api";
+import { getforgotPassOTP, submitNewPassOTP } from "../../api/user/user/user-api";
 import Swal from "sweetalert2";
 import { Modal } from "antd";
 

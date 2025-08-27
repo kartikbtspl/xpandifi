@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchUserAPI, updateUserAPI } from "../../../api/Admin_API/user-api/user-api";
 import {
   getUserProfile,
   updateUserProfile,
   resetUserPassword,
-} from "../../../api/Admin_API/user-api/user-api";
+  fetchUserAPI
+} from "../../../api/admin/user-api/user-api";
 
 const initialState = {
-  user: null,               
+  admin: null,               
   profile: null,            
   loading: false,           
   status: "idle",           
@@ -16,7 +16,7 @@ const initialState = {
 };
 
 
-export const fetchUser = createAsyncThunk(
+export const fetchAdmin = createAsyncThunk(
   "user/fetchUser",
   async (_, thunkAPI) => {
     try {
@@ -82,15 +82,15 @@ const userAdminSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Fetch user
-      .addCase(fetchUser.pending, (state) => {
+      .addCase(fetchAdmin.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase(fetchAdmin.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.user = action.payload;
       })
-      .addCase(fetchUser.rejected, (state, action) => {
+      .addCase(fetchAdmin.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })

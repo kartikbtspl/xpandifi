@@ -5,7 +5,7 @@ import {
   createTierAPI,
   updateTierAPI,
   deleteTierAPI
-} from "../../../api/Admin_API/configurations/location/location";
+} from "../../../api/admin/configurations/location/location";
 
 // Fetch tiers
 export const fetchTier = createAsyncThunk(

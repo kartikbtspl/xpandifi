@@ -3,7 +3,7 @@ import { menuItems, retailerMenuItems, adminMenuItems } from "../util/appsidebar
 import SidebarItem from "./SidebarItem";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import { fetchCampaigns } from "../redux/slices/User/campaignSlice";
+import { fetchCampaigns } from "../redux/slices/user/campaignSlice";
 import '../index.css'; 
 
 const AppSidebar = ({ isOpen, toggleSidebar }) => {

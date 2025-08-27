@@ -6,7 +6,7 @@ import {
   updateDeviceAPI,
   deleteDeviceAPI,
   getDeviceByIdOrNameAPI
-} from "../../../api/Admin_API/configurations/device/device";
+} from "../../../api/admin/configurations/device/device";
 
 // Fetch devices
 export const fetchDevices = createAsyncThunk(

@@ -1,6 +1,6 @@
 // src/store/slices/ticketsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createTicketAPI } from "../../../api/User_API/tickets-api/ticket-api";
+import { createTicketAPI } from "../../../api/user/tickets-api/ticket-api";
 
 export const addTicket = createAsyncThunk(
   "tickets/addTicket",

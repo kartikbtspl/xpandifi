@@ -9,8 +9,8 @@ import {
   getBaseBidSumsByStatus,
   getMaxBidCapSumsByStatus,
 } from "../../../util/helper/sumFunctions";
-import { fetchCampaigns } from "../../../redux/slices/User/campaignSlice";
-import {fetchDropdownData} from "../../../redux/slices/User/cityProductDeviceSlice"
+import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
+import {fetchDropdownData} from "../../../redux/slices/user/cityProductDeviceSlice"
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge"
 
 

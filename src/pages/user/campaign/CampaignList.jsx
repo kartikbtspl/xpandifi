@@ -5,7 +5,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   fetchCampaigns,
   deleteCampaign,
-} from "../../../redux/slices/User/campaignSlice";
+} from "../../../redux/slices/user/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
 import EditCampaignModal from "./EditCampaignModal";
 import Button from "../../../components/ui/button/Button";

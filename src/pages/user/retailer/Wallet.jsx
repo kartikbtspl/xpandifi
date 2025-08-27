@@ -7,7 +7,7 @@ import { Modal } from '../../../components/ui/modal/Modal';
 import WithdrawEarnings from './WithdrawEarning';
 import ApprovalBadge from '../../../components/ui/badges/ApprovalBadge';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchWalletBalance, fetchWithdrawalRequests, cancelWithdrawalRequest } from '../../../redux/slices/User/walletSlice';
+import { fetchWalletBalance, fetchWithdrawalRequests, cancelWithdrawalRequest } from '../../../redux/slices/user/walletSlice';
 import Swal from 'sweetalert2';
 import Loader from '../../../components/loader/Loader';
 

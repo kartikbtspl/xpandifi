@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCampaigns,
   campaignApproval,
-} from "../../../redux/slices/Admin/campaignSlice";
+} from "../../../redux/slices/admin/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
 import CampaignDetailsModal from "./CampaignDetailsModal";
 import RejectCampaignModal from "./RejectCampaignModal";
@@ -11,7 +11,7 @@ import getCampaignColumns from "./columns";
 
 const CampaignRequest = () => {
   const dispatch = useDispatch();
-  const { campaigns, loading,fetched } = useSelector((state) => state.campaign);
+  const { campaigns, loading,fetched } = useSelector((state) => state.adminCampaign);
 
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [isOpen, setIsOpen] = useState(false);

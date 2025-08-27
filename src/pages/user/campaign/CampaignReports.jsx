@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReusableTable from "../../../components/table/ReusableTable";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCampaigns } from "../../../redux/slices/User/campaignSlice";
+import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import Button from "../../../components/ui/button/Button";
 
 const CampaignReports = () => {

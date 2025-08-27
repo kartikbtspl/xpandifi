@@ -18,7 +18,7 @@ import Modal from "../../../components/modal/Modal";
 // import {Modal} from "../../components/ui/modal/Modal"
 import CampaignCard from "../../../components/card/CampaignCard";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchApprovedCampaigns } from "../../../redux/slices/User/approvedCampaignSlice";
+import { fetchApprovedCampaigns } from "../../../redux/slices/user/approvedCampaignSlice";
 import { countActivCampaigns } from "../../../util/helper/sumFunctions";
 
 const RetailerDashboard = () => {

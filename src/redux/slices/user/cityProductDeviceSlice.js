@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getDropDownDataAPI } from '../../../api/User_API/campaign-api/targetingOptionService';
+import { getDropDownDataAPI } from '../../../api/user/campaign-api/targetingOptionService';
 
 export const fetchDropdownData = createAsyncThunk(
   'dropdown/fetchDropdownData',

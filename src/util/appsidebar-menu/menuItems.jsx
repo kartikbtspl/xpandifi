@@ -77,6 +77,6 @@ export const adminMenuItems = [
     icon: <DeviceMgntIcon />,
     path: "/ticket",
   },
-  { name: "Bid Review", icon: <BidReviewIcon />, path: "/bids" },
+  { name: "Bid Review", icon: <BidReviewIcon />, path: "/manage-bids" },
   { name: "Setting", icon: <SettingIcon />, path: "/setting" },
 ];

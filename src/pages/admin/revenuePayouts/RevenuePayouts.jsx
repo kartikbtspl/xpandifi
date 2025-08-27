@@ -6,7 +6,7 @@ import moment from "moment";
 import ReusableTable from "../../../components/table/ReusableTable";
 import Button from "../../../components/ui/button/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPayouts } from "../../../redux/slices/Admin/payoutSlice";
+import { fetchPayouts } from "../../../redux/slices/admin/payoutSlice";
 import Swal from "sweetalert2";
 
 const RevenuePayouts = () => {

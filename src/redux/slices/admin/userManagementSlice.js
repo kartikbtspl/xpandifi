@@ -4,7 +4,7 @@ import {
   getUsersAPI,
   createUserAPI,
   toggleUserStatusAPI,
-} from "../../../api/Admin_API/user-management/userManagementApi";
+} from "../../../api/admin/user-management/userManagementApi";
 
 // Fetch all users
 export const fetchUsers = createAsyncThunk(

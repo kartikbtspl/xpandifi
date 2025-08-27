@@ -23,7 +23,6 @@ import Support from "../pages/user/retailer/Support";
 import TicketRaise from "../pages/user/Ticket/TicketRaise";
 
 // ================= ADMIN ROUTES =================
-import AdminDashboard from "../pages/admin/AdminDashboard"; 
 import UserManagement from "../pages/admin/userManagement/UserManagement";
 import CampaignRequest from "../pages/admin/campaign/CampaignRequest";
 import BidReview from "../pages/admin/bidsReview/BidReview";
@@ -36,7 +35,7 @@ import TicketSystem from "../pages/admin/TicketSystem/TicketSystem";
 import AdminMyEarnings from "../pages/admin/earn/MyEarnigs"; 
 import PayoutCheckout from "../pages/admin/revenuePayouts/PayoutCheckout";
 import WithdrawalRequest from "../pages/admin/revenuePayouts/WithdrawalRequest";
-
+import Profile from "../pages/shared/Profile"
 
 export const dashboardRoutes = [
     <Route
@@ -118,14 +117,6 @@ export const dashboardRoutes = [
         </PrivateRoute>} />
 
     {/* ADMIN ROUTES */}
-      {/* <Route 
-        path="/admin" 
-        element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
-            <AdminDashboard />
-          </PrivateRoute>
-        } 
-      /> */}
       <Route 
         path="user-management" 
         element={
@@ -151,7 +142,7 @@ export const dashboardRoutes = [
         } 
       />
       <Route 
-        path="bids" 
+        path="manage-bids" 
         element={
           <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <BidReview />
@@ -199,14 +190,7 @@ export const dashboardRoutes = [
           </PrivateRoute>
         } 
       />
-      {/* <Route 
-        path="/admin/user-details" 
-        element={
-          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
-            <AdminUserDetails />
-          </PrivateRoute>
-        } 
-      /> */}
+    
       <Route 
         path="ticket" 
         element={

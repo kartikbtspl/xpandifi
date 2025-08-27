@@ -9,7 +9,7 @@ import {
   fetchTier,
   createTier,
   updateTier,
-} from "../../../../redux/slices/Admin/tierSlice";
+} from "../../../../redux/slices/admin/tierSlice";
 import { getTierColumns } from "../Columns";
 
 import AddTierModal from "./AddTierModal";

@@ -4,10 +4,10 @@ import { Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import ReusableTable from "../../../components/table/ReusableTable";
 import { useDispatch } from "react-redux";
-import {fetchCampaigns} from "../../../redux/slices/Admin/campaignSlice"
+import {fetchCampaigns} from "../../../redux/slices/admin/campaignSlice"
 
 const BidReview = () => {
-  const { campaigns, loading } = useSelector((state) => state.campaign);
+  const { campaigns, loading } = useSelector((state) => state.adminCampaign);
   const dispatch=useDispatch()
 
   const handleReferesh=()=>{

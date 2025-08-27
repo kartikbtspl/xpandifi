@@ -9,7 +9,7 @@ import {
   fetchDevices,
   createDevice,
   updateDevice,
-} from "../../../../redux/slices/Admin/deviceSlice";
+} from "../../../../redux/slices/admin/deviceSlice";
 
 import { getDeviceColumns } from "../Columns";
 import AddDeviceModal from "./AddDeviceModal";

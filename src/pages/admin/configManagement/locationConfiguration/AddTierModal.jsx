@@ -5,7 +5,7 @@ import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Loader from "../../../../components/loader/Loader";
-import { createTier } from "../../../../redux/slices/Admin/tierSlice"; 
+import { createTier } from "../../../../redux/slices/admin/tierSlice"; 
 
 const AddTierModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();

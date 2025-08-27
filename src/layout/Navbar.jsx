@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUserProfile } from "../redux/slices/User/userSlice";
-import { jwtDecode } from "jwt-decode";
-import Input from "../components/ui/input/Input";
-import { SearchIcon } from "../icon";
-import UserProfile from "../components/user/UserProfile";
 import { Link } from "react-router-dom";
 import { routeMap } from "../routes/routeMaps";
+import Input from "../components/ui/input/Input";
+import { SearchIcon } from "../icon";
+import { Modal } from "../components/ui/modal/Modal";
+import AddAdminForm from "../components/ui/user/AddAdminForm";
+import UserProfile from "../components/ui/user/UserProfile";
+import { fetchUser } from "../redux/slices/user/userProfileSlice";
+import { fetchAdmin } from "../redux/slices/admin/userProfileSlice";
 
 const languages = [
   { label: "English", code: "en" },
@@ -17,32 +19,33 @@ const languages = [
 const Navbar = ({ toggleSidebar }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [name, setName] = useState("");
   const [query, setQuery] = useState("");
   const [result, setResult] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const profileRef = useRef();
+
   const dispatch = useDispatch();
-  const { profile } = useSelector((state) => state.user);
 
-  // Decode token to get name
+  // get role from auth slice (adjust if your state shape is different)
+  const role = useSelector((state) => state.auth?.user?.role);
+  const isAdmin = role === "ADMIN" || role === "SUPERADMIN";
+
+  const sliceSelector = isAdmin
+    ? (state) => state.adminProfile
+    : (state) => state.user;
+
+  const { profile: user } = useSelector(sliceSelector);
+
+  // fetch correct profile depending on role
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setName(decoded?.fullName || "");
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
+    if (isAdmin) {
+      dispatch(fetchAdmin());
+    } else {
+      dispatch(fetchUser());
     }
-  }, []);
+  }, [dispatch, isAdmin]);
 
-  // Fetch profile on mount
-  useEffect(() => {
-    dispatch(fetchUserProfile());
-  }, [dispatch]);
-
-  // Hide profile dropdown on outside click
+  // close profile dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -53,39 +56,26 @@ const Navbar = ({ toggleSidebar }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle language change
-  const handleLanguageChange = (e) => {
-    setSelectedLanguage(e.target.value);
-    // You can dispatch to redux or save to localStorage here
-  };
-
-  // Search filter logic
   const handleSearch = (value) => {
     setQuery(value);
-
-    if (!value.trim()) {
-      setResult([]);
-      return;
-    }
-
+    if (!value.trim()) return setResult([]);
     const filtered = routeMap
       .filter((route) => route.name && route.path)
       .filter((route) =>
         route.name.toLowerCase().includes(value.toLowerCase())
       );
-
     setResult(filtered);
   };
 
+  // const ProfileComponent = isAdmin ? AdminProfile : UserProfile;
+
   return (
     <div className="h-16 bg-white shadow-md flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">
-      {/* Left section: Sidebar toggle and Search */}
+      {/* Left: Sidebar + Search */}
       <div className="flex items-center gap-3 w-full max-w-lg">
         <button className="md:hidden text-xl" onClick={toggleSidebar}>
           ☰
         </button>
-
-        {/* Search Box */}
         <div className="relative">
           <Input
             name="search"
@@ -96,10 +86,7 @@ const Navbar = ({ toggleSidebar }) => {
             inputProps={{ type: "search" }}
             icon={<SearchIcon />}
             iconPosition="left"
-            className="w-full"
           />
-
-          {/* Search Dropdown */}
           {query && (
             <div className="absolute mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50">
               {result.length > 0 ? (
@@ -132,12 +119,11 @@ const Navbar = ({ toggleSidebar }) => {
         </div>
       </div>
 
-      {/* Right section: Language & Profile */}
+      {/* Right: Lang + Profile */}
       <div className="flex items-center gap-4">
-        {/* Language Selector */}
         <select
           value={selectedLanguage}
-          onChange={handleLanguageChange}
+          onChange={(e) => setSelectedLanguage(e.target.value)}
           className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white focus:outline-none"
         >
           {languages.map((lang) => (
@@ -147,29 +133,46 @@ const Navbar = ({ toggleSidebar }) => {
           ))}
         </select>
 
-        {/* User Profile */}
         <div className="relative" ref={profileRef}>
           <div
             onClick={() => setShowProfile((prev) => !prev)}
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src={profile?.avatar || "https://i.pravatar.cc/40"}
+              src={
+                user?.avatar || user?.profile_url || "/images/profile.jpeg"
+              }
               alt="User Avatar"
               className="w-8 h-8 rounded-full"
             />
             <span className="text-sm font-medium text-gray-700 hidden sm:block">
-              {profile?.fullName || "Loading..."}
+              {user?.fullName || user?.name || "Loading..."}
             </span>
           </div>
-
-          {/* Dropdown Profile */}
-          {showProfile && <UserProfile profile={profile} />}
+          {showProfile && (
+            <UserProfile
+              profile={user}
+              onAddAdminClick={() => {
+                setIsModalOpen(true);
+                setShowProfile(false);
+              }}
+            />
+          )}
         </div>
       </div>
+
+      {/* Admin-only modal */}
+      {isAdmin && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          size="md"
+        >
+          <AddAdminForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
+      )}
     </div>
   );
 };
 
 export default Navbar;
-

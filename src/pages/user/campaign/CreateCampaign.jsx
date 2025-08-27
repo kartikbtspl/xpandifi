@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   estimatePrice,
-} from "../../../api/User_API/campaign-api/targetingOptionService";
+} from "../../../api/user/campaign-api/targetingOptionService";
 
 import FormBuilder from "../../../components/form/FromBuilder";
 import LoaderEmpt from "../../../components/loader/LoaderEmpt";
@@ -14,8 +14,8 @@ import { fields } from "../../../util/Form-menu/campaign-fields";
 import { campaignValidationSchema,customizePayload } from "../../../util/validation/campaignValidationSchema";
 import Swal from "sweetalert2";
 
-import { createCampaign, fetchCampaigns } from "../../../redux/slices/User/campaignSlice";
-import { fetchDropdownData } from "../../../redux/slices/User/cityProductDeviceSlice";
+import { createCampaign, fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
+import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
 import { text } from "@fortawesome/fontawesome-svg-core";
 import { icons } from "antd/es/image/PreviewGroup";
 

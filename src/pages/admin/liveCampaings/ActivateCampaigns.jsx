@@ -6,11 +6,11 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import {
   fetchCampaigns,
   toggleCampaignStatus,
-} from "../../../redux/slices/Admin/campaignSlice";
+} from "../../../redux/slices/admin/campaignSlice";
 
 const ActivateCampaigns = () => {
   const dispatch = useDispatch();
-  const { campaigns, loading, fetched } = useSelector((state) => state.campaign);
+  const { campaigns, loading, fetched } = useSelector((state) => state.adminCampaign);
   const [switchLoading, setSwitchLoading] = useState({});
 
     useEffect(() => {

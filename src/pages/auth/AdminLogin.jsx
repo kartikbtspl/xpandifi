@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginUser } from "../../redux/slices/Admin/authSlice";
+import { loginUser } from "../../redux/slices/admin/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import Loader from "../../components/loader/Loader";
 import ForgotPass from "./ForgotPass";
-import { fetchCampaigns } from "../../redux/slices/Admin/campaignSlice";
-import { fetchUserProfile } from "../../redux/slices/Admin/userProfileSlice";
+import { fetchCampaigns } from "../../redux/slices/admin/campaignSlice";
+import { fetchUserProfile } from "../../redux/slices/admin/userProfileSlice";
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
 

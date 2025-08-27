@@ -4,17 +4,16 @@ import ReusableTable from "../../components/table/ReusableTable";
 import HeaderSection from "../../components/ui/header-section/HeaderSection";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCampaigns } from "../../redux/slices/Admin/campaignSlice";
-import { fetchUserProfile } from "../../redux/slices/Admin/userProfileSlice";
+import { fetchCampaigns } from "../../redux/slices/admin/campaignSlice";
+import { fetchUserProfile } from "../../redux/slices/admin/userProfileSlice";
 
 const AdminDashboard  = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { campaigns, loading, fetched } = useSelector(
-    (state) => state.campaign
+    (state) => state.adminCampaign
   );
 
-  const { profile } = useSelector((state) => state.user);
 
   const handleReferesh = () => {
     dispatch(fetchCampaigns());
@@ -139,15 +138,6 @@ const AdminDashboard  = () => {
 
   return (
     <div className="w-full">
-      {/* <div>
-        <HeaderSection
-          subtitle={profile?.name}
-          showButton={true}
-          buttonLabel="Create Campaign"
-          onButtonClick={() => navigate("/create-campaign")}
-          subtitleClass="text-[#445E94] font-bold text-xl"
-        />
-      </div> */}
       <div
         className="grid gap-4 w-full"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}

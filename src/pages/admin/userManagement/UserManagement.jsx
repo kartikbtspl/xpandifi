@@ -6,7 +6,7 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import {
   fetchUsers,
   toggleUserStatus,
-} from "../../../redux/slices/Admin/userManagementSlice";
+} from "../../../redux/slices/admin/userManagementSlice";
 
 import AddUserModal from "./AddUserModal";
 import { columns } from "./UserColumns";

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 //import { fetchUserAPI,updateUserAPI } from '../../api/user-api/user-api';
 
-import { fetchUserAPI,updateUserAPI } from '../../../api/Admin_API/user-api/user-api';
+import { getUserProfile,updateUserProfile } from '../../../api/user/user/user-api';
 
 const initialState = {
   user: null,
@@ -11,7 +11,7 @@ const initialState = {
 
 export const fetchUser = createAsyncThunk('user/fetchUser', async (_, thunkAPI) => {
   try {
-    return await fetchUserAPI();
+    return await getUserProfile();
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
   }
@@ -19,7 +19,7 @@ export const fetchUser = createAsyncThunk('user/fetchUser', async (_, thunkAPI) 
 
 export const updateUser = createAsyncThunk('user/updateUser', async (data, thunkAPI) => {
   try {
-    return await updateUserAPI(data);
+    return await updateUserProfile(data);
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
   }

@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserProfile, updateUserProfile, resetUserPassword } from '../../../api/User_API/user/user-api';
+import { getUserProfile, updateUserProfile, resetUserPassword } from '../../../api/user/user/user-api';
 
 // Async Thunks
-export const fetchUserProfile = createAsyncThunk(
+export const fetchUser = createAsyncThunk(
   'user/fetchProfile',
   async (_, { rejectWithValue }) => {
     try {
@@ -59,15 +59,15 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Fetch
-      .addCase(fetchUserProfile.pending, (state) => {
+      .addCase(fetchUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+      .addCase(fetchUser.fulfilled, (state, action) => {
         state.loading = false;
         state.profile = action.payload;
       })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
+      .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

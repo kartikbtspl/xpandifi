@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import LocationFields from "../../components/LocationsDropdown/LocationFields";
 import Swal from "sweetalert2";
-import { registerUserApi } from "../../api/User_API/user/user-api";
+import { registerUserApi } from "../../api/user/user/user-api";
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
     className={`animate-spin ${

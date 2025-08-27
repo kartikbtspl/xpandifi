@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCampaigns } from "../../../redux/slices/User/campaignSlice";
+import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
 import StatusBadge from "../../../components/ui/badges/StatusBadge"
 

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginUser } from "../../redux/slices/User/authSlice";
+import { loginUser } from "../../redux/slices/user/authSlice";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../../redux/slices/User/userSlice";
-import { fetchCampaigns } from "../../redux/slices/User/campaignSlice";
+import { fetchUser } from "../../redux/slices/user/userSlice";
+import { fetchCampaigns } from "../../redux/slices/user/campaignSlice";
 import ForgotPass from "./ForgotPass";
 import Button from "../../components/ui/button/Button";
 
@@ -52,7 +52,7 @@ const SignIn = () => {
         if (token) {
           localStorage.setItem("token", token);
           dispatch(fetchCampaigns());
-          dispatch(fetchUserProfile());
+          dispatch(fetchUser());
           navigate("/");
         }
       } else {

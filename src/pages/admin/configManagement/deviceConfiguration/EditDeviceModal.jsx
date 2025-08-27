@@ -7,7 +7,7 @@ import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Select from "react-select";
 
-import { updateDevice } from "../../../../redux/slices/Admin/deviceSlice";
+import { updateDevice } from "../../../../redux/slices/admin/deviceSlice";
 
 const deviceOptions = [
   { label: "Cube", value: "Cube" },

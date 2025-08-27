@@ -5,7 +5,7 @@ import {
   createProductAPI,
   updateProductAPI,
   deleteProductAPI,
-} from "../../../api/Admin_API/configurations/product/product";
+} from "../../../api/admin/configurations/product/product";
 
 // Fetch products
 export const fetchProducts = createAsyncThunk(

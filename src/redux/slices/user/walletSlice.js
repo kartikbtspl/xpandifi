@@ -5,7 +5,7 @@ import {
   createWithdrawalRequestAPI,
   getWithdrawalRequestsAPI,
   cancelWithdrawalRequestAPI,
-} from "../../../api/User_API/wallets-api/wallet-api";
+} from "../../../api/user/wallets-api/wallet-api";
 
 export const fetchWalletBalance = createAsyncThunk(
   "wallet/fetchBalance",

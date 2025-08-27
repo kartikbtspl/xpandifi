@@ -3,11 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
 import MediaCarousel from "../../../components/ui/carousel/MediaCarousel";
 import Button from "../../../components/ui/button/Button";
-import { verifyPayment, createOrder } from "../../../api/User_API/razor-api/razor-api";
+import { verifyPayment, createOrder } from "../../../api/user/razor-api/razor-api";
 import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { fetchCampaigns } from "../../../redux/slices/User/campaignSlice";
-import { createOrder_cashFree,checkCashfreePaymentStatus } from "../../../api/User_API/cashFree/cashFree-api";
+import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
+import { createOrder_cashFree,checkCashfreePaymentStatus } from "../../../api/user/cashFree/cashFree-api";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPayouts,
   updateWithdrawStatus,
-} from "../../../redux/slices/Admin/payoutSlice";
+} from "../../../redux/slices/admin/payoutSlice";
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();

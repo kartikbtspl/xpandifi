@@ -1,7 +1,7 @@
 import { useState/*, useEffect*/ } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { addTicket /*, fetchTickets, updateTicketStatus*/ } from "../../../redux/slices/User/ticketsSlice";
+import { addTicket /*, fetchTickets, updateTicketStatus*/ } from "../../../redux/slices/user/ticketsSlice";
 import Button from "../../../components/ui/button/Button";
 import ReusableTable from "../../../components/table/ReusableTable";
 import { Modal } from "../../../components/ui/modal/Modal";

@@ -2,10 +2,10 @@ import React, { useEffect, useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
 import Button from "../../../components/ui/button/Button";
-import { makePayoutAPI } from "../../../api/Admin_API/payout/payout-api";
+import { makePayoutAPI } from "../../../api/admin/payout/payout-api";
 import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { fetchPayouts } from "../../../redux/slices/Admin/payoutSlice";
+import { fetchPayouts } from "../../../redux/slices/admin/payoutSlice";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -21,7 +21,7 @@ const PayoutCheckout = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
-  const user = useSelector((state) => state.user.profile);
+  const user = useSelector((state) => state.adminprofile.profile);
   const requestData = location.state?.row;
 
   // Destructure payout info safely

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../components/ui/button/Button";
 import ReusableTable from "../../../../components/table/ReusableTable";
 
-import { fetchProducts } from "../../../../redux/slices/Admin/productSlice";
+import { fetchProducts } from "../../../../redux/slices/admin/productSlice";
 import { getProductColumns } from "../Columns";
 
 import AddProductModal from "./AddProductModal";

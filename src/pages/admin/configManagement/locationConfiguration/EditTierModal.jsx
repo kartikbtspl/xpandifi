@@ -6,7 +6,7 @@ import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Loader from "../../../../components/loader/Loader";
-import { updateTier } from "../../../../redux/slices/Admin/tierSlice"; // Adjust path
+import { updateTier } from "../../../../redux/slices/admin/tierSlice"; // Adjust path
 
 const EditTierModal = ({ isOpen, onClose, initialData }) => {
   const dispatch = useDispatch();

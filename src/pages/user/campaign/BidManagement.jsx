@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import ReusableTable from "../../../components/table/ReusableTable";
-import { fetchCampaigns } from "../../../redux/slices/User/campaignSlice";
+import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 
 // 🟢 Render badge for status
 const renderStatusBadge = (status) => {

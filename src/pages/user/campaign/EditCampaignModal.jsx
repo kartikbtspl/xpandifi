@@ -8,9 +8,9 @@ import FormBuilder from "../../../components/form/FromBuilder";
 import Loader from "../../../components/loader/Loader";
 import Select from "react-select";
 
-import { estimatePrice } from "../../../api/User_API/campaign-api/targetingOptionService";
-import { updateCampaign } from "../../../redux/slices/User/campaignSlice";
-import { fetchDropdownData } from "../../../redux/slices/User/cityProductDeviceSlice";
+import { estimatePrice } from "../../../api/user/campaign-api/targetingOptionService";
+import { updateCampaign } from "../../../redux/slices/user/campaignSlice";
+import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
 
 import { fields } from "../../../util/Form-menu/campaign-fields";
 import { customizePayload } from "../../../util/validation/campaignValidationSchema";

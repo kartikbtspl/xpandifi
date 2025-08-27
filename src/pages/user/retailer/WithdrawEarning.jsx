@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import Button from "../../../components/ui/button/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { createWithdrawalRequest,fetchWithdrawalRequests } from "../../../redux/slices/User/walletSlice";
+import { createWithdrawalRequest,fetchWithdrawalRequests } from "../../../redux/slices/user/walletSlice";
 
 const WithdrawEarnings = ({ onClose, balance }) => {
 

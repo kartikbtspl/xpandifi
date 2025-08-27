@@ -4,7 +4,7 @@ import {
   fetchWithdrawalRequestAPI,
   makePayoutAPI,
   updateWithdrawStatusAPI,
-} from "../../../api/Admin_API/payout/payout-api";
+} from "../../../api/admin/payout/payout-api";
 
 // Thunks
 export const fetchPayouts = createAsyncThunk(

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
-import { updateProduct } from "../../../../redux/slices/Admin/productSlice";
+import { updateProduct } from "../../../../redux/slices/admin/productSlice";
 
 const EditProductModal = ({ isOpen, onClose, initialData }) => {
   const dispatch = useDispatch();

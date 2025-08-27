@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getRetailerCampaigns } from '../../../api/User_API/retailer/retailer-campaign-api';
+import { getRetailerCampaigns } from '../../../api/user/retailer/retailer-campaign-api';
 
 // Async thunk to fetch approved campaigns
 export const fetchApprovedCampaigns = createAsyncThunk(

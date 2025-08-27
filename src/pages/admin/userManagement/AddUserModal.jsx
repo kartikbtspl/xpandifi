@@ -7,7 +7,7 @@ import { Modal } from "../../../components/ui/modal/Modal";
 import Input from "../../../components/ui/input/Input";
 import Button from "../../../components/ui/button/Button";
 import Loader from "../../../components/loader/Loader";
-import { createUser, fetchUsers } from "../../../redux/slices/Admin/userManagementSlice";
+import { createUser, fetchUsers } from "../../../redux/slices/admin/userManagementSlice";
 import { Switch } from "@mui/material";
 import { toast } from "react-toastify";
 
