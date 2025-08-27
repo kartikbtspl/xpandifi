@@ -86,7 +86,7 @@ const AdminUserDetails = () => {
     if (profilePicFile) {
       const formData = new FormData();
       formData.append("profilePic", profilePicFile);
-      await dispatch(updateUserProfilePic(formData)); // <-- Implement in Redux/API
+      // await dispatch(updateUserProfilePic(formData)); // <-- Implement in Redux/API
       await dispatch(fetchUser());
     }
     setEditMode((prev) => ({ ...prev, profilePic: false }));

@@ -10,7 +10,7 @@ const Button = ({
   ...inputProps
 }) => {
   const defaultClass =
-    'flex items-center justify-center px-4 py-2 rounded-full text-white bg-[#445E94] hover:bg-blue-900 text-sm transition disabled:opacity-50';
+    'flex items-center justify-center px-4 py-2 rounded-full text-white bg-[#445E94] hover:bg-blue-900 text-sm transition disabled:opacity-50 cursor-pointer';
 
   return (
     <button

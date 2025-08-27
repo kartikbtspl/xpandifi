@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { fetchUserProfile } from "../../../redux/slices/User/userSlice";
-import Loader from "../../../components/loader/Loader";
-import { formatDate } from "../../../util/helper/formatDate";
-import Button from "../../../components/ui/button/Button";
-import { Modal } from "../../../components/ui/modal/Modal";
-import { resetUserPassword } from "../../../api/User_API/user/user-api";
+import { fetchUserProfile } from "../../redux/slices/User/userSlice";
+import Loader from "../../components/loader/Loader";
+import { formatDate } from "../../util/helper/formatDate";
+import Button from "../../components/ui/button/Button";
+import { Modal } from "../../components/ui/modal/Modal";
+import { resetUserPassword } from "../../api/User_API/user/user-api";
 import Swal from "sweetalert2";
 
 const UserDetails = () => {

@@ -40,43 +40,43 @@ export const retailerMenuItems = [
 ];
 
 export const adminMenuItems = [
-  { name: "Dashboard", icon: <GridIcon />, path: "/admin" },
-  { name: "User Management", icon: <UserMgntIcon />, path: "/admin/user-management" },
+  { name: "Dashboard", icon: <GridIcon />, path: "/" },
+  { name: "User Management", icon: <UserMgntIcon />, path: "/user-management" },
   {
     name: "Campaign Request",
     icon: <CampaignReqIcon />,
-    path: "/admin/campaign-request",
+    path: "/campaign-request",
   },
   {
     name: "Live Campaigns",
     icon: <CampaignReqIcon />,
-    path: "/admin/live-campaigns",
+    path: "/live-campaigns",
   },
   {
     name: "Withdrawal Request",
     icon: <CampaignReqIcon />,
-    path: "/admin/request-withdrawal",
+    path: "/request-withdrawal",
   },
   {
     name: "Revenue & Payouts",
     icon: <RevenuePayIcon />,
-    path: "/admin/revenue-payouts",
+    path: "/revenue-payouts",
   },
   {
     name: "My Earning",
     icon: <RevenuePayIcon />,
-    path: "/admin/earning",
+    path: "/earning",
   },
   {
     name: "Configuration Management",
     icon: <DeviceMgntIcon />,
-    path: "/admin/config-management",
+    path: "/config-management",
   },
   {
     name: "Ticket System",
     icon: <DeviceMgntIcon />,
-    path: "/admin/ticket",
+    path: "/ticket",
   },
-  { name: "Bid Review", icon: <BidReviewIcon />, path: "/admin/bids" },
-  { name: "Setting", icon: <SettingIcon />, path: "/admin/setting" },
+  { name: "Bid Review", icon: <BidReviewIcon />, path: "/bids" },
+  { name: "Setting", icon: <SettingIcon />, path: "/setting" },
 ];
