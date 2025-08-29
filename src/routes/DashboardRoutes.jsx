@@ -35,6 +35,9 @@ import TicketSystem from "../pages/admin/TicketSystem/TicketSystem";
 import AdminMyEarnings from "../pages/admin/earn/MyEarnigs"; 
 import PayoutCheckout from "../pages/admin/revenuePayouts/PayoutCheckout";
 import WithdrawalRequest from "../pages/admin/revenuePayouts/WithdrawalRequest";
+import CampaignPaymentHistory from "../pages/admin/campaign/CampaignPaymentHistory"
+import CampaignRevenueRequest from "../pages/admin/campaign/CampaignRevenueRequest";
+
 
 export const dashboardRoutes = [
     <Route
@@ -132,6 +135,14 @@ export const dashboardRoutes = [
           </PrivateRoute>
         } 
       />
+       <Route 
+        path="campaign-payment-history" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
+            <CampaignPaymentHistory />
+          </PrivateRoute>
+        } 
+      />
       <Route 
         path="live-campaigns" 
         element={
@@ -145,6 +156,14 @@ export const dashboardRoutes = [
         element={
           <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <BidReview />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="campaign-revenue-request" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
+            <CampaignRevenueRequest />
           </PrivateRoute>
         } 
       />
@@ -209,138 +228,3 @@ export const dashboardRoutes = [
 
   </Route>,
 ];
-
-
-
-
-// export const dashboardRoutes = [
-//   <Route
-//     key="layout"
-//     element={
-//       <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
-//         <AppLayout />
-//       </PrivateRoute>
-//     }
-//   >
-
-//     {/* Shared route */}
-//     <Route path="/" element={<Dashboard />} />
-
-//     <Route
-//       path="/create-campaign"
-//       element={
-//         <PrivateRoute allowedRoles={["Ad-Agency"]}>
-//           <CreateCampaign />
-//         </PrivateRoute>
-//       }
-//     />
-//     <Route path="/campaigns-list" element={
-//       <PrivateRoute allowedRoles={["Ad-Agency"]}>
-//           <CampaignList />
-//         </PrivateRoute>}>
-//       <Route path="checkout" element={<CheckoutCampaign />} />
-//     </Route>
-//     <Route path="/reports" element={
-//       <PrivateRoute allowedRoles={["Ad-Agency"]}>
-//           <CampaignReports />
-//         </PrivateRoute>} />
-//     <Route path="/bids" element={<PrivateRoute allowedRoles={["Ad-Agency"]}>
-//           <BidManagement />
-//         </PrivateRoute>} />
-//     <Route path="/profile" element={<PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
-//           <UserDetails />
-//         </PrivateRoute>} />
-//         <Route path="/active-ads" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
-//           <ActiveCampaigns />
-//         </PrivateRoute>} />
-
-//         {/* Retailer routes */}
-//       <Route path="/devices" element={<PrivateRoute allowedRoles={["Retailer"]}>
-//           <Devices />
-//         </PrivateRoute>} />
-
-//     <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["Retailer"]}>
-//           <AdPerformance />
-//         </PrivateRoute>}>
-//       <Route path="view-analytics" element={<ProductAnalytics />} />
-//     </Route>
-//     <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["Retailer"]}>
-//           <WithdrawEarning />
-//         </PrivateRoute>} />
-//        <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
-//           <DataPrivacy />
-//         </PrivateRoute>} />
-      
-//         <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["Retailer"]}>
-//           <Campaigns />
-//         </PrivateRoute>} />
-//         <Route path="/wallet" element={ <PrivateRoute allowedRoles={["Retailer"]}>
-//           <Wallets />
-//         </PrivateRoute>} />
-        
-//         <Route path="/report" element={ <PrivateRoute allowedRoles={["Retailer"]}>
-//           <Reports />
-//         </PrivateRoute>} />
-        
-//         <Route path="/support" element={<PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
-//           <Support />
-//         </PrivateRoute>}>
-//       <Route path="raise-ticket" element={<TicketRaise />} />
-//     </Route>
-        
-//         <Route path="/settings" element={ <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
-//           <Settings />
-//         </PrivateRoute>} />
-        
-//   </Route>,
-// ];
-
-
-
-
-
-
-
-
-
-// //src\routes\DashboardRoutes.jsx
-// import { Route } from "react-router-dom";
-// import PrivateRoute from "./PrivateRoute";
-// import AppLayout from "../layout/AppLayout";
-// import CreateCampaign from "../pages/campaign/CreateCampaign";
-// import Dashboard from "../pages/Dashboard";
-// import CampaignList from "../pages/campaign/CampaignList";
-// import CampaignReports from "../pages/campaign/CampaignReports";
-// import BidManagement from "../pages/campaign/BidManagement";
-// import UserDetails from "../pages/user/UserDetails";
-// import PosDataUpload from "../pages/retailer/PosDataUpload";
-// import AdPerformance from "../pages/retailer/AdPerformance";
-// import WithdrawEarning from "../pages/retailer/WithdrawEarning";
-// import ProductAnalytics from "../pages/retailer/ProductAnalytics";
-// import DataPrivacy from "../pages/retailer/DataPrivacy";
-
-// export const dashboardRoutes = [
-//   <Route
-//     key="layout"
-//     element={
-//       <PrivateRoute>
-//         <AppLayout />
-//       </PrivateRoute>
-//     }
-//   >
-//     {/* <Route index path="/" element={<Home />} /> */}
-//     <Route path="/" element={<Dashboard />} />
-//     <Route path="/create-campaign" element={<CreateCampaign />} />
-//     <Route path="/campaigns-list" element={<CampaignList />} />
-//     <Route path="/reports" element={<CampaignReports />} />
-//     <Route path="/bids" element={<BidManagement />} />
-//     <Route path="/profile" element={<UserDetails />} />
-//     <Route path="/pos-upload" element={<PosDataUpload />} />
-//     <Route path="/ad-performance" element={<AdPerformance />}>
-//       <Route path="view-analytics" element={<ProductAnalytics />} />
-//     </Route>
-//     <Route path="/withdraw-earning" element={<WithdrawEarning />} />
-//     <Route path="/data-privacy" element={<DataPrivacy />} />
-    
-//   </Route>,
-// ];

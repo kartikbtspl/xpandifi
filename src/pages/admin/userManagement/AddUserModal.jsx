@@ -6,10 +6,8 @@ import { useState } from "react";
 import { Modal } from "../../../components/ui/modal/Modal";
 import Input from "../../../components/ui/input/Input";
 import Button from "../../../components/ui/button/Button";
-import Loader from "../../../components/loader/Loader";
-import { createUser, fetchUsers } from "../../../redux/slices/admin/userManagementSlice";
+import { createUser } from "../../../redux/slices/admin/userManagementSlice";
 import { Switch } from "@mui/material";
-import { toast } from "react-toastify";
 
 const AddUserModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -25,8 +23,6 @@ const AddUserModal = ({ isOpen, onClose }) => {
     };
     dispatch(createUser(payload)).then((res) => {
       if (!res.error) {
-        // dispatch(fetchUsers());
-        toast.success("User added successfully!");
         reset();
         setSelectedRole("Retailer");
         onClose();
@@ -88,7 +84,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" label={formLoading ? <Loader size="vs" /> : "Add User"} className="px-6 py-2" />
+              <Button type="submit" variant="primary" label="Add User" className="px-6 py-2" loading={formLoading} />
             </div>
           </div>
         </div>

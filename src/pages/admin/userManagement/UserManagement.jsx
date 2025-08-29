@@ -29,7 +29,7 @@ const UserManagement = () => {
   }, [fetched,loading,dispatch]);
 
 const handleStatusChange = async (userId, currentStatus) => {
-  const newStatus = currentStatus === "ACTIVE" ? "REJECTED" : "ACTIVE";
+  const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
   // Set loading true for this user
   setSwitchLoading((prev) => ({ ...prev, [userId]: true }));
@@ -60,9 +60,10 @@ const handleStatusChange = async (userId, currentStatus) => {
           columns={columns(handleStatusChange,switchLoading)}
           rows={users || []}
           loading={loading}
-          filterOptions={["all", "ACTIVE", "REJECTED"]}
+          filterOptions={["all", "ACTIVE", "INACTIVE"]}
           filterKey="status"
           onRefresh={handleReferesh}
+          searchableColumns={["fullName","phone","email"]}
         />
       </div>
     </div>

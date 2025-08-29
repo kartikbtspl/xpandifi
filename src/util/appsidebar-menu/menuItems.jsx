@@ -10,6 +10,7 @@ import { GridIcon,
   SupportIcon, CampaignReqIcon, UserMgntIcon, BidReviewIcon, RevenuePayIcon, DeviceMgntIcon
 } 
 from "../../icon/index"
+
 export const menuItems = [
   { name: "Dashboard", icon: <GridIcon />, path: "/" },
   { name: "Campaigns", icon: <CampaignIcon />, path: "/campaigns-list" },
@@ -43,14 +44,34 @@ export const adminMenuItems = [
   { name: "Dashboard", icon: <GridIcon />, path: "/" },
   { name: "User Management", icon: <UserMgntIcon />, path: "/user-management" },
   {
+    name: "Configuration Management",
+    icon: <DeviceMgntIcon />,
+    path: "/config-management",
+  },
+  {
     name: "Campaign Request",
     icon: <CampaignReqIcon />,
     path: "/campaign-request",
   },
   {
+    name: "Campaign Payment History",
+    icon: <CampaignReqIcon />,
+    path: "/campaign-payment-history",
+  },
+  {
     name: "Live Campaigns",
     icon: <CampaignReqIcon />,
     path: "/live-campaigns",
+  },
+  {
+    name: "My Earning",
+    icon: <RevenuePayIcon />,
+    path: "/earning",
+  },
+  {
+    name: "Campaign Revenue Request",
+    icon: <CampaignReqIcon />,
+    path: "/campaign-revenue-request",
   },
   {
     name: "Withdrawal Request",
@@ -62,21 +83,12 @@ export const adminMenuItems = [
     icon: <RevenuePayIcon />,
     path: "/revenue-payouts",
   },
-  {
-    name: "My Earning",
-    icon: <RevenuePayIcon />,
-    path: "/earning",
-  },
-  {
-    name: "Configuration Management",
-    icon: <DeviceMgntIcon />,
-    path: "/config-management",
-  },
+  { name: "Bid Review", icon: <BidReviewIcon />, path: "/bids" },
   {
     name: "Ticket System",
     icon: <DeviceMgntIcon />,
     path: "/ticket",
   },
-  { name: "Bid Review", icon: <BidReviewIcon />, path: "/manage-bids" },
   { name: "Setting", icon: <SettingIcon />, path: "/setting" },
+  
 ];
