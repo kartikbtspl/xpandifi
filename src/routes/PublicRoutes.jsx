@@ -1,8 +1,9 @@
 // src/routes/PublicRoutes.jsx
 import { Route, Navigate, useLocation } from "react-router-dom";
-import ContactUsForm from "../pages/User_Pages/AuthPages/ContactUsForm";
-import SignIn from "../pages/User_Pages/AuthPages/SignIn";
+import ContactUsForm from "../pages/auth/ContactUsForm";
+import SignIn from "../pages/auth/SignIn";
 import { jwtDecode } from "jwt-decode";
+import AdminLogin from "../pages/auth/AdminLogin";
 
 const isLoggedIn = () => {
   const token = localStorage.getItem("token");
@@ -29,10 +30,6 @@ const PublicRoute = ({ children }) => {
   const decoded = isLoggedIn();
 
   if (decoded) {
-    const role = decoded.role?.toLowerCase();
-    if (role === "SUPERADMIN") {
-      return <Navigate to="/admin" state={{ from: location }} replace />;
-    }
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
@@ -55,6 +52,17 @@ export const publicRoutes = [
     element={
       <PublicRoute>
         <ContactUsForm />
+      </PublicRoute>
+    }
+  />,
+
+
+   <Route
+    key="adminLogin"
+    path="/adminLogin"
+    element={
+      <PublicRoute>
+        <AdminLogin />
       </PublicRoute>
     }
   />,

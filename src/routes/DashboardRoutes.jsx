@@ -2,47 +2,45 @@ import { Route } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import PrivateRoute from "./PrivateRoute";
 // ================= USER ROUTES =================
-import Dashboard from "../pages/User_Pages/Dashboard";
-import CreateCampaign from "../pages/User_Pages/campaign/CreateCampaign";
-import CampaignList from "../pages/User_Pages/campaign/CampaignList";
-import CampaignReports from "../pages/User_Pages/campaign/CampaignReports";
-import BidManagement from "../pages/User_Pages/campaign/BidManagement";
-import UserDetails from "../pages/User_Pages/user/UserDetails";
-import Devices from "../pages/User_Pages/retailer/Devices";
-import AdPerformance from "../pages/User_Pages/retailer/AdPerformance";
-import WithdrawEarning from "../pages/User_Pages/retailer/WithdrawEarning";
-import ProductAnalytics from "../pages/User_Pages/retailer/ProductAnalytics";
-import DataPrivacy from "../pages/User_Pages/retailer/DataPrivacy";
-import ActiveCampaigns from "../pages/User_Pages/campaign/ActiveCampaigns";
-import CheckoutCampaign from "../pages/User_Pages/campaign/CheckoutCampaign";
-import Campaigns from "../pages/User_Pages/retailer/Campaigns";
-import Wallets from "../pages/User_Pages/retailer/Wallet";
-import Reports from "../pages/User_Pages/retailer/Reports";
-import Settings from "../pages/User_Pages/retailer/Settings";
-import Support from "../pages/User_Pages/retailer/Support";
-import TicketRaise from "../pages/User_Pages/Ticket/TicketRaise";
+import Dashboard from "../pages/Dashboard";
+import CreateCampaign from "../pages/user/campaign/CreateCampaign";
+import CampaignList from "../pages/user/campaign/CampaignList";
+import CampaignReports from "../pages/user/campaign/CampaignReports";
+import BidManagement from "../pages/user/campaign/BidManagement";
+import UserDetails from "../pages/shared/UserDetails";
+import Devices from "../pages/user/retailer/Devices";
+import AdPerformance from "../pages/user/retailer/AdPerformance";
+import WithdrawEarning from "../pages/user/retailer/WithdrawEarning";
+import ProductAnalytics from "../pages/user/retailer/ProductAnalytics";
+import DataPrivacy from "../pages/user/retailer/DataPrivacy";
+import ActiveCampaigns from "../pages/user/campaign/ActiveCampaigns";
+import CheckoutCampaign from "../pages/user/campaign/CheckoutCampaign";
+import Campaigns from "../pages/user/retailer/Campaigns";
+import Wallets from "../pages/user/retailer/Wallet";
+import Reports from "../pages/user/retailer/Reports";
+import Settings from "../pages/user/retailer/Settings";
+import Support from "../pages/user/retailer/Support";
+import TicketRaise from "../pages/user/Ticket/TicketRaise";
 
 // ================= ADMIN ROUTES =================
-import AdminDashboard from "../pages/Admin_Pages/Dashboard"; 
-import UserManagement from "../pages/Admin_Pages/userManagement/UserManagement";
-import CampaignRequest from "../pages/Admin_Pages/campaign/CampaignRequest";
-import BidReview from "../pages/Admin_Pages/bidsReview/BidReview";
-import RevenuePayouts from "../pages/Admin_Pages/revenuePayouts/RevenuePayouts";
-import AdminUserDetails from "../pages/Admin_Pages/User/UserDetails"; 
-import Setting from "../pages/Admin_Pages/setting/Setting";
-import ConfigurationManagement from "../pages/Admin_Pages/configManagement/ConfigurationManagement";
-import ActivateCampaigns from "../pages/Admin_Pages/liveCampaings/ActivateCampaigns";
-import TicketSystem from "../pages/Admin_Pages/TicketSystem/TicketSystem";
-import AdminMyEarnings from "../pages/Admin_Pages/earn/MyEarnigs"; 
-import PayoutCheckout from "../pages/Admin_Pages/revenuePayouts/PayoutCheckout";
-import WithdrawalRequest from "../pages/Admin_Pages/revenuePayouts/WithdrawalRequest";
-
+import UserManagement from "../pages/admin/userManagement/UserManagement";
+import CampaignRequest from "../pages/admin/campaign/CampaignRequest";
+import BidReview from "../pages/admin/bidsReview/BidReview";
+import RevenuePayouts from "../pages/admin/revenuePayouts/RevenuePayouts";
+// import AdminUserDetails from "../pages/admin/User/UserDetails"; 
+import Setting from "../pages/admin/setting/Setting";
+import ConfigurationManagement from "../pages/admin/configManagement/ConfigurationManagement";
+import ActivateCampaigns from "../pages/admin/liveCampaings/ActivateCampaigns";
+import TicketSystem from "../pages/admin/TicketSystem/TicketSystem";
+import AdminMyEarnings from "../pages/admin/earn/MyEarnigs"; 
+import PayoutCheckout from "../pages/admin/revenuePayouts/PayoutCheckout";
+import WithdrawalRequest from "../pages/admin/revenuePayouts/WithdrawalRequest";
 
 export const dashboardRoutes = [
     <Route
     key="layout"
     element={
-      <PrivateRoute allowedRoles={["retailer", "Ad-Agency", "SUPERADMIN"]}>
+      <PrivateRoute allowedRoles={["Retailer", "Ad-Agency", "SUPERADMIN","ADMIN"]}>
         <AppLayout />
       </PrivateRoute>
     }
@@ -72,7 +70,7 @@ export const dashboardRoutes = [
     <Route path="/bids" element={<PrivateRoute allowedRoles={["Ad-Agency"]}>
           <BidManagement />
         </PrivateRoute>} />
-    <Route path="/profile" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+    <Route path="/profile" element={<PrivateRoute allowedRoles={["Retailer", "Ad-Agency","SUPERADMIN","ADMIN"]}>
           <UserDetails />
         </PrivateRoute>} />
         <Route path="/active-ads" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
@@ -80,96 +78,88 @@ export const dashboardRoutes = [
         </PrivateRoute>} />
 
         {/* Retailer routes */}
-      <Route path="/devices" element={<PrivateRoute allowedRoles={["retailer"]}>
+      <Route path="/devices" element={<PrivateRoute allowedRoles={["Retailer"]}>
           <Devices />
         </PrivateRoute>} />
 
-    <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["retailer"]}>
+    <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["Retailer"]}>
           <AdPerformance />
         </PrivateRoute>}>
       <Route path="view-analytics" element={<ProductAnalytics />} />
     </Route>
-    <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["retailer"]}>
+    <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["Retailer"]}>
           <WithdrawEarning />
         </PrivateRoute>} />
-       <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+       <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
           <DataPrivacy />
         </PrivateRoute>} />
       
-        <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["retailer"]}>
+        <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["Retailer"]}>
           <Campaigns />
         </PrivateRoute>} />
-        <Route path="/wallet" element={ <PrivateRoute allowedRoles={["retailer"]}>
+        <Route path="/wallet" element={ <PrivateRoute allowedRoles={["Retailer"]}>
           <Wallets />
         </PrivateRoute>} />
         
-        <Route path="/report" element={ <PrivateRoute allowedRoles={["retailer"]}>
+        <Route path="/report" element={ <PrivateRoute allowedRoles={["Retailer"]}>
           <Reports />
         </PrivateRoute>} />
         
-        <Route path="/support" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+        <Route path="/support" element={<PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
           <Support />
         </PrivateRoute>}>
       <Route path="raise-ticket" element={<TicketRaise />} />
     </Route>
         
-        <Route path="/settings" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+        <Route path="/settings" element={ <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
           <Settings />
         </PrivateRoute>} />
 
     {/* ADMIN ROUTES */}
       <Route 
-        path="/admin" 
+        path="user-management" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
-            <AdminDashboard />
-          </PrivateRoute>
-        } 
-      />
-      <Route 
-        path="/admin/user-management" 
-        element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <UserManagement />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/campaign-request" 
+        path="campaign-request" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <CampaignRequest />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/live-campaigns" 
+        path="live-campaigns" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <ActivateCampaigns />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/bids" 
+        path="manage-bids" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <BidReview />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/request-withdrawal" 
+        path="request-withdrawal" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <WithdrawalRequest />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/revenue-payouts" 
+        path="revenue-payouts" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <RevenuePayouts />
           </PrivateRoute>
         } 
@@ -177,48 +167,41 @@ export const dashboardRoutes = [
         <Route 
           path="pay" 
           element={
-            <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+            <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
               <PayoutCheckout />
             </PrivateRoute>
           } 
         />
       </Route>
       <Route 
-        path="/admin/config-management" 
+        path="config-management" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <ConfigurationManagement />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/setting" 
+        path="setting" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <Setting />
           </PrivateRoute>
         } 
       />
+    
       <Route 
-        path="/admin/user-details" 
+        path="ticket" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
-            <AdminUserDetails />
-          </PrivateRoute>
-        } 
-      />
-      <Route 
-        path="/admin/ticket" 
-        element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <TicketSystem />
           </PrivateRoute>
         } 
       />
       <Route 
-        path="/admin/earning" 
+        path="earning" 
         element={
-          <PrivateRoute allowedRoles={["SUPERADMIN"]}>
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <AdminMyEarnings />
           </PrivateRoute>
         } 
@@ -234,7 +217,7 @@ export const dashboardRoutes = [
 //   <Route
 //     key="layout"
 //     element={
-//       <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+//       <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
 //         <AppLayout />
 //       </PrivateRoute>
 //     }
@@ -264,7 +247,7 @@ export const dashboardRoutes = [
 //     <Route path="/bids" element={<PrivateRoute allowedRoles={["Ad-Agency"]}>
 //           <BidManagement />
 //         </PrivateRoute>} />
-//     <Route path="/profile" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+//     <Route path="/profile" element={<PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
 //           <UserDetails />
 //         </PrivateRoute>} />
 //         <Route path="/active-ads" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
@@ -272,40 +255,40 @@ export const dashboardRoutes = [
 //         </PrivateRoute>} />
 
 //         {/* Retailer routes */}
-//       <Route path="/devices" element={<PrivateRoute allowedRoles={["retailer"]}>
+//       <Route path="/devices" element={<PrivateRoute allowedRoles={["Retailer"]}>
 //           <Devices />
 //         </PrivateRoute>} />
 
-//     <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["retailer"]}>
+//     <Route path="/ad-performance" element={<PrivateRoute allowedRoles={["Retailer"]}>
 //           <AdPerformance />
 //         </PrivateRoute>}>
 //       <Route path="view-analytics" element={<ProductAnalytics />} />
 //     </Route>
-//     <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["retailer"]}>
+//     <Route path="/withdraw-earning" element={<PrivateRoute allowedRoles={["Retailer"]}>
 //           <WithdrawEarning />
 //         </PrivateRoute>} />
-//        <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+//        <Route path="/data-privacy" element={ <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
 //           <DataPrivacy />
 //         </PrivateRoute>} />
       
-//         <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["retailer"]}>
+//         <Route path="/campaigns" element={ <PrivateRoute allowedRoles={["Retailer"]}>
 //           <Campaigns />
 //         </PrivateRoute>} />
-//         <Route path="/wallet" element={ <PrivateRoute allowedRoles={["retailer"]}>
+//         <Route path="/wallet" element={ <PrivateRoute allowedRoles={["Retailer"]}>
 //           <Wallets />
 //         </PrivateRoute>} />
         
-//         <Route path="/report" element={ <PrivateRoute allowedRoles={["retailer"]}>
+//         <Route path="/report" element={ <PrivateRoute allowedRoles={["Retailer"]}>
 //           <Reports />
 //         </PrivateRoute>} />
         
-//         <Route path="/support" element={<PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+//         <Route path="/support" element={<PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
 //           <Support />
 //         </PrivateRoute>}>
 //       <Route path="raise-ticket" element={<TicketRaise />} />
 //     </Route>
         
-//         <Route path="/settings" element={ <PrivateRoute allowedRoles={["retailer", "Ad-Agency"]}>
+//         <Route path="/settings" element={ <PrivateRoute allowedRoles={["Retailer", "Ad-Agency"]}>
 //           <Settings />
 //         </PrivateRoute>} />
         
