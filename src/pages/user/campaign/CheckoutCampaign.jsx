@@ -4,10 +4,11 @@ import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
 import MediaCarousel from "../../../components/ui/carousel/MediaCarousel";
 import Button from "../../../components/ui/button/Button";
 import { verifyPayment, createOrder } from "../../../api/user/razor-api/razor-api";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import { createOrder_cashFree,checkCashfreePaymentStatus } from "../../../api/user/cashFree/cashFree-api";
+import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -26,25 +27,24 @@ const CheckoutCampaign = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const user = useCurrentUser();
 
-  const user = useSelector((state) => state.user.profile);
   const campaignData = location.state?.row;
+  console.log(campaignData,"data")
 
-  const {
-    raw: campaign = {},
-    campaignCode = "",
-    name = "",
-    image = [],
-  } = campaignData || {};
+  if (!campaignData) {
+    return <div className="text-center text-gray-500 mt-20">Redirecting...</div>;
+  }
+
+//   const { raw: campaign = {}, campaignCode = "", name = "", image = [] } = campaignData;
 
   useEffect(() => {
-    if (!campaignData) {
-      navigate("/campaigns-list");
-    }
+    if (!campaignData) navigate("/campaigns-list");
   }, [campaignData, navigate]);
 
+  // Razorpay Payment Handler
   const handlePayment = useCallback(async () => {
-    if (!campaignData?.raw || !user) {
+    if (!campaignData|| !user) {
       Swal.fire("Missing Information", "Campaign or user data is not available.", "warning");
       return;
     }
@@ -57,7 +57,7 @@ const CheckoutCampaign = () => {
     setIsLoading(true);
 
     try {
-      const { raw: campaign } = campaignData;
+      const campaign  = campaignData;
       const orderPayload = {
         campaignId: campaign.id,
         campaignCode: campaignData.campaignCode,
@@ -137,93 +137,84 @@ const CheckoutCampaign = () => {
     }
   }, [campaignData, user, navigate, dispatch]);
 
+  // Cashfree Payment Handler
+  const handleCashfreePayment = useCallback(async () => {
+    if (!campaignData || !user) {
+      Swal.fire("Missing Info", "Campaign or user data not available", "warning");
+      return;
+    }
 
+    setIsLoading(true);
 
-const handleCashfreePayment = useCallback(async () => {
-  if (!campaignData?.raw || !user) {
-    Swal.fire("Missing Info", "Campaign or user data not available", "warning");
-    return;
-  }
+    try {
+      const campaign  = campaignData;
 
-  setIsLoading(true);
+      const orderPayload = {
+        campaignId: campaign.id,
+        amount: campaign.baseBid,
+      };
 
-  try {
-    const { raw: campaign } = campaignData;
+      const res = await createOrder_cashFree(orderPayload);
+      const sessionId = res?.paymentSessionId;
 
-    const orderPayload = {
-      campaignId: campaign.id,
-      amount: campaign.baseBid,
-    };
+      if (!sessionId) throw new Error("No paymentSessionId returned");
 
-    const res = await createOrder_cashFree(orderPayload);
-    const sessionId = res?.paymentSessionId;
+      const cashfree = window.Cashfree({ mode: "sandbox" }); // Change to "production" for live
+      const checkoutOptions = {
+        paymentSessionId: sessionId,
+        redirectTarget: "_modal",
+      };
 
-    if (!sessionId) throw new Error("No paymentSessionId returned");
+      cashfree.checkout(checkoutOptions);
 
-    const cashfree = window.Cashfree({ mode: "sandbox" }); // Use "production" for live
-    const checkoutOptions = {
-      paymentSessionId: sessionId,
-      redirectTarget: "_modal",
-    };
+      // Polling for payment status
+      let attempts = 0;
+      const maxAttempts = 40;
+      const interval = 3000;
 
-    cashfree.checkout(checkoutOptions);
+      const poll = setInterval(async () => {
+        attempts++;
+        try {
+          const statusRes = await checkCashfreePaymentStatus(sessionId);
+          if (statusRes?.success && statusRes?.status === "PAID") {
+            clearInterval(poll);
 
-    // Start polling
-    let attempts = 0;
-    const maxAttempts = 40; // 2 mins if 3s interval
-    const interval = 3000;
+            Swal.fire({
+              icon: "success",
+              title: "Payment Successful",
+              text: "Your campaign has been activated!",
+            }).then(() => navigate("/campaigns-list"));
 
-    const poll = setInterval(async () => {
-      attempts++;
-      try {
-        const statusRes = await checkCashfreePaymentStatus(sessionId);
-        if (statusRes?.success && statusRes?.status === "PAID") {
+            dispatch(fetchCampaigns());
+          } else if (attempts >= maxAttempts) {
+            clearInterval(poll);
+            Swal.fire("Timeout", "Payment verification timed out. Please check status later.", "warning");
+          }
+        } catch (err) {
           clearInterval(poll);
-
-          Swal.fire({
-            icon: "success",
-            title: "Payment Successful",
-            text: "Your campaign has been activated!",
-          }).then(() => navigate("/campaigns-list"));
-
-          dispatch(fetchCampaigns());
-        } else if (attempts >= maxAttempts) {
-          clearInterval(poll);
-          Swal.fire("Timeout", "Payment verification timed out. Please check status later.", "warning");
+          console.error("Polling error:", err);
+          Swal.fire("Error", "Something went wrong while verifying payment.", "error");
         }
-      } catch (err) {
-        clearInterval(poll);
-        console.error("Polling error:", err);
-        Swal.fire("Error", "Something went wrong while verifying payment.", "error");
-      }
-    }, interval);
-  } catch (err) {
-    console.error("Cashfree order error:", err);
-    Swal.fire("Error", err?.message || "Failed to create Cashfree order", "error");
-  } finally {
-    setIsLoading(false);
-  }
-}, [campaignData, user, navigate, dispatch]);
-
-
-
-  if (!campaignData) {
-    return <div className="text-center text-gray-500 mt-20">Redirecting...</div>;
-  }
+      }, interval);
+    } catch (err) {
+      console.error("Cashfree order error:", err);
+      Swal.fire("Error", err?.message || "Failed to create Cashfree order", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [campaignData, user, navigate, dispatch]);
 
   const {
     brandName,
     adType,
     duration,
     storeTypes,
-    targetDevices,
-    regions,
     startDate,
     startTime,
     endDate,
     endTime,
     baseBid,
-  } = campaign;
+  } = campaignData;
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 md:px-10 pb-8 pt-4">
@@ -235,49 +226,51 @@ const handleCashfreePayment = useCallback(async () => {
       <div className="bg-white rounded-xl shadow-xl p-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left: Media */}
-          <div>
-            <MediaCarousel mediaFiles={image || []} size="md" />
-          </div>
+            <MediaCarousel mediaFiles={campaignData?.productFiles || []} size="md" />
 
           {/* Right: Info + Payment */}
           <div className="flex flex-col justify-between">
-            <div className="space-y-4 text-sm text-gray-700">
-              <InfoRow label="Campaign Code" value={campaignCode} highlight />
-              <InfoRow label="Brand" value={brandName} />
-              <InfoRow label="Ad Type" value={adType} />
-              <InfoRow label="Duration" value={`${duration} days`} />
-              <InfoRow label="Store Type" value={storeTypes} />
-              <InfoRow label="Devices" value={targetDevices?.join(", ") || "N/A"} />
-              <InfoRow label="Regions" value={regions?.join(", ") || "N/A"} />
+            <div className="space-y-3 text-sm text-gray-700">
+              <InfoRow label="Campaign Code" value={campaignData?.campaignCode} highlight />
+              <InfoRow label="Brand" value={brandName || "N/A"} />
+              <InfoRow label="Ad Type" value={adType || "N/A"} />
+              <InfoRow label="Duration" value={`${duration || 0} seconds`} />
+              <InfoRow label="Store Type" value={storeTypes || "N/A"} />
+              <InfoRow
+                label="Devices"
+                value={campaignData.devices?.map((d) => d.name).join(", ") || "N/A"}
+              />
+              <InfoRow
+                label="Regions"
+                value={campaignData.cityPostcodes?.map((c) => c.city).join(", ") || "N/A"}
+              />
               <InfoRow
                 label="Schedule"
-                value={`${formatDate(startDate)} (${startTime}) → ${formatDate(endDate)} (${endTime})`}
+                value={`${formatDate(startDate)} (${startTime || "N/A"}) → ${formatDate(endDate)} (${endTime || "N/A"})`}
               />
-              <hr className="my-2 border-gray-300" />
+              <hr className="my-3 border-gray-300" />
             </div>
 
             <div className="mt-4 flex flex-col md:flex-row justify-end gap-3">
-              {/* Razorpay */}
-              {/* <Button
-                type="button"
-                label={`Pay with Razorpay ₹${baseBid}`}
-                isIcon={false}
-                className="cursor-pointer"
-                onClick={handlePayment}
-                loading={isLoading}
-                disabled={isLoading}
-              />  */}
-
-              {/* Cashfree */}
               <Button
                 type="button"
-                label={`Pay with Cashfree ₹${baseBid}`}
+                label={`Pay ₹${baseBid || 0}`}
                 isIcon={false}
                 className="cursor-pointer"
                 onClick={handleCashfreePayment}
                 loading={isLoading}
                 disabled={isLoading}
               />
+              {/* Uncomment if Razorpay is needed */}
+              {/* <Button
+                type="button"
+                label={`Pay with Razorpay ₹${baseBid || 0}`}
+                isIcon={false}
+                className="cursor-pointer"
+                onClick={handlePayment}
+                loading={isLoading}
+                disabled={isLoading}
+              /> */}
             </div>
           </div>
         </div>
@@ -286,10 +279,13 @@ const handleCashfreePayment = useCallback(async () => {
   );
 };
 
+// InfoRow component with perfect alignment
 const InfoRow = ({ label, value, highlight = false }) => (
-  <div className="flex justify-between">
-    <span className="font-medium">{label}:</span>
-    <span className={highlight ? "text-blue-600 font-semibold" : ""}>{value}</span>
+  <div className="flex justify-between items-center w-full">
+    <span className="font-medium text-gray-600">{label}:</span>
+    <span className={`${highlight ? "text-blue-600 font-semibold" : "text-gray-800"} text-right`}>
+      {value}
+    </span>
   </div>
 );
 

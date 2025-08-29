@@ -80,10 +80,6 @@ const CampaignReports = () => {
   return (
     <div className="w-full">
       <h2 className="text-xl font-semibold mb-4">Campaign Reports</h2>
-
-      {/* Optional Debug: Show raw data */}
-      {/* <pre>{JSON.stringify(rows, null, 2)}</pre> */}
-
       <ReusableTable
         columns={columns}
         rows={rows}

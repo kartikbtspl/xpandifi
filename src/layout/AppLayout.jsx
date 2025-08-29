@@ -1,16 +1,35 @@
-import React, { useState } from "react";
+import React, { useState,useMemo } from "react";
 import AppSidebar from "./AppSidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
+import {useCurrentUser} from "../components/ui/user/CurrentUser"
+import PageTitle from "../components/ui/page-title/PageTitle";
+
 
 const AppLayout = ( ) => {
+  const user = useCurrentUser();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
 
+    const role = user?.role || null;
+  
+    const title = useMemo(() => {
+      const roleMap = {
+        "Ad-Agency": "Ad Agency",
+        Retailer: "Retailer",
+        SUPERADMIN: "SuperAdmin",
+        ADMIN: "Admin",
+      };
+      return roleMap[role] || null;
+    }, [role]);
+
   return (
+    <>
+      {title && <PageTitle title={title} />}
+
     <div className="flex h-screen overflow-hidden bg-gray-100">
 
       <AppSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -21,6 +40,7 @@ const AppLayout = ( ) => {
         <main className="flex-1 overflow-y-auto p-4 md:p-6"><Outlet /></main>
       </div>
     </div>
+    </>
   );
 };
 

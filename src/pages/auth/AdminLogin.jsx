@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginUser } from "../../redux/slices/admin/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import Loader from "../../components/loader/Loader";
-import ForgotPass from "./ForgotPass";
+import ForgotPassAdmin from "./ForgotPassAdmin";
 import { fetchCampaigns } from "../../redux/slices/admin/campaignSlice";
-import { fetchUserProfile } from "../../redux/slices/admin/userProfileSlice";
+import { fetchAdminProfile,loginAdmin } from "../../redux/slices/admin/adminSlice"
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
+import PageTitle from "../../components/ui/page-title/PageTitle";
 
 const AdminLogin = () => {
   const [isForgotOpen, setIsForgotOpen] = useState(false);
@@ -27,11 +27,11 @@ const AdminLogin = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await dispatch(loginUser(data));
+      const response = await dispatch(loginAdmin(data));
       const token = response?.payload?.token;
       if (token) {
         localStorage.setItem("token", token);
-        dispatch(fetchUserProfile());
+        dispatch(fetchAdminProfile());
         dispatch(fetchCampaigns());
         navigate("/");
       }
@@ -44,6 +44,7 @@ const AdminLogin = () => {
 
   return (
     <>
+         <PageTitle title="Xpandifi" /> {/* sets the title for signin page */} 
       <div className="min-h-screen flex">
         {/* Left Section */}
         <div className="w-1/2 hidden lg:flex flex-col justify-center items-center bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-10">
@@ -175,7 +176,7 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
-      <ForgotPass
+      <ForgotPassAdmin
         isForgotOpen={isForgotOpen}
         onClose={() => setIsForgotOpen(false)}
       />

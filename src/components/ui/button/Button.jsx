@@ -6,18 +6,25 @@ const Button = ({
   className = '',
   type = 'button',
   loading = false,
-  isIcon=true,
+  isIcon = true,
+  variant = 'primary', // can be 'primary' or 'custom'
+  children,
   ...inputProps
 }) => {
-  const defaultClass =
-    'flex items-center justify-center px-4 py-2 rounded-full text-white bg-[#445E94] hover:bg-blue-900 text-sm transition disabled:opacity-50 cursor-pointer';
+  const baseClass =
+    'flex items-center justify-center px-4 py-2 rounded-full text-sm transition disabled:opacity-50  cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
+
+  const variants = {
+    primary: 'text-white bg-[#445E94] hover:bg-blue-900',
+    custom: '', // rely fully on className
+  };
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={loading}
-      className={`${defaultClass} ${className}`}
+      className={`${baseClass} ${variants[variant]} ${className}`}
       {...inputProps}
     >
       {loading ? (
@@ -44,9 +51,12 @@ const Button = ({
           </svg>
           {`${label}...`}
         </>
+      ) : children ? (
+        children
       ) : (
         <>
-          {isIcon?<span className="mr-2 text-base">+</span>:''} {label}
+          {isIcon && <span className="mr-2 text-base">+</span>}
+          {label}
         </>
       )}
     </button>

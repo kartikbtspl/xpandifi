@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { registerUSerApi } from "../../../api/admin/user-management/userManagementApi";
 import Button from "../button/Button";
 import Input from "../input/Input";
-import { use, useState } from "react";
+import { useState } from "react";
 
 const AddAdminForm = ({ onClose }) => {
   const [isLoading, setLoading]=useState(false);

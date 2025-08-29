@@ -19,14 +19,14 @@ export const loginUserApi = async (credentials) => {
   return response.data;
 };
 
-export const getUserProfile = async () => {
+export const getUserProfileAPI = async () => {
   const response = await axiosInstance.get('/api/v1/users/myProfile' , {
       withCredentials: true,
     });
-  return response.data;
+  return response.data?.data;
 };
 
-export const updateUserProfile = async (data) => {
+export const updateUserProfileAPI = async (data) => {
   
   const response = await axiosInstance.put('/api/v1/users/editProfile', data , {
       withCredentials: true,
@@ -34,7 +34,7 @@ export const updateUserProfile = async (data) => {
   return response.data;
 };
 
-export const resetUserPassword = async (passwordData) => {
+export const resetUserPasswordAPI = async (passwordData) => {
 
   const response = await axiosInstance.post('/api/v1/auth/reset-password', passwordData , {
       withCredentials: true,

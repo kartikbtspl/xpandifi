@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import {useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { routeMap } from "../routes/routeMaps";
 import Input from "../components/ui/input/Input";
@@ -7,8 +7,9 @@ import { SearchIcon } from "../icon";
 import { Modal } from "../components/ui/modal/Modal";
 import AddAdminForm from "../components/ui/user/AddAdminForm";
 import UserProfile from "../components/ui/user/UserProfile";
-import { fetchUser } from "../redux/slices/user/userProfileSlice";
-import { fetchUserProfile } from "../redux/slices/admin/userProfileSlice";
+import { fetchUserProfile } from "../redux/slices/user/userSlice";
+import { fetchAdminProfile } from "../redux/slices/admin/adminSlice";
+import { useCurrentUser } from "../components/ui/user/CurrentUser";
 
 const languages = [
   { label: "English", code: "en" },
@@ -17,6 +18,7 @@ const languages = [
 ];
 
 const Navbar = ({ toggleSidebar }) => {
+  const user = useCurrentUser();
   const [showProfile, setShowProfile] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [query, setQuery] = useState("");
@@ -26,24 +28,15 @@ const Navbar = ({ toggleSidebar }) => {
 
   const dispatch = useDispatch();
 
-  // get role from auth slice (adjust if your state shape is different)
-  const role = useSelector((state) => state.auth?.user?.role);
-  const isAdmin = role === "ADMIN" || role === "SUPERADMIN";
-
-  const sliceSelector = isAdmin
-    ? (state) => state.adminProfile
-    : (state) => state.user;
-
-  const { profile: user } = useSelector(sliceSelector);
 
   // fetch correct profile depending on role
   useEffect(() => {
-    if (isAdmin) {
-      dispatch(fetchUserProfile());
-    } else {
-      dispatch(fetchUser());
-    }
-  }, [dispatch, isAdmin]);
+    if (!user?.role) return; // don't dispatch until role is known
+
+    const isAdmin = ["SUPERADMIN", "ADMIN"].includes(user.role);
+
+    dispatch(isAdmin ? fetchAdminProfile() : fetchUserProfile());
+  }, [dispatch, user?.role]);
 
   // close profile dropdown on outside click
   useEffect(() => {
@@ -149,19 +142,18 @@ const Navbar = ({ toggleSidebar }) => {
             <UserProfile
               profile={user}
               onAddAdminClick={() => {
-                setIsModalOpen(true),
-                setShowProfile(false);
+                setIsModalOpen(true), setShowProfile(false);
               }}
-              />
-            )}
+            />
+          )}
         </div>
       </div>
       {/* Admin-only modal */}
-      {role==='SUPERADMIN' && (
+      {user?.role === "SUPERADMIN" && (
         <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        size="md"
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          size="md"
         >
           <AddAdminForm onClose={() => setIsModalOpen(false)} />
         </Modal>

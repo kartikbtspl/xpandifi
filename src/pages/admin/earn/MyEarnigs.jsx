@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getRevenue } from "../../../api/admin/user-api/user-api";
+import { getRevenue } from "../../../api/admin/admin-api/admin-api";
 
 const AdminMyEarnings  = () => {
   // Enhanced static data
@@ -19,17 +19,6 @@ const AdminMyEarnings  = () => {
     fetchRevenue();
   }, []);
 
-  // const earnings = {
-  //   total: 12500,
-  //   monthly: 3200,
-  //   daily: 150,
-  //   transactions: 150,
-  //   monthlyTarget: 5000,
-  //   pendingWithdrawal: 850,
-  //   nextPayout: "2023-06-05"
-  // }
-
-  // Additional static data
   const recentTransactions = [
     {
       id: 1,

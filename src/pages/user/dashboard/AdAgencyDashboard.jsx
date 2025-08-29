@@ -12,21 +12,8 @@ import {
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import {fetchDropdownData} from "../../../redux/slices/user/cityProductDeviceSlice"
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge"
+import {formatDate} from "../../../util/helper/formatDate"
 
-
-// Helper: format rows for table
-const formatCampaignData = (data = []) =>
-  data.map((item, index) => ({
-    id: index + 1,
-    campaignCode: item.campaignCode,
-    name: item?.name || "Untitled Campaign",
-    slot: item.timings || `${item.startTime} - ${item.endTime}`,
-    bidAmount: item.baseBid ?? 0,
-    bids: item.bidsInSameSlot ?? Math.floor(Math.random() * 100),
-    status: item.isApproved || "UNKNOWN",
-    resultIn: item.endDate || "N/A",
-    raw: item,
-  }));
 
 const AdAgencyDashboard = () => {
   const navigate = useNavigate();
@@ -35,21 +22,19 @@ const AdAgencyDashboard = () => {
   const { campaigns, loading } = useSelector((state) => state.campaign);
   const { profile: user } = useSelector((state) => state.user);
 
-  const [rows, setRows] = useState([]);
   const [baseBidSums, setBaseBidSums] = useState({});
   const [maxBidCapSums, setMaxBidCapSums] = useState({});
 
 
   useEffect(() => {dispatch(fetchDropdownData())}, [dispatch]);
 
+  const filter_camp =campaigns?.filter((c)=>c.isPayment===false)
+
 
   useEffect(() => {
-    const campaignList = campaigns?.data ?? [];
-    // setRows(formatCampaignData(campaignList));
-    setRows(formatCampaignData(campaignList.filter((c) => !c.isPayment)));
-    setBaseBidSums(getBaseBidSumsByStatus(campaignList));
-    setMaxBidCapSums(getMaxBidCapSumsByStatus(campaignList));
-  }, [campaigns]);
+    setBaseBidSums(getBaseBidSumsByStatus(filter_camp));
+    setMaxBidCapSums(getMaxBidCapSumsByStatus(filter_camp));
+  },[]);
 
   const statsData = [
     { title: "Revenue", value: "25.1k", change: "+15%", currency: true },
@@ -71,15 +56,18 @@ const AdAgencyDashboard = () => {
   const columns = [
     { id: "campaignCode", label: "Campaign ID" },
     { id: "name", label: "Campaign Name" },
-    { id: "slot", label: "Slot" },
-    { id: "bidAmount", label: "Bid Amount", numeric: true },
-    { id: "bids", label: "Bids In Same Slot", numeric: true },
+    { id: "timings", label: "Time Slots" },
+    { id: "baseBid", label: "Bid Amount",
+      render:(row)=>`₹${row.baseBid}`
+     },
     {
-      id: "status",
+      id: "isApproved",
       label: "Status",
-      render: (row) => <ApprovalBadge status={row.status} size={12}/>,
+      render: (row) => <ApprovalBadge status={row.isApproved} size={12}/>,
     },
-    { id: "resultIn", label: "Result In" },
+    { id: "createdAt", label: "Result In",
+      render: (row)=>formatDate(row.createdAt)
+     },
   ];
 
   return (
@@ -105,11 +93,13 @@ const AdAgencyDashboard = () => {
 
       <ReusableTable
         columns={columns}
-        rows={rows}
+        rows={filter_camp}
         loading={loading}
         onRefresh={() => dispatch(fetchCampaigns())}
-        filterKey="status"
+        filterKey="isApproved"
         filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
+        order="desc"
+            orderBy="updatedAt"
       />
     </div>
   );

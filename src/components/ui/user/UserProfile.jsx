@@ -1,9 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
+import { logoutUser } from "../../../redux/slices/user/userSlice";
+import { useDispatch } from "react-redux";
+import { logoutAdmin } from "../../../redux/slices/admin/adminSlice";
 
 const UserProfile = ({ profile, onAddAdminClick }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear auth token
+    if (["SUPERADMIN", "ADMIN"].includes(profile?.role)) {
+      dispatch(logoutAdmin()); 
+    } else {
+      dispatch(logoutUser()); 
+    }
     navigate("/signin"); // Redirect to signin
   };
 
@@ -22,17 +31,8 @@ const UserProfile = ({ profile, onAddAdminClick }) => {
       {/* Menu */}
       <ul className="py-1 text-sm text-gray-700">
         {profile?.role === "SUPERADMIN" && onAddAdminClick && (
-          // <button
-          //   onClick={onAddAdminClick}
-          //   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-          // >
-          //   Add Admin
-          // </button>
           <button
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent dropdown outside click logic from triggering
-              onAddAdminClick();
-            }}
+            onClick={onAddAdminClick}
             className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
           >
             Add Admin

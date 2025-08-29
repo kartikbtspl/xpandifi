@@ -16,16 +16,13 @@ import Swal from "sweetalert2";
 
 import { createCampaign, fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
-import { text } from "@fortawesome/fontawesome-svg-core";
-import { icons } from "antd/es/image/PreviewGroup";
-
 
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { loading } = useSelector((state) => state.campaign);
+  const { formLoading } = useSelector((state) => state.campaign);
   const { data: dropdownData, loading: dropdownLoading } = useSelector(
     (state) => state.cityProductDevice
   );
@@ -33,7 +30,6 @@ const CreateCampaign = () => {
   const methods = useForm({
     resolver: yupResolver(campaignValidationSchema),
   });
-
   const { watch, setValue } = methods;
 
   const [dropdowns, setDropdowns] = useState({
@@ -45,14 +41,14 @@ const CreateCampaign = () => {
     pincodeMap: {},
   });
 
-  // Fetch dropdown data from Redux on mount if not present
+  // Fetch dropdown data if not available
   useEffect(() => {
     if (!dropdownData) {
       dispatch(fetchDropdownData());
     }
   }, [dispatch, dropdownData]);
 
-  // When dropdownData updates, build options and maps
+  // Build dropdown options and maps when data arrives
   useEffect(() => {
     if (!dropdownData) return;
 
@@ -62,30 +58,20 @@ const CreateCampaign = () => {
     const pincodeMap = {};
 
     dropdownData.locations.forEach((loc) => {
-  if (loc.name) {
-    regionOptions.push({ label: loc.name, value: loc.name });
-  }
-  if (loc.postcode) {
-    pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
-  }
+      if (loc.name) regionOptions.push({ label: loc.name, value: loc.name });
+      if (loc.postcode)
+        pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
 
-  if (regionMap[loc.name]) {
-    if (loc.postcode) regionMap[loc.name].push(loc.postcode);
-  } else {
-    regionMap[loc.name] = loc.postcode ? [loc.postcode] : [];
-  }
+      regionMap[loc.name] = regionMap[loc.name] || [];
+      if (loc.postcode) regionMap[loc.name].push(loc.postcode);
 
-  if (loc.postcode) {
-    pincodeMap[loc.postcode] = loc.name;
-  }
-});
-
+      if (loc.postcode) pincodeMap[loc.postcode] = loc.name;
+    });
 
     const productOptions = dropdownData.products.map((p) => ({
       label: p.name,
       value: p.name,
     }));
-
     const deviceOptions = dropdownData.devices.map((d) => ({
       label: d.name,
       value: d.name,
@@ -101,92 +87,80 @@ const CreateCampaign = () => {
     });
   }, [dropdownData]);
 
-  // Sync pincodes ↔ regions selections
+  // Sync regions ↔ pincodes selections
   useEffect(() => {
     const subscription = watch((values, { name: changedField }) => {
       const selectedRegions = values.regions || [];
       const selectedPincodes = values.pincode || [];
 
-      if (!dropdowns.regionMap || Object.keys(dropdowns.regionMap).length === 0) {
-        return;
-      }
+      if (!dropdowns.regionMap || !dropdowns.pincodeMap) return;
 
       if (changedField === "regions") {
-        if (selectedRegions.length > 0) {
-          let derivedPincodes = [];
-          selectedRegions.forEach((region) => {
-            if (dropdowns.regionMap[region]) {
-              derivedPincodes.push(...dropdowns.regionMap[region]);
-            }
-          });
-
-          derivedPincodes = [...new Set(derivedPincodes)];
-
-          const currentPincodeSorted = [...selectedPincodes].sort();
-          const derivedPincodeSorted = [...derivedPincodes].sort();
-
-          if (JSON.stringify(currentPincodeSorted) !== JSON.stringify(derivedPincodeSorted)) {
-            setValue("pincode", derivedPincodes, { shouldValidate: false });
-          }
-        } else if (selectedPincodes.length > 0) {
-          setValue("pincode", [], { shouldValidate: false });
+        const derivedPincodes = [
+          ...new Set(
+            selectedRegions.flatMap(
+              (region) => dropdowns.regionMap[region] || []
+            )
+          ),
+        ];
+        if (
+          JSON.stringify(selectedPincodes.sort()) !==
+          JSON.stringify(derivedPincodes.sort())
+        ) {
+          setValue("pincode", derivedPincodes, { shouldValidate: false });
         }
       } else if (changedField === "pincode") {
-        if (selectedPincodes.length > 0) {
-          let derivedRegions = selectedPincodes
-            .map((pin) => dropdowns.pincodeMap[pin])
-            .filter(Boolean);
-
-          derivedRegions = [...new Set(derivedRegions)];
-
-          const currentRegionsSorted = [...selectedRegions].sort();
-          const derivedRegionsSorted = [...derivedRegions].sort();
-
-          if (JSON.stringify(currentRegionsSorted) !== JSON.stringify(derivedRegionsSorted)) {
-            setValue("regions", derivedRegions, { shouldValidate: false });
-          }
-        } else if (selectedRegions.length > 0) {
-          setValue("regions", [], { shouldValidate: false });
+        const derivedRegions = [
+          ...new Set(
+            selectedPincodes
+              .map((pin) => dropdowns.pincodeMap[pin])
+              .filter(Boolean)
+          ),
+        ];
+        if (
+          JSON.stringify(selectedRegions.sort()) !==
+          JSON.stringify(derivedRegions.sort())
+        ) {
+          setValue("regions", derivedRegions, { shouldValidate: false });
         }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, dropdowns.regionMap, dropdowns.pincodeMap, setValue]);
+  }, [watch, dropdowns, setValue]);
 
   // Submit handler
   const handleSubmit = async (formData) => {
-    if (loading) return;
+    if (formLoading) return;
 
     const payload = customizePayload(formData);
-
     const result = await dispatch(createCampaign(payload));
 
     if (createCampaign.fulfilled.match(result)) {
-      await dispatch(fetchCampaigns());
+      dispatch(fetchCampaigns());
       methods.reset();
-
-      await Swal.fire({
-        title: "Success!",
-        text: "Campaign created successfully.",
+      navigate("/");
+      Swal.fire({
         icon: "success",
+        title: "Campaign created successfully!",
+        position: "top-end",
+        toast: true,
+        timer: 3000,
+        showConfirmButton: false,
+        background: "#445E94",
+        color: "#fff",
+        iconColor: "#fff",
+      })
+    } else if (createCampaign.rejected.match(result)) {
+      const errorMessage = result.payload?.message || "Something went wrong.";
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "warning",
         confirmButtonText: "OK",
       });
-
-      navigate("/");
     }
-    if (createCampaign.rejected.match(result)) {
-    await Swal.fire({
-      title: 'Error', //  Title should be in quotes
-      text: "Something went wrong.", //  Proper error access
-      icon: 'warning',
-      confirmButtonText: "OK"
-    });
-  }
   };
-
-
-
 
   // Show loader while dropdowns loading
   if (dropdownLoading || !dropdownData) {
@@ -195,17 +169,18 @@ const CreateCampaign = () => {
 
   return (
     <div className="w-full">
-      {loading && <LoaderEmpt size="large" />}
-      <h2 className="text-xl lg:2xl font-semibold text-gray-800 mb-4">Create Campaign</h2>
+      {formLoading && <LoaderEmpt size="large" />}
+      <h2 className="text-xl lg:2xl font-semibold text-gray-800 mb-4">
+        Create Campaign
+      </h2>
       <FormBuilder
-        
         onSubmit={handleSubmit}
         fieldsConfig={fields}
         isEdit={false}
         dropdowns={{
           ...dropdowns,
           regions: dropdowns.regions,
-          pincode: dropdowns.pincodes, // prop name matches expected by FormBuilder
+          pincode: dropdowns.pincodes,
         }}
         methods={methods}
         estimateApi={estimatePrice}
@@ -213,7 +188,7 @@ const CreateCampaign = () => {
         estimateSetField="baseBid"
         title=""
         submitLabel="Submit For Approval"
-        loading={loading}
+        loading={formLoading}
       />
     </div>
   );

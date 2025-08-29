@@ -1,27 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
 import StatusBadge from "../../../components/ui/badges/StatusBadge"
 
 
-const formatActiveCampaigns = (data = []) =>
-  data.map((item, index) => ({
-    id: index + 1,
-    campaignCode: item.campaignCode,
-    name: item.campaignName || item.name || "Untitled Campaign",
-    start: `${item.startDate} - ${item.startTime}`,
-    end: `${item.endDate} - ${item.endTime}`,
-    isActive: item.isActive, //  directly from backend
-    status: item.isActive ? "ACTIVE" : "INACTIVE",  // ✅ add explicit status
-    raw: item,
-  }));
 
 const ActiveCampaigns = () => {
   const dispatch = useDispatch();
-  const { campaigns, loading, fetched } = useSelector((state) => state.campaign);
+  const { campaigns, loading, fetched } = useSelector(
+    (state) => state.campaign
+  );
 
-  const [rows, setRows] = useState([]);
+
+
+  const filter_camp = useMemo(
+  () =>
+    campaigns?.filter((c) => c.isPayment)
+      .map((c) => ({
+        ...c,
+        status: c.isActive ? "ACTIVE" : "INACTIVE",
+      }))
+      .sort((a, b) => {
+        return a.isActive === b.isActive ? 0 : a.isActive ? 1 : -1;
+      }),
+  [campaigns]
+);
 
   //  Fetch on mount
   useEffect(() => {
@@ -30,15 +34,6 @@ const ActiveCampaigns = () => {
     }
   }, [fetched, loading, dispatch]);
 
-  //  Filter campaigns: isApproved === "APPROVED" && isPayment === true
-  useEffect(() => {
-    const allCampaigns = campaigns?.data ?? [];
-    const filtered = allCampaigns.filter(
-      (c) => c.isApproved === "APPROVED" && c.isPayment === true
-    );
-    setRows(formatActiveCampaigns(filtered));
-  }, [campaigns]);
-
   const refreshCampaigns = () => {
     dispatch(fetchCampaigns());
   };
@@ -46,8 +41,13 @@ const ActiveCampaigns = () => {
   const columns = [
     { id: "campaignCode", label: "Campaign ID" },
     { id: "name", label: "Campaign Name" },
-    { id: "start", label: "Start Date" },
-    { id: "end", label: "End Date" },
+    { id: "startDate", label: "Start Date" },
+    { id: "endDate", label: "End Date" },
+    {
+      id: "budget",
+      label: "Amount",
+      render: (row) => `₹ ${row.baseBid}`,
+    },
     {
       id: "status",
       label: "Status",
@@ -60,11 +60,14 @@ const ActiveCampaigns = () => {
       <h2 className="text-xl font-semibold mb-4">Active Campaigns</h2>
       <ReusableTable
         columns={columns}
-        rows={rows}
+        rows={filter_camp}
         loading={loading}
         onRefresh={refreshCampaigns}
         filterKey="status"
         filterOptions={["all", "ACTIVE", "INACTIVE"]}
+        order={"desc"}
+        orderBy={"updatedAt"}
+        searchableColumns={["name","budget","brandName"]}
       />
     </div>
   );

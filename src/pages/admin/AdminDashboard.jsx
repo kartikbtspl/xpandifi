@@ -1,16 +1,13 @@
 import { useMemo, useEffect } from "react";
 import StatCard from "../../components/card/StatCard";
 import ReusableTable from "../../components/table/ReusableTable";
-import HeaderSection from "../../components/ui/header-section/HeaderSection";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCampaigns } from "../../redux/slices/admin/campaignSlice";
-import { fetchUserProfile } from "../../redux/slices/admin/userProfileSlice";
+import { fetchAdminProfile } from "../../redux/slices/admin/adminSlice";
 
 const AdminDashboard  = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { campaigns, loading, fetched } = useSelector(
+  const { campaigns, loading, } = useSelector(
     (state) => state.adminCampaign
   );
 
@@ -20,14 +17,8 @@ const AdminDashboard  = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchUserProfile());
+    dispatch(fetchAdminProfile());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (!fetched && !loading) {
-      dispatch(fetchUserProfile());
-    }
-  }, [fetched, loading, dispatch]);
 
   const {
     pendingCampaigns,
@@ -35,7 +26,7 @@ const AdminDashboard  = () => {
     totalApprovedRevenue,
     totalPendingBid,
   } = useMemo(() => {
-    const approved = campaigns.filter(
+    const approved = campaigns?.filter(
       (c) => c.isApproved?.toUpperCase() === "APPROVED"
     );
     const pending = campaigns.filter(

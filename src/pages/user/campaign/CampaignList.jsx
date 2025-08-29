@@ -10,57 +10,37 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import EditCampaignModal from "./EditCampaignModal";
 import Button from "../../../components/ui/button/Button";
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
-
-// Format campaigns for table
-const formatCampaigns = (data = []) =>
-  data.map((item, index) => ({
-    id: index + 1,
-    campaignCode: item.campaignCode,
-    image: item.productFiles,
-    name: item?.name || "Untitled Campaign",
-    start: `${item.startDate} - ${item.startTime}`,
-    end: `${item.endDate} - ${item.endTime}`,
-    status: item.isApproved || "UNKNOWN",
-    raw: item,
-  }));
+import Toast from "../../../components/ui/toast/Toast";
+import Title from "antd/es/skeleton/Title";
 
 const CampaignList = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { campaigns, loading,fetched } = useSelector((state) => state.campaign);
+  const { campaigns, loading, fetched } = useSelector(
+    (state) => state.campaign
+  );
+  console.log(campaigns);
 
   const isViewAnalytics = location.pathname.includes("checkout");
 
-  const [rows, setRows] = useState([]);
+  const filter_camp = campaigns.filter((c) => c.isPayment === false);
+
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   // Fetch campaigns on mount
   useEffect(() => {
-    console.log("fetched:", fetched, "Loading ", loading)
-    if(!fetched && !loading){
+    if (!fetched && !loading) {
       dispatch(fetchCampaigns());
     }
   }, [fetched, loading, dispatch]);
-
-  // Filter and sort campaigns by updatedAt (descending)
-  useEffect(() => {
-    const data = campaigns?.data ?? [];
-
-    const filtered = data
-      .filter((c) => c.isPayment === false)
-      .sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // optional
-
-    setRows(formatCampaigns(filtered));
-  }, [campaigns]);
 
   const refreshCampaigns = () => {
     dispatch(fetchCampaigns());
   };
 
   const handleEdit = (row) => {
-    console.log("row:..", row.raw);
-    setSelectedCampaign(row.raw);
+    setSelectedCampaign(row);
     setIsEditOpen(true);
   };
 
@@ -76,11 +56,11 @@ const CampaignList = () => {
       confirmButtonColor: "#445E94",
     }).then((result) => {
       if (result.isConfirmed) {
-        const campaignId = row.raw.id || row.raw._id || row.raw.campaignCode;
+        const campaignId = row.id || row._id || row.campaignCode;
         dispatch(deleteCampaign(campaignId))
           .unwrap()
           .then(() => {
-            Swal.fire("Deleted!", "The campaign has been deleted.", "success");
+            Toast.success("Deleted!","The campaign has been deleted.")
             refreshCampaigns();
           })
           .catch(() => {
@@ -97,18 +77,18 @@ const CampaignList = () => {
   const columns = [
     { id: "campaignCode", label: "Campaign ID" },
     { id: "name", label: "Campaign Name" },
-    { id: "start", label: "Start Date" },
-    { id: "end", label: "End Date" },
+    { id: "startDate", label: "Start Date" },
+    { id: "endDate", label: "End Date" },
     {
       id: "status",
       label: "Status",
-      render: (row) => <ApprovalBadge status={row.status} size={12} />,
+      render: (row) => <ApprovalBadge status={row.isApproved} size={12} />,
     },
     {
       id: "actions",
       label: "Actions",
       render: (row) => {
-        const isApproved = row.raw?.isApproved;
+        const isApproved = row.isApproved;
         const canEdit = isApproved === "PENDING" || isApproved === "REJECTED";
 
         return canEdit ? (
@@ -150,11 +130,14 @@ const CampaignList = () => {
 
           <ReusableTable
             columns={columns}
-            rows={rows}
+            rows={filter_camp}
             loading={loading}
             onRefresh={refreshCampaigns}
             filterKey="status"
             filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
+            order="desc"
+            orderBy="updatedAt"
+            searchableColumns={["name"]}
           />
 
           {isEditOpen && selectedCampaign && (

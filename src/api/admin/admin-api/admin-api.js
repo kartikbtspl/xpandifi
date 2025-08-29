@@ -25,15 +25,12 @@ export const updateUserAPI = async (data) => {
 };
 
 
-
-
-
-
-export const getUserProfile = async () => {
+export const getAdminProfile = async () => {
   const response = await axiosInstance.get('/api/v2/admin/getProfile' , {
       withCredentials: true,
     });
-  return response.data;
+    console.log(response.data.data)
+  return response.data.data;
 };
 
 export const updateUserProfile = async (data) => {

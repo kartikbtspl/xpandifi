@@ -1,110 +1,157 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserProfile, updateUserProfile, resetUserPassword } from '../../../api/user/user/user-api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  loginUserApi,
+  getUserProfileAPI,
+  updateUserProfileAPI,
+  resetUserPasswordAPI,
+} from "../../../api/user/user/user-api";
 
-// Async Thunks
-export const fetchUser = createAsyncThunk(
-  'user/fetchProfile',
+// ==================== Async Thunks ====================
+
+// Login user
+export const loginUser = createAsyncThunk(
+  "user/loginUser",
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await loginUserApi(credentials);
+      const { token, user } = response;
+      localStorage.setItem("token", token);
+      return { token, user };
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Login failed");
+    }
+  }
+);
+
+// Fetch user profile
+export const fetchUserProfile = createAsyncThunk(
+  "user/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await getUserProfile();
-      return response?.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Fetch failed');
+      return await getUserProfileAPI();
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Fetch failed");
     }
   }
 );
 
-export const updateUser = createAsyncThunk(
-  'user/updateProfile',
-  async (userData, { rejectWithValue }) => {
+// Update user profile
+export const updateUserProfile = createAsyncThunk(
+  "user/updateProfile",
+  async (data, { rejectWithValue }) => {
     try {
-      return await updateUserProfile(userData);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Update failed');
+      return await updateUserProfileAPI(data);
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Update failed");
     }
   }
 );
 
-// ✅ Reset Password Thunk
-export const resetPassword = createAsyncThunk(
-  'user/resetPassword',
+// Reset password
+export const resetUserPassword = createAsyncThunk(
+  "user/resetPassword",
   async ({ currentPassword, newPassword }, { rejectWithValue }) => {
     try {
-      const response = await resetUserPassword({ currentPassword, newPassword });
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Reset password failed');
+      return await resetUserPasswordAPI({ currentPassword, newPassword });
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Password reset failed");
     }
   }
 );
 
-// Initial State
+// ==================== Initial State ====================
 const initialState = {
-  profile: null,
-  loading: false,
+  user: null,                // full profile
+  token: localStorage.getItem("token") || null, // persist token
+  loading: false,            // for fetching profile
+  formLoading: false,        // for login/update/reset
   error: null,
   successMessage: null,
 };
 
-// Slice
+// ==================== Slice ====================
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
+    logoutUser: (state) => {
+      state.user = null;
+      state.token = null;
+      state.error = null;
+      state.successMessage = null;
+      localStorage.clear();
+    },
     clearUserMessages: (state) => {
       state.error = null;
       state.successMessage = null;
     },
   },
   extraReducers: (builder) => {
+    // ===== Login =====
     builder
-      // Fetch
-      .addCase(fetchUser.pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
+        state.formLoading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.formLoading = false;
+        state.token = action.payload.token;
+        state.user = action.payload.user || null; // if login API has profile
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.formLoading = false;
+        state.error = action.payload;
+      });
+
+    // ===== Fetch Profile =====
+    builder
+      .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = action.payload;
+        state.user = action.payload; // always full profile
       })
-      .addCase(fetchUser.rejected, (state, action) => {
+      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
+      });
 
-      // Update
-      .addCase(updateUser.pending, (state) => {
-        state.loading = true;
+    // ===== Update Profile =====
+    builder
+      .addCase(updateUserProfile.pending, (state) => {
+        state.formLoading = true;
         state.error = null;
         state.successMessage = null;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.profile = action.payload;
-        state.successMessage = 'Profile updated successfully!';
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.formLoading = false;
+        state.user = action.payload; // updated profile
+        state.successMessage = "Profile updated successfully!";
       })
-      .addCase(updateUser.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.formLoading = false;
         state.error = action.payload;
-      })
+      });
 
-      // ✅ Reset Password
-      .addCase(resetPassword.pending, (state) => {
-        state.loading = true;
+    // ===== Reset Password =====
+    builder
+      .addCase(resetUserPassword.pending, (state) => {
+        state.formLoading = true;
         state.error = null;
         state.successMessage = null;
       })
-      .addCase(resetPassword.fulfilled, (state, action) => {
-        state.loading = false;
-        state.successMessage = action.payload?.message || 'Password reset successful!';
+      .addCase(resetUserPassword.fulfilled, (state, action) => {
+        state.formLoading = false;
+        state.successMessage = action.payload?.message || "Password reset successful!";
       })
-      .addCase(resetPassword.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(resetUserPassword.rejected, (state, action) => {
+        state.formLoading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { clearUserMessages } = userSlice.actions;
+export const { logoutUser, clearUserMessages } = userSlice.actions;
 export default userSlice.reducer;
-

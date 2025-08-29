@@ -21,7 +21,6 @@ const StatusBadge = ({ isActive, size = 10 }) => {
   return (
     <div
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-full font-medium ${badgeClass}`}
-      // remove text-sm class to avoid conflict with inline style
     >
       <StatusIndicator
         isActive={isActive}

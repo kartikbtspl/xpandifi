@@ -9,7 +9,7 @@ import Loader from "../../../components/loader/Loader";
 import Select from "react-select";
 
 import { estimatePrice } from "../../../api/user/campaign-api/targetingOptionService";
-import { updateCampaign } from "../../../redux/slices/user/campaignSlice";
+import { updateCampaign, fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
 
 import { fields } from "../../../util/Form-menu/campaign-fields";
@@ -17,7 +17,7 @@ import { customizePayload } from "../../../util/validation/campaignValidationSch
 
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.campaign);
+  const { formLoading } = useSelector((state) => state.campaign);
   const { data: dropdownData, loading: dropdownLoading } = useSelector(
     (state) => state.cityProductDevice
   );
@@ -42,6 +42,10 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     }
   }, [dispatch, dropdownData]);
 
+  const refreshCampaigns = () => {
+    dispatch(fetchCampaigns());
+  };
+
   // Prepare dropdown options with NAMES as values
   useEffect(() => {
     if (!dropdownData) return;
@@ -53,7 +57,8 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
 
     dropdownData.locations.forEach((loc) => {
       if (loc.name) regionOptions.push({ label: loc.name, value: loc.name });
-      if (loc.postcode) pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
+      if (loc.postcode)
+        pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
 
       if (regionMap[loc.name]) {
         if (loc.postcode) regionMap[loc.name].push(loc.postcode);
@@ -91,11 +96,14 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         ...new Set(campaignData.cityPostcodes?.map((item) => item.city) || []),
       ];
       const selectedPincodes = [
-        ...new Set(campaignData.cityPostcodes?.map((item) => item.postcode) || []),
+        ...new Set(
+          campaignData.cityPostcodes?.map((item) => item.postcode) || []
+        ),
       ];
 
       // Map devices and product to their NAMES (not IDs)
-      const selectedTargetDeviceNames = campaignData.devices?.map((d) => d.name) || [];
+      const selectedTargetDeviceNames =
+        campaignData.devices?.map((d) => d.name) || [];
       const selectedProductName =
         campaignData.product?.name || campaignData.product || "";
 
@@ -126,7 +134,9 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
       if (name === "regions") {
         const derivedPincodes = [
           ...new Set(
-            selectedRegions.flatMap((region) => dropdowns.regionMap[region] || [])
+            selectedRegions.flatMap(
+              (region) => dropdowns.regionMap[region] || []
+            )
           ),
         ];
 
@@ -134,7 +144,9 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         const derivedSorted = [...derivedPincodes].sort();
 
         if (JSON.stringify(currentSorted) !== JSON.stringify(derivedSorted)) {
-          methods.setValue("pincode", derivedPincodes, { shouldValidate: false });
+          methods.setValue("pincode", derivedPincodes, {
+            shouldValidate: false,
+          });
         }
       }
 
@@ -151,7 +163,9 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         const derivedSorted = [...derivedRegions].sort();
 
         if (JSON.stringify(currentSorted) !== JSON.stringify(derivedSorted)) {
-          methods.setValue("regions", derivedRegions, { shouldValidate: false });
+          methods.setValue("regions", derivedRegions, {
+            shouldValidate: false,
+          });
         }
       }
     });
@@ -161,64 +175,67 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
 
   // Handle campaign update submit
   const handleUpdate = async (formData) => {
-    console.log("Form Data before submit:", formData);
-
     const allFiles = formData.productFiles || [];
     const oldImages = allFiles.filter((item) => typeof item === "string");
     const newFiles = allFiles.filter((item) => item instanceof File);
 
-    // Build cityPostcodes array from selected regions and pincodes
-    const cityPostcodesFromRegions = (formData.regions || []).flatMap((region) =>
-      (dropdowns.regionMap[region] || []).map((postcode) => ({ city: region, postcode }))
-    );
+    const cityPostcodes = [
+      ...new Set(
+        (formData.regions || [])
+          .flatMap((r) =>
+            (dropdowns.regionMap[r] || []).map((p) => ({
+              city: r,
+              postcode: p,
+            }))
+          )
+          .concat(
+            (formData.pincode || []).map((p) => ({
+              city: dropdowns.pincodeMap[p],
+              postcode: p,
+            }))
+          )
+      ),
+    ];
 
-    const cityPostcodesFromPincodes = (formData.pincode || []).map((postcode) => ({
-      city: dropdowns.pincodeMap[postcode],
-      postcode,
-    }));
-
-    // Merge and dedupe cityPostcodes
-    const cityPostcodesMap = new Map();
-    [...cityPostcodesFromRegions, ...cityPostcodesFromPincodes].forEach(({ city, postcode }) => {
-      if (city && postcode) cityPostcodesMap.set(`${city}-${postcode}`, { city, postcode });
-    });
-    const cityPostcodesPayload = Array.from(cityPostcodesMap.values());
-
-    if (!cityPostcodesPayload.length) {
-      Swal.fire({
+    if (!cityPostcodes.length)
+      return Swal.fire({
         icon: "error",
         title: "Validation Error",
-        text: "Please select at least one target city or postcode.",
+        text: "Select at least one city/postcode.",
       });
-      return;
-    }
 
-    // Prepare payload matching your backend expectation (names for product & devices)
     const payload = customizePayload({
       ...formData,
       productFiles: newFiles,
-      cityPostcodes: cityPostcodesPayload,
+      cityPostcodes,
       targetDevices: formData.targetDevices,
       product: formData.product,
     });
 
-    console.log("Prepared Payload for dispatch:", payload);
-
     try {
-      await dispatch(updateCampaign({ id: campaignData.id, data: payload, oldImages }));
-      onSuccess?.();
+      await dispatch(
+        updateCampaign({ id: campaignData.id, data: payload, oldImages })
+      ).unwrap();
+      await refreshCampaigns();
+      await onSuccess?.();
       onClose?.();
-
-      setTimeout(() =>
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Campaign updated successfully",
-        }),
-        300
-      );
+      Swal.fire({
+        icon: "success",
+        title: "Campaign Updated Successfully.",
+        position: "top-end",
+        toast: true,
+        timer: 3000,
+        showConfirmButton: false,
+        background: "#445E94",
+        color: "#fff",
+        iconColor: "#fff",
+      });
     } catch (err) {
-      Swal.fire({ icon: "error", title: "Error", text: "Failed to update campaign" });
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err?.message || "Failed to update campaign",
+      });
     }
   };
 
@@ -228,7 +245,10 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     const deviceNames = formData.targetDevices || [];
 
     const cityPostcodes = (formData.regions || []).flatMap((region) =>
-      (dropdowns.regionMap[region] || []).map((postcode) => ({ city: region, postcode }))
+      (dropdowns.regionMap[region] || []).map((postcode) => ({
+        city: region,
+        postcode,
+      }))
     );
 
     return { productNames, deviceNames, cityPostcodes };
@@ -274,8 +294,10 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
           {...field}
           options={dropdowns.product}
           isClearable
-          onChange={opt => field.onChange(opt ? opt.value : "")}
-          value={dropdowns.product.find(opt => opt.value === field.value) || null}
+          onChange={(opt) => field.onChange(opt ? opt.value : "")}
+          value={
+            dropdowns.product.find((opt) => opt.value === field.value) || null
+          }
         />
       )}
     />
@@ -290,9 +312,12 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
           {...field}
           options={dropdowns.targetDevices}
           isMulti
-          onChange={opts => field.onChange(opts ? opts.map(opt => opt.value) : [])}
-          value={dropdowns.targetDevices.filter(opt =>
-            Array.isArray(field.value) && field.value.includes(opt.value)
+          onChange={(opts) =>
+            field.onChange(opts ? opts.map((opt) => opt.value) : [])
+          }
+          value={dropdowns.targetDevices.filter(
+            (opt) =>
+              Array.isArray(field.value) && field.value.includes(opt.value)
           )}
         />
       )}
@@ -300,18 +325,13 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+       <>
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" >
+       {formLoading && (
+          <LoaderEmpt size="large" />
+      )}
       <FormProvider {...methods}>
         <div className="max-h-[80vh] rounded-lg relative">
-          {loading && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
-              <div className="flex flex-col items-center gap-2">
-                <h2 className="text-sm text-gray-700">Updating Campaign...</h2>
-                <Loader />
-              </div>
-            </div>
-          )}
-
           <FormBuilder
             onSubmit={handleUpdate}
             fieldsConfig={deepFieldsConfig}
@@ -321,9 +341,14 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
             }}
             methods={methods}
             isEdit={true}
-            loading={loading}
+            loading={formLoading}
             estimateApi={estimatePrice}
-            estimateWatchFields={["product", "regions", "targetDevices", "pincode"]}
+            estimateWatchFields={[
+              "product",
+              "regions",
+              "targetDevices",
+              "pincode",
+            ]}
             estimateSetField="baseBid"
             estimatePayloadFn={prepareEstimatePayload}
             isPlus={false}
@@ -334,7 +359,9 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
             }}
             title={
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full pr-12">
-                <span className="text-xl font-bold text-gray-800">Update Campaign</span>
+                <span className="text-xl font-bold text-gray-800">
+                  Update Campaign
+                </span>
 
                 {campaignData.remark && (
                   <div className="flex items-center mt-1 sm:mt-0 text-sm sm:max-w-xs truncate text-right">
@@ -356,6 +383,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
         </div>
       </FormProvider>
     </Modal>
+       </>
   );
 };
 

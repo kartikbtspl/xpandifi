@@ -18,7 +18,7 @@ import { SearchIcon } from "../../icon/index";
 import Loader from "../../components/loader/Loader";
 import COLORS from "../../constants/Colors";
 
-const   ReusableTable = ({
+const ReusableTable = ({
   columns,
   rows,
   sx = {},
@@ -28,53 +28,67 @@ const   ReusableTable = ({
   filterOptions = ["all"],
   filterKey = "isApproved",
   isFilter = true,
+  defaultOrder = "desc",
+  defaultOrderBy = "updatedAt",
+  order: controlledOrder,
+  orderBy: controlledOrderBy,
+  onOrderChange,
+  searchableColumns = [], // dynamic search columns
 }) => {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState(columns[0]?.id || "");
+  const [internalOrder, setInternalOrder] = useState(defaultOrder);
+  const [internalOrderBy, setInternalOrderBy] = useState(defaultOrderBy);
+  const order = controlledOrder ?? internalOrder;
+  const orderBy = controlledOrderBy ?? internalOrderBy;
+
   const [selected, setSelected] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
-  // Pagination state
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  // Filter + Search + Sort
   const filteredAndSortedRows = useMemo(() => {
     const lowerSearch = searchQuery.toLowerCase();
     let filtered = [...rows];
 
-    if (searchQuery) {
+    // 🔹 Dynamic search based on searchableColumns
+    if (searchQuery && searchableColumns.length > 0) {
       filtered = filtered.filter((row) =>
-        columns.some((col) => {
-          const value = col.render ? col.render(row) : row[col.id];
-          // col.render might return React element — so stringify carefully
-          if (typeof value === "string" || typeof value === "number") {
-            return String(value).toLowerCase().includes(lowerSearch);
-          }
-          return false;
+        searchableColumns.some((colId) => {
+          const col = columns.find((c) => c.id === colId);
+          if (!col) return false;
+          const value = col.render ? col.render(row) : row[colId];
+          return value != null && String(value).toLowerCase().includes(lowerSearch);
         })
       );
     }
 
+    // Filter by status
     if (filterStatus !== "all") {
       filtered = filtered.filter(
         (row) =>
-          String(row[filterKey] ?? "").toUpperCase() ===
-          filterStatus.toUpperCase()
+          String(row[filterKey] ?? "").toUpperCase() === filterStatus.toUpperCase()
       );
     }
 
+    // Sorting
     const compare = (a, b) => {
-      if (b[orderBy] < a[orderBy]) return -1;
-      if (b[orderBy] > a[orderBy]) return 1;
-      return 0;
+      const valA = a[orderBy];
+      const valB = b[orderBy];
+      if (orderBy === "isActive") return valA === valB ? 0 : valA ? 1 : -1;
+      if (valA == null) return 1;
+      if (valB == null) return -1;
+      if (typeof valA === "number") return valA - valB;
+      if (valA instanceof Date) return valA.getTime() - valB.getTime();
+      return String(valA).localeCompare(String(valB));
     };
 
-    return filtered.sort(order === "desc" ? compare : (a, b) => -compare(a, b));
-  }, [rows, columns, orderBy, order, searchQuery, filterStatus, filterKey]);
+    return filtered.sort(order === "asc" ? compare : (a, b) => compare(b, a));
+  }, [rows, columns, orderBy, order, searchQuery, filterStatus, filterKey, searchableColumns]);
 
-  // Slice rows for pagination
+  // Pagination
   const paginatedRows = useMemo(() => {
     const start = page * rowsPerPage;
     return filteredAndSortedRows.slice(start, start + rowsPerPage);
@@ -82,43 +96,31 @@ const   ReusableTable = ({
 
   const handleSort = (_, property) => {
     const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      const allIds = filteredAndSortedRows.map((row) => row.id);
-      setSelected(allIds);
-    } else {
-      setSelected([]);
+    const newOrder = isAsc ? "desc" : "asc";
+    if (onOrderChange) onOrderChange(newOrder, property);
+    else {
+      setInternalOrder(newOrder);
+      setInternalOrderBy(property);
     }
   };
 
-  // Checkbox selection only — does NOT trigger onRowClick
+  const handleSelectAll = (e) => {
+    if (e.target.checked) setSelected(filteredAndSortedRows.map((row) => row.id));
+    else setSelected([]);
+  };
+
   const handleCheckboxClick = (e, row) => {
-    e.stopPropagation(); // Prevent row click
+    e.stopPropagation();
     const isSelected = selected.includes(row.id);
     setSelected((prev) =>
       isSelected ? prev.filter((id) => id !== row.id) : [...prev, row.id]
     );
   };
 
-  // Row click triggers onRowClick and toggles selection
-  const handleRowClick = (row) => {
-    onRowClick?.(row);
-  };
+  const handleRowClick = (row) => onRowClick?.(row);
 
-  const formatLabel = (label) =>
-    label
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase()); // Ex: approved_pending → Approved Pending
-
-  // Pagination handlers
-  const handleChangePage = (_, newPage) => {
-    setPage(newPage);
-  };
-
+  const formatLabel = (label) => label.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const handleChangePage = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -126,25 +128,20 @@ const   ReusableTable = ({
 
   return (
     <Box>
-      {/* 🔍 Search & Filter Header */}
+      {/* Search + Filter */}
       <div className="flex justify-between bg-white rounded-2xl items-center p-3 mb-4">
-        <div className="relative w-1/3">
+        <div className="flex w-1/3">
           <Input
             name="search"
             placeholder="Search..."
             icon={<SearchIcon />}
             iconPosition="left"
-            className="mt-2"
-            inputProps={{
-              type: "search",
-              value: searchQuery,
-              onChange: (e) => setSearchQuery(e.target.value),
-            }}
+            className="mt-2 flex-1"
+            inputProps={{ type: "search", value: searchQuery, onChange: (e) => setSearchQuery(e.target.value) }}
           />
         </div>
 
         <div className="flex items-center gap-4 text-gray-500 text-xl">
-          {/* 🧩 Filter */}
           {isFilter && (
             <div className="relative">
               <FiFilter
@@ -156,13 +153,8 @@ const   ReusableTable = ({
                   {filterOptions.map((status) => (
                     <div
                       key={status}
-                      onClick={() => {
-                        setFilterStatus(status);
-                        setShowFilterDropdown(false);
-                      }}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                        filterStatus === status ? "bg-gray-200 font-semibold" : ""
-                      }`}
+                      onClick={() => { setFilterStatus(status); setShowFilterDropdown(false); }}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filterStatus === status ? "bg-gray-200 font-semibold" : ""}`}
                     >
                       {formatLabel(status)}
                     </div>
@@ -171,15 +163,11 @@ const   ReusableTable = ({
               )}
             </div>
           )}
-
-          <FiRefreshCw
-            className="cursor-pointer hover:text-black"
-            onClick={() => onRefresh()}
-          />
+          <FiRefreshCw className="cursor-pointer hover:text-black" onClick={onRefresh} />
         </div>
       </div>
 
-      {/* 📋 Table */}
+      {/* Table */}
       <Box sx={{ width: "100%", borderRadius: 2, ...sx.container }}>
         <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden" }}>
           <TableContainer>
@@ -188,23 +176,13 @@ const   ReusableTable = ({
                 <TableRow>
                   <TableCell padding="checkbox">
                     <Checkbox
-                      checked={
-                        selected.length > 0 &&
-                        selected.length === filteredAndSortedRows.length
-                      }
-                      indeterminate={
-                        selected.length > 0 &&
-                        selected.length < filteredAndSortedRows.length
-                      }
+                      checked={selected.length > 0 && selected.length === filteredAndSortedRows.length}
+                      indeterminate={selected.length > 0 && selected.length < filteredAndSortedRows.length}
                       onChange={handleSelectAll}
                     />
                   </TableCell>
                   {columns.map((col) => (
-                    <TableCell
-                      key={col.id}
-                      align={col.numeric ? "center" : "left"}
-                      sx={{ fontWeight: 600, color: COLORS.blueGray }}
-                    >
+                    <TableCell key={col.id} align={col.numeric ? "center" : "left"} sx={{ fontWeight: 600, color: COLORS.blueGray }}>
                       <TableSortLabel
                         active={orderBy === col.id}
                         direction={orderBy === col.id ? order : "asc"}
@@ -226,11 +204,7 @@ const   ReusableTable = ({
                   </TableRow>
                 ) : paginatedRows.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length + 1}
-                      align="center"
-                      sx={{ backgroundColor: "white" }}
-                    >
+                    <TableCell colSpan={columns.length + 1} align="center" sx={{ backgroundColor: "white" }}>
                       No data found
                     </TableCell>
                   </TableRow>
@@ -244,12 +218,8 @@ const   ReusableTable = ({
                         selected={isSelected}
                         sx={{
                           cursor: "pointer",
-                          backgroundColor: isSelected
-                            ? "#F2F5F9 !important"
-                            : "white",
-                          "&:hover": {
-                            backgroundColor: "#F2F5F9 !important",
-                          },
+                          backgroundColor: isSelected ? "#F2F5F9 !important" : "white",
+                          "&:hover": { backgroundColor: "#F2F5F9 !important" },
                         }}
                         onClick={() => handleRowClick(row)}
                       >
@@ -257,15 +227,8 @@ const   ReusableTable = ({
                           <Checkbox checked={isSelected} />
                         </TableCell>
                         {columns.map((col) => (
-                          <TableCell
-                            key={col.id}
-                            align={col.numeric ? "center" : "left"}
-                          >
-                            {col.render
-                              ? col.needsIndex
-                                ? col.render(row, index)
-                                : col.render(row)
-                              : row[col.id]}
+                          <TableCell key={col.id} align={col.numeric ? "center" : "left"}>
+                            {col.render ? (col.needsIndex ? col.render(row, index) : col.render(row)) : row[col.id]}
                           </TableCell>
                         ))}
                       </TableRow>
@@ -276,15 +239,7 @@ const   ReusableTable = ({
             </Table>
           </TableContainer>
 
-          {/* Pagination Controls centered */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              p: 1,
-              backgroundColor: COLORS.softBackground,
-            }}
-          >
+          <Box sx={{ display: "flex", justifyContent: "center", p: 1, backgroundColor: COLORS.softBackground }}>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"

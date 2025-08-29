@@ -35,6 +35,7 @@ const HeaderSection = ({
           label={buttonLabel}
           onClick={onButtonClick}
           className={buttonClass}
+          type='button'
         />
       )}
     </div>

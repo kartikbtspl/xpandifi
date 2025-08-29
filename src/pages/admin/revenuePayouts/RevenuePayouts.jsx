@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPayouts } from "../../../redux/slices/admin/payoutSlice";
 import Swal from "sweetalert2";
 
+
 const RevenuePayouts = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -116,11 +117,11 @@ const RevenuePayouts = () => {
       </Typography>
 
       {/* ✅ Error State */}
-      {/* {error && (
+      {error && (
         <div className="text-red-600 bg-red-100 px-4 py-2 rounded">
           {error}
         </div>
-      )} */}
+      )}
 
       {/* ✅ Data Table */}
       {!error && (

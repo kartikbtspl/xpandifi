@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { FiEdit } from "react-icons/fi";
 import Swal from "sweetalert2";
-import { jwtDecode } from "jwt-decode";
 
 import Loader from "../../components/loader/Loader";
 import { Modal } from "../../components/ui/modal/Modal";
@@ -11,31 +10,32 @@ import Button from "../../components/ui/button/Button";
 import { formatDate } from "../../util/helper/formatDate";
 
 // Redux slices
-import { fetchUser } from "../../redux/slices/user/userSlice";
 import {
   fetchUserProfile,
-  updateUser,
-} from "../../redux/slices/admin/userProfileSlice";
-
-// APIs
-import { resetUserPassword } from "../../api/user/user/user-api";
-import { resetUserPassword as adminResetPassword } from "../../api/admin/user-api/user-api";
+  resetUserPassword,
+} from "../../redux/slices/user/userSlice";
+import {
+  fetchAdminProfile,
+  updateAdminProfile,
+  resetAdminPassword,
+} from "../../redux/slices/admin/adminSlice";
+import { useCurrentUser } from "../../components/ui/user/CurrentUser";
 
 const UserDetails = () => {
-  const dispatch = useDispatch();
-  const [role, setRole] = useState(null);
-
+  const dispatch = useDispatch();  
+  const  user  = useCurrentUser();
+  
   const [editMode, setEditMode] = useState({
     profile: false,
     profilePic: false,
     passwordModal: false,
   });
-
+  
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-
+  
   const {
     register,
     handleSubmit,
@@ -43,37 +43,11 @@ const UserDetails = () => {
     formState: { errors, isSubmitting, isDirty },
     watch,
   } = useForm();
-
-  // ✅ Decode token & fetch profile once on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const decoded = jwtDecode(token);
-      const userRole = decoded?.role || null;
-      setRole(userRole);
-
-      // Fetch correct profile based on role
-      if (userRole === "SUPERADMIN" || userRole === "ADMIN") {
-        dispatch(fetchUserProfile());
-      } else {
-        dispatch(fetchUser());
-      }
-    } catch (err) {
-      console.error("Error decoding token:", err);
-    }
-  }, [dispatch]);
-
-  // ✅ Determine admin or user slice
-  const isAdmin = role === "ADMIN" || role === "SUPERADMIN";
-  const sliceSelector = isAdmin
-    ? (state) => state.adminProfile
-    : (state) => state.user;
-
-  const { profile: user, loading } = useSelector(sliceSelector);
-
-  // ✅ Reset form when user data changes
+  
+  
+  const isAdmin = ["SUPERADMIN", "ADMIN"].includes(user?.role);
+  
+  //  Reset form when user data changes
   useEffect(() => {
     if (user) {
       reset({
@@ -87,34 +61,30 @@ const UserDetails = () => {
       });
     }
   }, [user, reset]);
-
+  
   // ✅ Profile picture preview
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+    
     setProfilePicFile(file);
     const reader = new FileReader();
     reader.onloadend = () => setProfilePicPreview(reader.result);
     reader.readAsDataURL(file);
   };
-
+  
   const handleProfilePicSubmit = async () => {
     if (!profilePicFile) return;
-
+    
     setUpdating(true);
     try {
       const formData = new FormData();
       formData.append("profilePic", profilePicFile);
 
-      // TODO: Dispatch uploadProfilePic(formData) API here
-
       // Refresh profile
-      if (isAdmin) {
-        await dispatch(fetchUserProfile());
-      } else {
-        await dispatch(fetchUser());
-      }
+      if (!user?.role) return; // don't dispatch until role is known
+
+      dispatch(isAdmin ? fetchAdminProfile() : fetchUserProfile());
     } finally {
       cancelEdit("profilePic");
       setUpdating(false);
@@ -122,12 +92,11 @@ const UserDetails = () => {
   };
 
   const handleProfileSubmit = async (data) => {
-    if (!isAdmin) return;
-
+    if (!user.role) return;
     setUpdating(true);
     try {
-      await dispatch(updateUser(data));
-      await dispatch(fetchUserProfile());
+      await dispatch(updateAdminProfile(data));
+      await dispatch(fetchAdminProfile());
       cancelEdit("profile");
     } finally {
       setUpdating(false);
@@ -138,7 +107,7 @@ const UserDetails = () => {
     const { currentPassword, newPassword } = data;
     setPasswordLoading(true);
     try {
-      const apiFn = isAdmin ? adminResetPassword : resetUserPassword;
+      const apiFn = isAdmin ? resetAdminPassword : resetUserPassword;
       const response = await apiFn({ currentPassword, newPassword });
 
       cancelEdit("passwordModal");
@@ -171,7 +140,7 @@ const UserDetails = () => {
 
   return (
     <div className="relative w-full mx-auto p-6">
-      {(loading || loading) && (
+      {(!user) && (
         <div className="absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center gap-3">
           <Loader />
         </div>

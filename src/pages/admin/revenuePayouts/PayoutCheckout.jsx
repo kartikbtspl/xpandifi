@@ -6,6 +6,8 @@ import { makePayoutAPI } from "../../../api/admin/payout/payout-api";
 import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchPayouts } from "../../../redux/slices/admin/payoutSlice";
+import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
+
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -21,7 +23,7 @@ const PayoutCheckout = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
-  const user = useSelector((state) => state.adminprofile.profile);
+  const user = useCurrentUser();
   const requestData = location.state?.row;
 
   // Destructure payout info safely
@@ -36,7 +38,7 @@ const PayoutCheckout = () => {
 
   useEffect(() => {
     if (!requestData) {
-      navigate("/admin/revenue-payouts"); // Redirect to payouts list instead of campaigns-list
+      navigate("/revenue-payouts"); // Redirect to payouts list instead of campaigns-list
     }
   }, [requestData, navigate]);
 

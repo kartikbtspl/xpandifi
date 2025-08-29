@@ -6,6 +6,18 @@ import {
   toggleCampaignStatusAPI,
   campaignApprovalApi,
 } from "../../../api/admin/campaign-api/campaignService";
+import { createSelector } from "@reduxjs/toolkit";
+
+export const selectSortedCampaigns = createSelector(
+  (state) => state.campaign.campaigns,
+  (campaigns) =>
+    [...campaigns].sort((a, b) => {
+      const updatedDiff = new Date(b.updatedAt) - new Date(a.updatedAt);
+      if (updatedDiff !== 0) return updatedDiff;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    })
+);
+
 
 export const createCampaign = createAsyncThunk(
   "campaign/createCampaign",
@@ -80,7 +92,7 @@ export const toggleCampaignStatus = createAsyncThunk(
   }
 );
 
-const campaignAdminSlice = createSlice({
+const campaignSlice = createSlice({
   name: "campaign",
   initialState: {
     loading: false,
@@ -148,5 +160,5 @@ const campaignAdminSlice = createSlice({
   },
 });
 
-export const { resetCampaigns } = campaignAdminSlice.actions;
-export default campaignAdminSlice.reducer;
+export const { resetCampaigns } = campaignSlice.actions;
+export default campaignSlice.reducer;

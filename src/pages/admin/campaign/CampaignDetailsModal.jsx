@@ -1,4 +1,4 @@
-
+import React from "react";
 import { Modal } from "../../../components/ui/modal/Modal";
 import {
   FaCalendarAlt,
@@ -7,12 +7,11 @@ import {
   FaClock,
   FaBullseye,
   FaMoneyBillWave,
-  FaIndustry
+  FaIndustry,
 } from "react-icons/fa";
-import ProductMedia from "../../../components/campaign/ProductMedia";
-//import { formatScheduleDate } from "../../../util/Form-menu/";
-
 import { formatScheduleDate } from "../../../util/Form-menu/dateUtils";
+import MediaCarousels from "../../../components/ui/carousel/MediaCarousels";
+
 
 const CampaignDetailsModal = ({
   isOpen,
@@ -24,32 +23,30 @@ const CampaignDetailsModal = ({
 }) => {
   if (!campaign) return null;
 
+  console.log(campaign)
+
   const targeting =
-    campaign.devices?.length > 0
-      ? campaign.devices.map((device) => device.name).join(", ")
-      : "—";
+  campaign.devices?.length > 0
+    ? campaign.devices.map((device) => device.name).join(", ")
+    : "—";
 
-  const infoItems = [
-    { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—", icon: <FaTag /> },
-    { label: "Brand", value: campaign.brandName || "—", icon: <FaIndustry /> },
-    {
-      label: "Schedule",
-      value: formatScheduleDate(campaign.startDate, campaign.endDate) || "—",
-      icon: <FaCalendarAlt />
-    },
-    { label: "Ad Type", value: campaign.adType || "—", icon: <FaBullseye /> },
-    { label: "Store Type", value: campaign.storeTypes || "—", icon: <FaStore /> },
-    { label: "Product Type", value: campaign.product || "—", icon: <FaTag /> },
-    { label: "Devices", value: targeting, icon: <FaBullseye /> },
-    { label: "Duration", value: campaign.duration ? `${campaign.duration} sec` : "—", icon: <FaClock /> },
-    {
-      label: "Base Value",
-      value: campaign.baseBid !== undefined ? `₹ ${campaign.baseBid}` : "—",
-      icon: <FaMoneyBillWave />
-    },
-    { label: "Regions", value: campaign.cityPostcodes.map(item => item.city).join(", ") ,  icon: <FaBullseye /> },
+const regions =
+  campaign.cityPostcodes?.length > 0
+    ? campaign.cityPostcodes.map((item) => item.city).join(", ")
+    : "—";
 
-  ];
+const infoItems = [
+  { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—", icon: <FaTag /> },
+  { label: "Brand", value: campaign.brandName || "—", icon: <FaIndustry /> },
+  { label: "Schedule", value: formatScheduleDate(campaign.startDate, campaign.endDate) || "—", icon: <FaCalendarAlt /> },
+  { label: "Ad Type", value: campaign.adType || "—", icon: <FaBullseye /> },
+  { label: "Store Type", value: campaign.storeTypes || "—", icon: <FaStore /> },
+  { label: "Product Type", value: campaign.product || "—", icon: <FaTag /> },
+  { label: "Devices", value: targeting, icon: <FaBullseye /> },
+  { label: "Duration", value: campaign.duration ? `${campaign.duration} sec` : "—", icon: <FaClock /> },
+  { label: "Base Value", value: campaign.baseBid !== undefined ? `₹ ${campaign.baseBid}` : "—", icon: <FaMoneyBillWave /> },
+  { label: "Regions", value: regions, icon: <FaBullseye /> },
+];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton={true}>
@@ -64,7 +61,6 @@ const CampaignDetailsModal = ({
           {infoItems.map(({ label, value, icon }, index) => (
             <div key={index}>
               <label className="text-sm text-gray-600 flex items-center gap-2">
-                
                 {label}
               </label>
               <div className="mt-1 w-full px-3 py-2 text-gray-800 bg-white border border-gray-200 rounded-md shadow-sm text-sm">
@@ -77,8 +73,13 @@ const CampaignDetailsModal = ({
         {/* Product Media Section */}
         {campaign?.productFiles && (
           <div className="mt-4">
-            <h3 className="text-sm font-semibold text-gray-600 mb-2">Product Media</h3>
-            <ProductMedia productFiles={campaign.productFiles} />
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">
+              Product Media
+            </h3>
+            <MediaCarousels
+              mediaFiles={campaign?.productFiles || []}
+              size="md"
+            />
           </div>
         )}
 
@@ -115,75 +116,3 @@ const CampaignDetailsModal = ({
 };
 
 export default CampaignDetailsModal;
-
-// import React from "react";
-// import { Modal } from "../../components/ui/modal/Modal";
-// import CampaignInfo from "../../components/campaign/CampaignInfo";
-// import ProductMedia from "../../components/campaign/ProductMedia";
-
-// const CampaignDetailsModal = ({
-//   isOpen,
-//   openRejectModal,
-//   onClose,
-//   campaign,
-//   onApprove,
-//   onReject,
-// }) => {
-//   if (!campaign) return null;
-
-//   return (
-//     <div>
-//       <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton={true}>
-//         {campaign && (
-//           <div className="space-y-6">
-//             {/* Title */}
-//             <h2 className="text-2xl font-semibold">
-//               {campaign?.name || campaign?.campaignName}
-//             </h2>
-
-//             {/* Campaign Info in Form-Like Boxes */}
-//             <CampaignInfo
-//               isOpen={isCampaignModalOpen}
-//               onClose={() => setIsCampaignModalOpen(false)}
-//               campaign={selectedCampaign} />
-
-//             {/* Product Media Section */}
-//             {campaign?.productFiles && (
-//               <ProductMedia productFiles={campaign.productFiles} />
-//             )}
-
-//             {/* Action Buttons */}
-//             {campaign.isApproved === "PENDING" && (
-//               <div className="flex justify-end gap-4 mt-4">
-//                 <button
-//                   className="px-5 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-//                   onClick={openRejectModal}
-//                 >
-//                   Reject
-//                 </button>
-//                 <button
-//                   className="px-5 py-2 rounded-md bg-green-100 text-green-600 hover:bg-green-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-//                   onClick={() => onApprove("APPROVE")}
-//                 >
-//                   Approve
-//                 </button>
-//               </div>
-//             )}
-
-//             {/* Remark (if campaign is rejected) */}
-//             {campaign.isApproved === "REJECTED" && (
-//               <div>
-//                 <label className="text-sm text-gray-600">Remark</label>
-//                 <div className="mt-1 w-full px-3 py-2 text-gray-800 bg-white border border-gray-200 rounded-md shadow-sm text-sm">
-//                   {campaign.remark}
-//                 </div>
-//               </div>
-//             )}
-//           </div>
-//         )}
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default CampaignDetailsModal;

@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit'
 
 // User Slices
 import campaignReducer from './slices/user/campaignSlice'
-import loginReducer from './slices/user/authSlice'
 import userReducer from './slices/user/userSlice'
 import approvedCampaignReducer from './slices/user/approvedCampaignSlice'
 import ticketsReducer from './slices/user/ticketsSlice'
@@ -11,8 +10,7 @@ import walletReducer from './slices/user/walletSlice'
 
 // Admin Slices
 import adminCampaignReducer from './slices/admin/campaignSlice'
-import adminAuthReducer from './slices/admin/authSlice'
-import adminProfileReducer from './slices/admin/userProfileSlice'
+import adminReducer from './slices/admin/adminSlice'
 import usersManagementReducer from './slices/admin/userManagementSlice'
 import deviceReducer from './slices/admin/deviceSlice'
 import tierReducer from './slices/admin/tierSlice'
@@ -23,7 +21,6 @@ export const store = configureStore({
   reducer: {
     // User Slices
     campaign: campaignReducer,
-    auth: loginReducer,
     user: userReducer,
     approvedCampaigns: approvedCampaignReducer,
     tickets: ticketsReducer,
@@ -32,8 +29,7 @@ export const store = configureStore({
 
     // Admin Slices
     adminCampaign: adminCampaignReducer,
-    adminAuth: adminAuthReducer,
-    adminProfile: adminProfileReducer,
+    admin: adminReducer,
     usersManagement: usersManagementReducer,
     device: deviceReducer,
     tier: tierReducer,
