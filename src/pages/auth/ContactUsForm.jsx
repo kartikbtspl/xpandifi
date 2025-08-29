@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import LocationFields from "../../components/LocationsDropdown/LocationFields";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 import { registerUserApi } from "../../api/user/user/user-api";
+import Toast from "../../components/ui/toast/Toast"
+
+
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
     className={`animate-spin ${
@@ -53,18 +56,13 @@ const ContactUsForm = () => {
     try {
       const response = await registerUserApi(data);
       if (response.status === 201 || response.status===200) {
-        Swal.fire({
-          icon: "success",
-          title: "Request Submitted!",
-          html: `Your request has been submitted successfully.<br><strong>${data.email}</strong><br>Please check your email for credentials.`,
-          confirmButtonText: "OK",
-        });
+        Toast.success("Request Submitted!","Your request has been submitted successfully.")
       }
       reset();
       navigate("/signin");
     } catch (err) {
       console.error("Submission failed:", err);
-      toast.error("Submission failed. Please try again.");
+      Toast.error("Submission failed. Please try again.");
     } finally {
       setLoading(false);
     }

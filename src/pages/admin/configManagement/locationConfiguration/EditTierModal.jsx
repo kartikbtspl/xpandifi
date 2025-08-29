@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
-import Loader from "../../../../components/loader/Loader";
 import { updateTier } from "../../../../redux/slices/admin/tierSlice"; // Adjust path
+import Toast from "../../../../components/ui/toast/Toast";
 
 const EditTierModal = ({ isOpen, onClose, initialData }) => {
   const dispatch = useDispatch();
@@ -40,12 +40,17 @@ const EditTierModal = ({ isOpen, onClose, initialData }) => {
       price: Number(data.price),
     };
 
-    dispatch(updateTier({ id: initialData.id, data: finalData })).then((res) => {
-      if (!res.error) {
-        reset();
-        onClose();
+    dispatch(updateTier({ id: initialData.id, data: finalData })).then(
+      (res) => {
+        if (!res.error) {
+          Toast.success("Tier updated successfully!");
+          reset();
+          onClose();
+        } else {
+          Toast.error(res?.error?.message || "Failed to update tier!");
+        }
       }
-    });
+    );
   };
 
   return (

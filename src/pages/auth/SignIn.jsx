@@ -36,7 +36,7 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   // ✅ use redux loading state
-  const { formLoading, error } = useSelector((state) => state.user);
+  const { formLoading } = useSelector((state) => state.user);
 
   const {
     register: loginRegister,
@@ -165,13 +165,6 @@ const SignIn = () => {
                 {isLoginSubmitting || formLoading ? <Spinner /> : null}
                 {isLoginSubmitting || formLoading ? "Logging in..." : "Login"}
               </button>
-
-              {/* Error Message */}
-              {error && (
-                <p className="text-sm text-red-500 text-center mt-2">
-                  {error}
-                </p>
-              )}
 
               {/* Forgot Password */}
               <div className="text-right">

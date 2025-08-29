@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../../../redux/slices/user/userSlice";
 import { useDispatch } from "react-redux";
 import { logoutAdmin } from "../../../redux/slices/admin/adminSlice";
+import { closeCampaignSSE } from "../../../util/services/sseService";
+import { clearCampaigns } from "../../../redux/slices/user/approvedCampaignSlice";
 
 const UserProfile = ({ profile, onAddAdminClick }) => {
   const dispatch = useDispatch();
@@ -9,9 +11,14 @@ const UserProfile = ({ profile, onAddAdminClick }) => {
 
   const handleLogout = () => {
     if (["SUPERADMIN", "ADMIN"].includes(profile?.role)) {
-      dispatch(logoutAdmin()); 
+      dispatch(logoutAdmin());
     } else {
-      dispatch(logoutUser()); 
+      dispatch(logoutUser());
+      if (profile?.role === "Retailer") {
+        closeCampaignSSE();
+
+        dispatch(clearCampaigns());
+      }
     }
     navigate("/signin"); // Redirect to signin
   };

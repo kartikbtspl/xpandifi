@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
-import Loader from "../../../../components/loader/Loader";
 import { createTier } from "../../../../redux/slices/admin/tierSlice"; 
+import Toast from "../../../../components/ui/toast/Toast"
 
 const AddTierModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -30,10 +30,13 @@ const AddTierModal = ({ isOpen, onClose }) => {
     };
 
     dispatch(createTier(finalData)).then((res) => {
-      if (!res.error) {
-        reset();
-        onClose();
-      }
+       if (!res.error) {
+    Toast.success("Tier added successfully!");
+    reset();
+    onClose();
+  } else {
+    Toast.error(res?.error?.message || "Failed to add tier!");
+  }
     });
   };
 

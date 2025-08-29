@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
 import {
   createCampaignAPI,
   getCampaignsAPI,
@@ -7,6 +6,7 @@ import {
   campaignApprovalApi,
 } from "../../../api/admin/campaign-api/campaignService";
 import { createSelector } from "@reduxjs/toolkit";
+import Toast from "../../../components/ui/toast/Toast";
 
 export const selectSortedCampaigns = createSelector(
   (state) => state.campaign.campaigns,
@@ -18,20 +18,13 @@ export const selectSortedCampaigns = createSelector(
     })
 );
 
-
 export const createCampaign = createAsyncThunk(
   "campaign/createCampaign",
   async (data, { rejectWithValue }) => {
     try {
       const response = await createCampaignAPI(data);
-      toast.success("Campaign created successfully!");
       return response;
     } catch (error) {
-      toast.error(
-        error.response?.data?.errors?.[0]?.message ||
-          error.response?.data?.message ||
-          "An error occurred while creating the campaign."
-      );
       return rejectWithValue(error.response?.data);
     }
   }
@@ -44,11 +37,10 @@ export const fetchCampaigns = createAsyncThunk(
       const response = await getCampaignsAPI();
 
       if (response.length === 0) {
-        toast.info("No campaigns found.");
+        Toast.info("No campaigns found.");
       }
       return response;
     } catch (error) {
-      toast.error("Failed to fetch campaigns.");
       return rejectWithValue(error.response?.data);
     }
   }
@@ -64,11 +56,17 @@ export const campaignApproval = createAsyncThunk(
       }
 
       await campaignApprovalApi(id, payload);
-      
+      if (status === "APPROVE") {
+        Toast.success("Campaign approved successfully!");
+      } else {
+        Toast.info("Campaign rejected.");
+      }
 
       return { id, status, remark };
     } catch (error) {
       console.error("Approval request failed:", error);
+      Toast.error("Failed to update status");
+
       return rejectWithValue(error?.response?.data || "Request failed");
     }
   }
@@ -83,11 +81,16 @@ export const toggleCampaignStatus = createAsyncThunk(
 
       // Get updated value from backend response (fallback to original status)
       const updatedStatus = responseData?.data?.status ?? status;
+      if(status===true){
+        Toast.success("Campaign activated successfully!")
+      }
 
       return { id, status: updatedStatus };
     } catch (error) {
       console.error("Status toggle failed:", error);
-      toast.error("Failed to update status");
+      Toast.error(error?.message||"Failed to update status");
+
+
       return rejectWithValue(error?.response?.data || "Request failed");
     }
   }
@@ -98,9 +101,9 @@ const campaignSlice = createSlice({
   initialState: {
     loading: false,
     error: null,
-    data: null,          // single campaign (created or updated)
-    campaigns: [],       // list of campaigns
-    fetched: false,      // tracks if campaigns have been fetched successfully
+    data: null, // single campaign (created or updated)
+    campaigns: [], // list of campaigns
+    fetched: false, // tracks if campaigns have been fetched successfully
   },
   reducers: {
     resetCampaigns: (state) => {

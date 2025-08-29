@@ -10,6 +10,7 @@ import {
 
 import AddUserModal from "./AddUserModal";
 import { columns } from "./UserColumns";
+import Toast from "../../../components/ui/toast/Toast";
 
 const UserManagement = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,22 @@ const UserManagement = () => {
     }
   }, [fetched,loading,dispatch]);
 
+// const handleStatusChange = async (userId, currentStatus) => {
+//   const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+//   // Set loading true for this user
+//   setSwitchLoading((prev) => ({ ...prev, [userId]: true }));
+
+//   try {
+//     await dispatch(toggleUserStatus({ id: userId, status: newStatus }));
+//   } catch (error) {
+//     console.error("Failed to toggle status", error);
+//   } finally {
+//     // Set loading false for this user
+//     setSwitchLoading((prev) => ({ ...prev, [userId]: false }));
+//   }
+// };
+
 const handleStatusChange = async (userId, currentStatus) => {
   const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
@@ -35,15 +52,22 @@ const handleStatusChange = async (userId, currentStatus) => {
   setSwitchLoading((prev) => ({ ...prev, [userId]: true }));
 
   try {
-    await dispatch(toggleUserStatus({ id: userId, status: newStatus }));
+    const result = await dispatch(toggleUserStatus({ id: userId, status: newStatus })).unwrap();
+
+    //  Success toast
+    if (result?.status === "ACTIVE") {
+      Toast.success("User Activated", "The user has been activated successfully!");
+    } else {
+      Toast.warning("User Deactivated", "The user has been deactivated.");
+    }
   } catch (error) {
-    console.error("Failed to toggle status", error);
+    //  Error toast
+    Toast.error("Error", error?.message || "Failed to update user status");
   } finally {
     // Set loading false for this user
     setSwitchLoading((prev) => ({ ...prev, [userId]: false }));
   }
 };
-
 
   return (
     <div>

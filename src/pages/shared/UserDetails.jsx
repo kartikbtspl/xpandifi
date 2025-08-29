@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { FiEdit } from "react-icons/fi";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 
 import Loader from "../../components/loader/Loader";
 import { Modal } from "../../components/ui/modal/Modal";
 import Button from "../../components/ui/button/Button";
 import { formatDate } from "../../util/helper/formatDate";
-
+import Toast from "../../components/ui/toast/Toast";
 // Redux slices
 import {
   fetchUserProfile,
@@ -22,20 +22,20 @@ import {
 import { useCurrentUser } from "../../components/ui/user/CurrentUser";
 
 const UserDetails = () => {
-  const dispatch = useDispatch();  
-  const  user  = useCurrentUser();
-  
+  const dispatch = useDispatch();
+  const user = useCurrentUser();
+
   const [editMode, setEditMode] = useState({
     profile: false,
     profilePic: false,
     passwordModal: false,
   });
-  
+
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -43,10 +43,9 @@ const UserDetails = () => {
     formState: { errors, isSubmitting, isDirty },
     watch,
   } = useForm();
-  
-  
+
   const isAdmin = ["SUPERADMIN", "ADMIN"].includes(user?.role);
-  
+
   //  Reset form when user data changes
   useEffect(() => {
     if (user) {
@@ -61,21 +60,21 @@ const UserDetails = () => {
       });
     }
   }, [user, reset]);
-  
-  // ✅ Profile picture preview
+
+  // Profile picture preview
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     setProfilePicFile(file);
     const reader = new FileReader();
     reader.onloadend = () => setProfilePicPreview(reader.result);
     reader.readAsDataURL(file);
   };
-  
+
   const handleProfilePicSubmit = async () => {
     if (!profilePicFile) return;
-    
+
     setUpdating(true);
     try {
       const formData = new FormData();
@@ -107,25 +106,19 @@ const UserDetails = () => {
     const { currentPassword, newPassword } = data;
     setPasswordLoading(true);
     try {
-      const apiFn = isAdmin ? resetAdminPassword : resetUserPassword;
-      const response = await apiFn({ currentPassword, newPassword });
+      const thunk = isAdmin ? resetAdminPassword : resetUserPassword;
+
+      //  Dispatch thunk and unwrap to get actual response or throw error
+      const response = await dispatch(
+        thunk({ currentPassword, newPassword })
+      ).unwrap();
 
       cancelEdit("passwordModal");
 
-      if (response?.success || response?.status === 200) {
-        Swal.fire({
-          title: "Password Updated!",
-          icon: "success",
-          timer: 2000,
-        });
-        reset();
-      }
+      Toast.success(response?.message || "Password Updated!");
+      reset();
     } catch (error) {
-      Swal.fire({
-        title: "Failed!",
-        text: error?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      Toast.error("Failed!", error || "Something went wrong");
     } finally {
       setPasswordLoading(false);
     }
@@ -140,7 +133,7 @@ const UserDetails = () => {
 
   return (
     <div className="relative w-full mx-auto p-6">
-      {(!user) && (
+      {!user && (
         <div className="absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center gap-3">
           <Loader />
         </div>
@@ -246,7 +239,7 @@ const UserDetails = () => {
 
             <div className="mt-6">
               <Button
-              isIcon={false}
+                isIcon={false}
                 onClick={() =>
                   setEditMode((prev) => ({ ...prev, passwordModal: true }))
                 }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Loader from "../../components/loader/Loader";
-import { getforgotPassOTP, submitNewPassOTP } from "../../api/user/user/user-api";
-import Swal from "sweetalert2";
+import {
+  getforgotPassOTP,
+  submitNewPassOTP,
+} from "../../api/user/user/user-api";
 import { Modal } from "antd";
-
+import Toast from "../../components/ui/toast/Toast";
 const ForgotPass = ({ isForgotOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -63,36 +65,24 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
       setIsOtpSent(true);
       setExpirationTime(600);
       setIsExpired(false);
-      Swal.fire({
-        icon: "success",
-        title: "OTP Sent",
-        text: "Check your email for the OTP.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+      Toast.success("OTP Sent", "Check your email for the OTP.");
     } catch (error) {
-      console.error("Error sending OTP:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Failed to Send OTP",
-        text: "Please try again.",
-      });
+      console.error("Error resetting password:", error);
+
+      const apiMessage =
+        error.response?.data?.message || // backend error
+        error.message || // axios/system error
+        "Could not reset password. Check OTP or try again."; // fallback
+
+      Toast.error("Failed", apiMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const onForgot = async (data) => {
-    if (isExpired) {
-      Swal.fire({
-        icon: "warning",
-        title: "OTP Expired",
-        text: "Please resend the OTP.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
-      return;
-    }
+    if (isExpired)
+      return Toast.warning("OTP Expired", "Please resend the OTP.");
 
     try {
       setLoading(true);
@@ -102,22 +92,19 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
         newPassword: data.newPassword,
       };
       await submitNewPassOTP(payload);
-      Swal.fire({
-        icon: "success",
-        title: "Password Reset",
-        text: "You can now log in with your new password.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+      Toast.success(
+        "Password Reset",
+        "You can now log in with your new password."
+      );
+
       reset();
       onClose();
     } catch (error) {
       console.error("Error resetting password:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text: "Could not reset password. Check OTP or try again.",
-      });
+      Toast.error(
+        "Failed",
+        "Could not reset password. Check OTP or try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -141,13 +128,17 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
       <div className="max-w-md mx-auto">
         {!isOtpSent ? (
           <form onSubmit={handleSubmitOtp(onEmailSubmit)} className="space-y-4">
-            <h3 className="text-xl font-semibold text-center">Forgot Password</h3>
+            <h3 className="text-xl font-semibold text-center">
+              Forgot Password
+            </h3>
             <p className="text-sm text-center text-gray-600 mb-4">
               Enter your email to receive an OTP.
             </p>
 
             <div>
-              <label className="text-sm font-medium block mb-1">Email Address</label>
+              <label className="text-sm font-medium block mb-1">
+                Email Address
+              </label>
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -161,7 +152,9 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
                 className="w-full px-4 py-2 border rounded-lg"
               />
               {errorsOtp.email && (
-                <p className="text-sm text-red-500 mt-1">{errorsOtp.email.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errorsOtp.email.message}
+                </p>
               )}
             </div>
 
@@ -176,10 +169,14 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
           </form>
         ) : (
           <form onSubmit={handleSubmit(onForgot)} className="space-y-4">
-            <h3 className="text-xl font-semibold text-center">Reset Password</h3>
+            <h3 className="text-xl font-semibold text-center">
+              Reset Password
+            </h3>
             <p className="text-sm text-center text-gray-700">
               {isExpired ? (
-                <span className="text-red-500">OTP expired. Please resend.</span>
+                <span className="text-red-500">
+                  OTP expired. Please resend.
+                </span>
               ) : (
                 <>
                   OTP expires in{" "}
@@ -203,7 +200,9 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
               {...register("otp", { required: "OTP is required" })}
               className="w-full px-4 py-2 border rounded-lg"
             />
-            {errors.otp && <p className="text-sm text-red-500">{errors.otp.message}</p>}
+            {errors.otp && (
+              <p className="text-sm text-red-500">{errors.otp.message}</p>
+            )}
 
             <input
               type="password"
@@ -218,7 +217,9 @@ const ForgotPass = ({ isForgotOpen, onClose }) => {
               className="w-full px-4 py-2 border rounded-lg"
             />
             {errors.newPassword && (
-              <p className="text-sm text-red-500">{errors.newPassword.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.newPassword.message}
+              </p>
             )}
 
             <button

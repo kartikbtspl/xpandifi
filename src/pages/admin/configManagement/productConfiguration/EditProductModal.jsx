@@ -6,6 +6,7 @@ import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import { updateProduct } from "../../../../redux/slices/admin/productSlice";
+import Toast from "../../../../components/ui/toast/Toast";
 
 const EditProductModal = ({ isOpen, onClose, initialData }) => {
   const dispatch = useDispatch();
@@ -42,8 +43,11 @@ const EditProductModal = ({ isOpen, onClose, initialData }) => {
     dispatch(updateProduct({ id: initialData.id, data: formattedData })).then(
       (res) => {
         if (!res.error) {
+          Toast.success("Product updated successfully!");
           reset();
           onClose();
+        } else {
+          Toast.error(res?.error?.message || "Failed to update product!");
         }
       }
     );
@@ -76,7 +80,8 @@ const EditProductModal = ({ isOpen, onClose, initialData }) => {
             rules={{
               required: "Price is required",
               validate: (value) =>
-                !isNaN(value) && Number(value) > 0 || "Price must be a positive number",
+                (!isNaN(value) && Number(value) > 0) ||
+                "Price must be a positive number",
             }}
             render={({ field }) => (
               <Input
