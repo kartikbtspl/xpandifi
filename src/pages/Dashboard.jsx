@@ -5,7 +5,7 @@ import AdAgencyDashboard from "./user/dashboard/AdAgencyDashboard";
 import AdminDashboard from "./admin/AdminDashboard";
 import { fetchCampaigns } from "../redux/slices/user/campaignSlice";
 import { useCurrentUser } from "../components/ui/user/CurrentUser";
-
+import Shimmer from "../components/shimmer/Shimmer"
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { fetched, loading } = useSelector((state) => state.campaign);
@@ -29,7 +29,7 @@ const Dashboard = () => {
       case "SUPERADMIN":
         return <AdminDashboard />;
       default:
-        return <p className="text-gray-500">No dashboard available</p>;
+        return <Shimmer/>;
     }
   };
 
