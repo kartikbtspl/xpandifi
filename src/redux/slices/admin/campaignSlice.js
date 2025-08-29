@@ -64,6 +64,7 @@ export const campaignApproval = createAsyncThunk(
       }
 
       await campaignApprovalApi(id, payload);
+      
 
       return { id, status, remark };
     } catch (error) {

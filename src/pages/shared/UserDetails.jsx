@@ -246,6 +246,7 @@ const UserDetails = () => {
 
             <div className="mt-6">
               <Button
+              isIcon={false}
                 onClick={() =>
                   setEditMode((prev) => ({ ...prev, passwordModal: true }))
                 }

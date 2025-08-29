@@ -30,3 +30,12 @@ export const initCampaignSSE = (onData) => {
     }
   };
 };
+
+
+export const closeCampaignSSE = () => {
+  if (eventSource) {
+    console.log("Closing SSE connection...");
+    eventSource.close();
+    eventSource = null;
+  }
+};

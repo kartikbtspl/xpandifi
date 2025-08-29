@@ -3,12 +3,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
 import MediaCarousel from "../../../components/ui/carousel/MediaCarousel";
 import Button from "../../../components/ui/button/Button";
-import { verifyPayment, createOrder } from "../../../api/user/razor-api/razor-api";
+import {
+  verifyPayment,
+  createOrder,
+} from "../../../api/user/razor-api/razor-api";
 import { useDispatch } from "react-redux";
-import Swal from "sweetalert2";
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
-import { createOrder_cashFree,checkCashfreePaymentStatus } from "../../../api/user/cashFree/cashFree-api";
+import {
+  createOrder_cashFree,
+  checkCashfreePaymentStatus,
+} from "../../../api/user/cashFree/cashFree-api";
 import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
+import Toast from "../../../components/ui/toast/Toast";
+// import Swal from "sweetalert2";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -30,13 +37,15 @@ const CheckoutCampaign = () => {
   const user = useCurrentUser();
 
   const campaignData = location.state?.row;
-  console.log(campaignData,"data")
+  console.log(campaignData, "data");
 
   if (!campaignData) {
-    return <div className="text-center text-gray-500 mt-20">Redirecting...</div>;
+    return (
+      <div className="text-center text-gray-500 mt-20">Redirecting...</div>
+    );
   }
 
-//   const { raw: campaign = {}, campaignCode = "", name = "", image = [] } = campaignData;
+  //   const { raw: campaign = {}, campaignCode = "", name = "", image = [] } = campaignData;
 
   useEffect(() => {
     if (!campaignData) navigate("/campaigns-list");
@@ -44,20 +53,21 @@ const CheckoutCampaign = () => {
 
   // Razorpay Payment Handler
   const handlePayment = useCallback(async () => {
-    if (!campaignData|| !user) {
-      Swal.fire("Missing Information", "Campaign or user data is not available.", "warning");
-      return;
+    if (!campaignData || !user) {
+      Toast.warning(
+        "Missing Information",
+        "Campaign or user data is not available."
+      );
     }
 
     if (!window.Razorpay) {
-      Swal.fire("Payment SDK Error", "Razorpay SDK not loaded. Please refresh and try again.", "error");
-      return;
+      return Toast.error("Please refresh and try again.");
     }
 
     setIsLoading(true);
 
     try {
-      const campaign  = campaignData;
+      const campaign = campaignData;
       const orderPayload = {
         campaignId: campaign.id,
         campaignCode: campaignData.campaignCode,
@@ -83,7 +93,7 @@ const CheckoutCampaign = () => {
         modal: {
           ondismiss: () => {
             setIsLoading(false);
-            Swal.fire("Payment Cancelled", "You closed the payment popup.", "info");
+            Toast.info("Payment Cancelled", "You closed the payment popup.");
           },
         },
         handler: async (response) => {
@@ -96,28 +106,41 @@ const CheckoutCampaign = () => {
             });
 
             if (verifyRes?.success) {
-              Swal.fire({
-                icon: "success",
-                title: "Payment Successful",
-                text: "Your campaign has been activated!",
-                confirmButtonColor: "#3085d6",
-              }).then(() => navigate("/campaigns-list"));
-
+              // Swal.fire({
+              //   icon: "success",
+              //   title: "Payment Successful",
+              //   text: "Your campaign has been activated!",
+              //   confirmButtonColor: "#3085d6",
+              // }).then(() => navigate("/campaigns-list"));
+              navigate("/campaigns-list");
+              Toast.success(
+                "Payment Successful",
+                "Your campaign has been activated!"
+              );
               dispatch(fetchCampaigns());
             } else {
-              Swal.fire({
-                icon: "error",
-                title: "Verification Failed",
-                text: "Payment could not be verified. Please contact support.",
-              });
+              // Swal.fire({
+              //   icon: "error",
+              //   title: "Verification Failed",
+              //   text: "Payment could not be verified. Please contact support.",
+              // });
+              Toast.error(
+                "Verification Failed",
+                "Payment could not be verified. Please contact support."
+              );
             }
           } catch (err) {
             console.error("Verification error:", err);
-            Swal.fire({
-              icon: "error",
-              title: "Verification Error",
-              text: err?.response?.data?.message || "Something went wrong verifying your payment.",
-            });
+            // Swal.fire({
+            //   icon: "error",
+            //   title: "Verification Error",
+            //   text: err?.response?.data?.message || "Something went wrong verifying your payment.",
+            // });
+            Toast.error(
+              "Verification Error",
+              err?.response?.data?.message ||
+                "Something went wrong verifying your payment."
+            );
           } finally {
             setIsLoading(false);
           }
@@ -128,11 +151,12 @@ const CheckoutCampaign = () => {
       razorpay.open();
     } catch (error) {
       console.error("Payment Error:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Something went wrong",
-        text: error?.message || "Unable to process payment. Please try again.",
-      });
+      // Swal.fire({
+      //   icon: "error",
+      //   title: "Something went wrong",
+      //   text: error?.message || "Unable to process payment. Please try again.",
+      // });
+      Toast.error("Something went wrong",error?.message || "Unable to process payment. Please try again.")
       setIsLoading(false);
     }
   }, [campaignData, user, navigate, dispatch]);
@@ -140,14 +164,17 @@ const CheckoutCampaign = () => {
   // Cashfree Payment Handler
   const handleCashfreePayment = useCallback(async () => {
     if (!campaignData || !user) {
-      Swal.fire("Missing Info", "Campaign or user data not available", "warning");
-      return;
+      // Swal.fire("Missing Info", "Campaign or user data not available", "warning");
+      return Toast.warning(
+        "Missing Info",
+        "Campaign or user data not available"
+      );
     }
 
     setIsLoading(true);
 
     try {
-      const campaign  = campaignData;
+      const campaign = campaignData;
 
       const orderPayload = {
         campaignId: campaign.id,
@@ -179,26 +206,48 @@ const CheckoutCampaign = () => {
           if (statusRes?.success && statusRes?.status === "PAID") {
             clearInterval(poll);
 
-            Swal.fire({
-              icon: "success",
-              title: "Payment Successful",
-              text: "Your campaign has been activated!",
-            }).then(() => navigate("/campaigns-list"));
-
+            // Swal.fire({
+            //   icon: "success",
+            //   title: "Payment Successful",
+            //   text: "Your campaign has been activated!",
+            // }).then(() => navigate("/campaigns-list"));
+            Toast.success(
+              "Payment Successful",
+              "Your campaign has been activated!"
+            );
+            navigate("/campaigns-list");
             dispatch(fetchCampaigns());
           } else if (attempts >= maxAttempts) {
             clearInterval(poll);
-            Swal.fire("Timeout", "Payment verification timed out. Please check status later.", "warning");
+            // Swal.fire(
+            //   "Timeout",
+            //   "Payment verification timed out. Please check status later.",
+            //   "warning"
+            // );
+            Toast.warning("Timeout",
+              "Payment verification timed out. Please check status later.")
           }
         } catch (err) {
           clearInterval(poll);
           console.error("Polling error:", err);
-          Swal.fire("Error", "Something went wrong while verifying payment.", "error");
+          // Swal.fire(
+          //   "Error",
+          //   "Something went wrong while verifying payment.",
+          //   "error"
+          // );
+          Toast.error(   "Error",
+            "Something went wrong while verifying payment.")
         }
       }, interval);
     } catch (err) {
       console.error("Cashfree order error:", err);
-      Swal.fire("Error", err?.message || "Failed to create Cashfree order", "error");
+      // Swal.fire(
+      //   "Error",
+      //   err?.message || "Failed to create Cashfree order",
+      //   "error"
+      // );
+      Toast.error("Error",
+        err?.message || "Failed to create Cashfree order")
     } finally {
       setIsLoading(false);
     }
@@ -226,27 +275,41 @@ const CheckoutCampaign = () => {
       <div className="bg-white rounded-xl shadow-xl p-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left: Media */}
-            <MediaCarousel mediaFiles={campaignData?.productFiles || []} size="md" />
+          <MediaCarousel
+            mediaFiles={campaignData?.productFiles || []}
+            size="md"
+          />
 
           {/* Right: Info + Payment */}
           <div className="flex flex-col justify-between">
             <div className="space-y-3 text-sm text-gray-700">
-              <InfoRow label="Campaign Code" value={campaignData?.campaignCode} highlight />
+              <InfoRow
+                label="Campaign Code"
+                value={campaignData?.campaignCode}
+                highlight
+              />
               <InfoRow label="Brand" value={brandName || "N/A"} />
               <InfoRow label="Ad Type" value={adType || "N/A"} />
               <InfoRow label="Duration" value={`${duration || 0} seconds`} />
               <InfoRow label="Store Type" value={storeTypes || "N/A"} />
               <InfoRow
                 label="Devices"
-                value={campaignData.devices?.map((d) => d.name).join(", ") || "N/A"}
+                value={
+                  campaignData.devices?.map((d) => d.name).join(", ") || "N/A"
+                }
               />
               <InfoRow
                 label="Regions"
-                value={campaignData.cityPostcodes?.map((c) => c.city).join(", ") || "N/A"}
+                value={
+                  campaignData.cityPostcodes?.map((c) => c.city).join(", ") ||
+                  "N/A"
+                }
               />
               <InfoRow
                 label="Schedule"
-                value={`${formatDate(startDate)} (${startTime || "N/A"}) → ${formatDate(endDate)} (${endTime || "N/A"})`}
+                value={`${formatDate(startDate)} (${
+                  startTime || "N/A"
+                }) → ${formatDate(endDate)} (${endTime || "N/A"})`}
               />
               <hr className="my-3 border-gray-300" />
             </div>
@@ -283,7 +346,11 @@ const CheckoutCampaign = () => {
 const InfoRow = ({ label, value, highlight = false }) => (
   <div className="flex justify-between items-center w-full">
     <span className="font-medium text-gray-600">{label}:</span>
-    <span className={`${highlight ? "text-blue-600 font-semibold" : "text-gray-800"} text-right`}>
+    <span
+      className={`${
+        highlight ? "text-blue-600 font-semibold" : "text-gray-800"
+      } text-right`}
+    >
       {value}
     </span>
   </div>

@@ -64,11 +64,14 @@ const CampaignList = () => {
             refreshCampaigns();
           })
           .catch(() => {
-            Swal.fire(
-              "Error",
-              "There was a problem deleting the campaign.",
-              "error"
-            );
+            // Swal.fire(
+            //   "Error",
+            //   "There was a problem deleting the campaign.",
+            //   "error"
+            // );
+
+            Toast.error("Error",
+              "There was a problem deleting the campaign.")
           });
       }
     });

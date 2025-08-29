@@ -9,6 +9,7 @@ import { fetchAdminProfile,loginAdmin } from "../../redux/slices/admin/adminSlic
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
 import PageTitle from "../../components/ui/page-title/PageTitle";
+import Toast from "../../components/ui/toast/Toast"
 
 const AdminLogin = () => {
   const [isForgotOpen, setIsForgotOpen] = useState(false);
@@ -34,9 +35,11 @@ const AdminLogin = () => {
         dispatch(fetchAdminProfile());
         dispatch(fetchCampaigns());
         navigate("/");
+        Toast.success("Singin Successfully!")
       }
     } catch (error) {
       console.error("Login error:", error);
+      Toast.error("Failed","Failed to Signin!")
     } finally {
       setLoading(false);
     }
