@@ -52,7 +52,7 @@ const AdminLogin = () => {
         {/* Left Section */}
         <div className="w-1/2 hidden lg:flex flex-col justify-center items-center bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-10">
           <img
-            src="/images/logo/xpandifi-logo.svg"
+            src="/images/Logo.svg"
             alt="Xpandifi Logo"
             className="h-10 mb-4"
           />

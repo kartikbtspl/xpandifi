@@ -51,33 +51,3 @@ const approvedCampaignSlice = createSlice({
 
 export const { setCampaigns, clearCampaigns } = approvedCampaignSlice.actions;
 export default approvedCampaignSlice.reducer;
-
-// const approvedCampaignSlice = createSlice({
-//   name: 'approvedCampaigns',
-//   initialState: {
-//     campaigns: [],
-//     loading: false,
-//     error: null,
-//     fetched: false, // <-- added fetched flag
-//   },
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(fetchApprovedCampaigns.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(fetchApprovedCampaigns.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.campaigns = action.payload;
-//         state.fetched = true; // <-- set fetched = true on success
-//       })
-//       .addCase(fetchApprovedCampaigns.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//         state.fetched = true; // <-- reset fetched on failure
-//       });
-//   },
-// });
-
-// export default approvedCampaignSlice.reducer;

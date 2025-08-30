@@ -25,10 +25,16 @@ const AppLayout = () => {
     };
     return roleMap[role] || null;
   }, [role]);
-
+  
   useEffect(() => {
-    if (role === "Retailer") initCampaignSSE();
-  }, []);
+    if (role !== "Retailer") return;
+
+    const cleanup = initCampaignSSE?.();
+    return () => {
+      if (typeof cleanup === "function") cleanup();
+    };
+  }, [role, initCampaignSSE]);
+
   return (
     <>
       {title && <PageTitle title={title} />}
