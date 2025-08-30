@@ -4,6 +4,9 @@ import {
   getCampaignsAPI,
   toggleCampaignStatusAPI,
   campaignApprovalApi,
+  getCampaignPaymentHistoryAPI,
+  getCampaignRevenueRequestAPI,
+  transferRevenueAPI,
 } from "../../../api/admin/campaign-api/campaignService";
 import { createSelector } from "@reduxjs/toolkit";
 import Toast from "../../../components/ui/toast/Toast";
@@ -81,17 +84,56 @@ export const toggleCampaignStatus = createAsyncThunk(
 
       // Get updated value from backend response (fallback to original status)
       const updatedStatus = responseData?.data?.status ?? status;
-      if(status===true){
-        Toast.success("Campaign activated successfully!")
+      if (status === true) {
+        Toast.success("Campaign activated successfully!");
       }
 
       return { id, status: updatedStatus };
     } catch (error) {
       console.error("Status toggle failed:", error);
-      Toast.error(error?.message||"Failed to update status");
-
+      Toast.error(error?.message || "Failed to update status");
 
       return rejectWithValue(error?.response?.data || "Request failed");
+    }
+  }
+);
+
+// Fetch Campaign Payments history
+export const fetchCampaignPayments = createAsyncThunk(
+  "campaign/fetchCampaignPayments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getCampaignPaymentHistoryAPI(); // your API
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
+// Fetch Campaign Payments history
+export const fetchCampaignRevenueRequest = createAsyncThunk(
+  "campaign/fetchCampaignRevenueRequest",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getCampaignRevenueRequestAPI(); // your API
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
+export const transferRevenue = createAsyncThunk(
+  "campaign/transferRevenue",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await transferRevenueAPI(id);
+      Toast.success("Revenue transferred successfully!");
+      return { id };
+    } catch (err) {
+      Toast.error("Failed to transfer revenue");
+      return rejectWithValue(err.response?.data);
     }
   }
 );
@@ -104,6 +146,17 @@ const campaignSlice = createSlice({
     data: null, // single campaign (created or updated)
     campaigns: [], // list of campaigns
     fetched: false, // tracks if campaigns have been fetched successfully
+
+    payments: [],
+    paymentsFetched: false,
+    paymentsLoading: false,
+
+    revenueRequests: [],
+    requestFetched: false,
+    requestLoading: false,
+    transferLoading: false,
+    transferError: null,
+    transferringId: null,
   },
   reducers: {
     resetCampaigns: (state) => {
@@ -160,6 +213,77 @@ const campaignSlice = createSlice({
           campaign.isApproved = updatedStatus;
           if (remark) campaign.remark = remark;
         }
+      })
+      // -------- Fetch Campaign Payments --------
+      .addCase(fetchCampaignPayments.pending, (state) => {
+        state.paymentsLoading = true;
+        state.error = null;
+      })
+
+      .addCase(fetchCampaignPayments.fulfilled, (state, action) => {
+        state.paymentsLoading = false;
+        state.payments = (action.payload || []).map((row, idx) => ({
+          ...row,
+          id: row.id || row._id || row.transactionId || `row-${idx}`,
+        }));
+        state.paymentsFetched = true;
+      })
+
+      .addCase(fetchCampaignPayments.rejected, (state, action) => {
+        state.paymentsLoading = false;
+        state.error = action.payload;
+        state.paymentsFetched = true;
+      })
+
+      // -------- Fetch Campaign Revenue Request --------
+      .addCase(fetchCampaignRevenueRequest.pending, (state) => {
+        state.requestLoading = true;
+        state.error = null;
+      })
+
+      .addCase(fetchCampaignRevenueRequest.fulfilled, (state, action) => {
+        state.requestLoading = false;
+
+        // action.payload is already the array
+        const payload = action.payload || [];
+
+        state.revenueRequests = payload.map((row, idx) => ({
+          ...row,
+          id: row.id || `row-${idx}`,
+        }));
+
+        state.requestFetched = true;
+      })
+
+      .addCase(fetchCampaignRevenueRequest.rejected, (state, action) => {
+        state.requestLoading = false;
+        state.error = action.payload;
+        state.requestFetched = true;
+      })
+
+      // -------- Fetch Campaign Revenue transfer --------
+
+      .addCase(transferRevenue.pending, (state, action) => {
+        state.transferLoading = true;
+        state.transferError = null;
+        state.transferringId = action.meta.arg;
+      })
+
+      .addCase(transferRevenue.fulfilled, (state, action) => {
+        state.transferLoading = false;
+        state.transferringId = null;
+        const { id } = action.payload;
+
+        const idx = state.revenueRequests.findIndex((c) => c.id === id);
+        if (idx !== -1) {
+          state.revenueRequests[idx].isRequested = true;
+        }
+      })
+
+      .addCase(transferRevenue.rejected, (state, action) => {
+        state.transferLoading = false;
+        state.transferError = action.payload || "Failed to transfer revenue";
+        state.transferringId = null;
       });
   },
 });

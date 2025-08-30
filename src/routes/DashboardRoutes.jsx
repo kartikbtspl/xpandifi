@@ -21,6 +21,8 @@ import Reports from "../pages/user/retailer/Reports";
 import Settings from "../pages/user/retailer/Settings";
 import Support from "../pages/user/retailer/Support";
 import TicketRaise from "../pages/user/Ticket/TicketRaise";
+import RevenueRequest from "../pages/user/campaign/RevenueRequest"
+import PaymentsHistory from "../pages/user/campaign/PaymentsHistory"
 
 // ================= ADMIN ROUTES =================
 import UserManagement from "../pages/admin/userManagement/UserManagement";
@@ -79,6 +81,10 @@ export const dashboardRoutes = [
         <Route path="/active-ads" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
           <ActiveCampaigns />
         </PrivateRoute>} />
+        
+         <Route path="/payment-history" element={ <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <PaymentsHistory />
+        </PrivateRoute>} />
 
         {/* Retailer routes */}
       <Route path="/devices" element={<PrivateRoute allowedRoles={["Retailer"]}>
@@ -102,6 +108,10 @@ export const dashboardRoutes = [
         </PrivateRoute>} />
         <Route path="/wallet" element={ <PrivateRoute allowedRoles={["Retailer"]}>
           <Wallets />
+        </PrivateRoute>} />
+
+         <Route path="/revenue-request" element={ <PrivateRoute allowedRoles={["Retailer"]}>
+          <RevenueRequest />
         </PrivateRoute>} />
         
         <Route path="/report" element={ <PrivateRoute allowedRoles={["Retailer"]}>

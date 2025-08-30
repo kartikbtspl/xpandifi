@@ -51,7 +51,7 @@ const ActiveCampaigns = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => <StatusBadge isActive={row.isActive} size={11} />, //  return the badge
+      render: (row) => <StatusBadge isActive={row.isActive} size={11} />,
     },
   ];
 
@@ -67,7 +67,7 @@ const ActiveCampaigns = () => {
         filterOptions={["all", "ACTIVE", "INACTIVE"]}
         order={"desc"}
         orderBy={"updatedAt"}
-        searchableColumns={["name","budget","brandName"]}
+        searchableColumns={["name","budget","brandName","campaignCode"]}
       />
     </div>
   );

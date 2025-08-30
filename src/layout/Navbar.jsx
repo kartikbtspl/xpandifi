@@ -48,7 +48,7 @@ const Navbar = ({ toggleSidebar }) => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // ✅ pick routeMap dynamically based on role
+  //  pick routeMap dynamically based on role
   const availableRoutes = useMemo(() => {
     if (!user?.role) return [];
     if (["SUPERADMIN", "ADMIN"].includes(user.role)) return adminRouteMap;
