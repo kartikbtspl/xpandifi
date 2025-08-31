@@ -138,7 +138,7 @@ const Navbar = ({ toggleSidebar }) => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src={user?.avatar || user?.profile_url || "/images/profile.jpeg"}
+              src={user?.avatar || user?.profile_url || "/images/profile.jpg"}
               alt="User Avatar"
               className="w-8 h-8 rounded-full"
             />

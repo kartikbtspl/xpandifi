@@ -5,8 +5,6 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import TicketDetailsModal from "./TicketDetailsModal";
 import { ticketCounts, ticketRows } from "./ticketData";
 import COLORS from "../../../constants/Colors";
-// import { toast , ToastContainer} from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Toast from "../../../components/ui/toast/Toast";
 
 const TicketSystem = () => {
@@ -104,33 +102,33 @@ const TicketSystem = () => {
     {
       id: "ticketID",
       label: "Ticket ID",
-      render: (row) => (
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpenModal(row);
-          }}
-          className="cursor-pointer hover:text-blue-600 hover:underline "
-        >
-          {row.ticketID}
-        </span>
-      ),
+      // render: (row) => (
+      //   <span
+      //     // onClick={(e) => {
+      //     //   e.stopPropagation();
+      //     //   handleOpenModal(row);
+      //     // }}
+      //     className="cursor-pointer hover:text-blue-600 hover:underline "
+      //   >
+      //     {row.ticketID}
+      //   </span>
+      // ),
     },
     
     {
       id: "subject",
       label: "Subject",
-      render: (row) => (
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpenModal(row);
-          }}
-          className="cursor-pointer hover:text-blue-600 hover:underline "
-        >
-          {row.subject}
-        </span>
-      ),
+      // render: (row) => (
+      //   <span
+      //     // onClick={(e) => {
+      //     //   e.stopPropagation();
+      //     //   handleOpenModal(row);
+      //     // }}
+      //     className="cursor-pointer hover:text-blue-600 hover:underline "
+      //   >
+      //     {row.subject}
+      //   </span>
+      // ),
     },
     
     { id: "priority", label: "Priority" },
@@ -202,19 +200,19 @@ const TicketSystem = () => {
           rows={rows}
           filterOptions={["all", "OPEN", "INPROGRESS", "RESOLVED", "REOPEN", "CLOSED"]}
           filterKey="status"
-          onRowClick={() => {}} 
+          onRowClick={handleOpenModal} 
         />
       </div>
 
       <TicketDetailsModal
         isOpen={isModalOpen}
         onClose={handleClose}
+
         ticket={selectedTicket}
         onStatusChange={handleStatusChange}
         onAdminRemarkChange={handleAdminRemarkChange}
         onSubmitChanges={handleSubmitChanges}
       />
-      <ToastContainer position="bottom-left" />
     </div>
   );
 };

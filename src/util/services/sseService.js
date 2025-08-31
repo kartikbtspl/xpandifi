@@ -15,7 +15,7 @@ export const initCampaignSSE = () => {
   eventSource = new EventSource(url);
 
   eventSource.onopen = () => {
-    console.log("SSE connection established:", url);
+    console.log("SSE connection established");
   };
   eventSource.onmessage = (event) => {
     try {
@@ -23,8 +23,6 @@ export const initCampaignSSE = () => {
         // ignore heartbeats
         return;
       }
-
-      console.log("Raw SSE event:", event.data);
 
       let parsed;
       try {
@@ -34,7 +32,6 @@ export const initCampaignSSE = () => {
         return;
       }
 
-      console.log("Parsed SSE data:", parsed);
       store.dispatch(setCampaigns(Array.isArray(parsed) ? parsed : []));
     } catch (err) {
       console.error("Error handling SSE message:", err);

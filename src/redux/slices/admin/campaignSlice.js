@@ -117,6 +117,7 @@ export const fetchCampaignRevenueRequest = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await getCampaignRevenueRequestAPI(); // your API
+      console.log(response);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data);
@@ -276,7 +277,7 @@ const campaignSlice = createSlice({
 
         const idx = state.revenueRequests.findIndex((c) => c.id === id);
         if (idx !== -1) {
-          state.revenueRequests[idx].isRequested = true;
+          state.revenueRequests[idx].isTransferred = true; // ✅ fix
         }
       })
 

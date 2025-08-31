@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getRetailerCampaigns } from '../../../api/user/retailer/retailer-campaign-api';
+import { getEndedCampaigns, getRetailerCampaigns ,requestRevenue} from '../../../api/user/retailer/retailer-campaign-api';
 
 // Async thunk to fetch approved campaigns
 export const fetchApprovedCampaigns = createAsyncThunk(
@@ -13,6 +13,33 @@ export const fetchApprovedCampaigns = createAsyncThunk(
     }
   }
 );
+
+// Async thunk to fetch ended campaigns
+export const fetchEndedCampaigns = createAsyncThunk(
+  'approvedCampaigns/fetchEndedCampaigns',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getEndedCampaigns();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch approved campaigns');
+    }
+  }
+);
+
+
+
+export const raiseRevenueRequest = createAsyncThunk(
+  'approvedCampaigns/raiseRevenueRequest',
+  async (campaignId, { rejectWithValue }) => {
+    try {
+      const response = await requestRevenue(campaignId);
+      return { campaignId, data: response }; // return campaignId to update state
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to raise revenue request');
+    }
+  }
+);
 const approvedCampaignSlice = createSlice({
   name: 'approvedCampaigns',
   initialState: {
@@ -20,6 +47,11 @@ const approvedCampaignSlice = createSlice({
     loading: false,
     error: null,
     fetched: false,
+     endedCampaigns: [],
+    endedLoading: false,
+   endedError: null,
+    endedFetched: false,
+
   },
   reducers: {
     setCampaigns: (state, action) => {
@@ -45,7 +77,38 @@ const approvedCampaignSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.fetched = true;
-      });
+      })
+      /// expired ended campaigns
+      .addCase(fetchEndedCampaigns.pending, (state) => {
+        state.endedLoading = true;
+        state.endedError = null;
+      })
+      .addCase(fetchEndedCampaigns.fulfilled, (state, action) => {
+        state.endedLoading = false;
+        state.endedCampaigns = action.payload;
+        state.endedFetched = true;
+      })
+      .addCase(fetchEndedCampaigns.rejected, (state, action) => {
+        state.endedLoading = false;
+        state.endedError = action.payload;
+        state.endedFetched = true;
+      })
+
+      .addCase(raiseRevenueRequest.pending, (state) => {
+      state.endedLoading = true; // optionally, show loading
+      state.endedError = null;
+    })
+    .addCase(raiseRevenueRequest.fulfilled, (state, action) => {
+      state.endedLoading = false;
+      const { campaignId } = action.payload;
+      state.endedCampaigns = state.endedCampaigns.map(c =>
+        c.id === campaignId ? { ...c, isRequested: true } : c
+      );
+    })
+    .addCase(raiseRevenueRequest.rejected, (state, action) => {
+      state.endedLoading = false;
+      state.endedError = action.payload;
+    });
   },
 });
 

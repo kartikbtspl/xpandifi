@@ -306,13 +306,12 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
       )}
     />
   );
+  // if(formLoading) return  <LoaderEmpt size="large" />
+
 
   return (
        <>
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" >
-       {formLoading && (
-          <LoaderEmpt size="large" />
-      )}
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <FormProvider {...methods}>
         <div className="max-h-[80vh] rounded-lg relative">
           <FormBuilder

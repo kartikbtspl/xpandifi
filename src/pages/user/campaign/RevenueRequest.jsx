@@ -1,66 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import ReusableTable from "../../../components/table/ReusableTable";
 import Toast from "../../../components/ui/toast/Toast";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/button/Button";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchEndedCampaigns,
+  raiseRevenueRequest,
+} from "../../../redux/slices/user/approvedCampaignSlice";
+import Loader from "../../../components/loader/Loader";
 const RevenueRequest = () => {
-  const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const { endedCampaigns, endedLoading, endedFetched } = useSelector(
+    (state) => state.approvedCampaigns
+  );
 
-  const [campaigns, setCampaigns] = useState([
-    {
-      campaignCode: "CAMP001",
-      campaignName: "Summer Launch 2025",
-      startDate: "2025-06-01",
-      endDate: "2025-06-15",
-      isRequested: false,
-    },
-    {
-      campaignCode: "CAMP002",
-      campaignName: "Winter Sale Promo",
-      startDate: "2025-06-15",
-      endDate: "2025-07-01",
-      isRequested: true,
-    },
-    {
-      campaignCode: "CAMP003",
-      campaignName: "New Product Awareness",
-      startDate: "2025-07-01",
-      endDate: "2025-07-22",
-      isRequested: false,
-    },
-    {
-      campaignCode: "CAMP004",
-      campaignName: "Back-to-School Special",
-      startDate: "2025-07-20",
-      endDate: "2025-08-05",
-      isRequested: true,
-    },
-    {
-      campaignCode: "CAMP005",
-      campaignName: "Holiday Mega Deals",
-      startDate: "2025-08-05",
-      endDate: "2025-08-20",
-      isRequested: false,
-    },
-  ]);
+  useEffect(() => {
+    if (!endedFetched && !endedLoading) {
+      dispatch(fetchEndedCampaigns());
+    }
+  }, [dispatch, endedFetched, endedLoading]);
+
 
   const handleRequest = (row) => {
-    Toast.success("Request sent successfully!");
-    // Update the campaigns state to mark as requested
-    setCampaigns((prev) =>
-      prev.map((c) =>
-        c.campaignCode === row.campaignCode ? { ...c, isRequested: true } : c
-      )
-    );
-    // setSelectedCampaign(row);
-    // setIsOpen(true);
+    dispatch(raiseRevenueRequest(row.id))
+      .unwrap()
+      .then(() => {
+        Toast.success("Request sent successfully!");
+      })
+      .catch((err) => {
+        Toast.error(err || "Failed to send request");
+      });
   };
 
   const columns = [
-    { id: "campaignCode", label: "Campaign Code" },
-    { id: "campaignName", label: "Campaign Name" },
+    {
+      id: "compaignCode",
+      label: "Campaign Code",
+      render: (row) => row.compaignCode || "N/A",
+    },
+    {
+      id: "campaignName",
+      label: "Campaign Name",
+      render: (row) => row.campaignName || "N/A",
+    },
     {
       id: "startDate",
       label: "Start Date",
@@ -75,8 +58,14 @@ const RevenueRequest = () => {
       id: "actions",
       label: "Actions",
       render: (row) =>
-        row.isRequested ? (
+        row.isTransfered ? (
+          <span className="text-gray-500 text-sm">
+            Revenue already transferred
+          </span>
+        ) : row.isRequested ? (
           <span className="text-gray-500 text-sm">Request already sent</span>
+        ) : endedLoading ? (
+          <Loader size="vs" />
         ) : (
           <Button
             label="Request"
@@ -88,43 +77,18 @@ const RevenueRequest = () => {
   ];
 
   const handleRefresh = () => {
-    alert("Refreshing campaigns...");
+    dispatch(fetchEndedCampaigns());
   };
 
   return (
     <>
       <ReusableTable
         columns={columns}
-        rows={campaigns}
+        rows={endedCampaigns}
+        loading={endedLoading}
         onRefresh={handleRefresh}
         searchableColumns={["campaignCode", "campaignName"]}
       />
-
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="md">
-        {selectedCampaign ? (
-          <div className="p-6 w-full">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              {selectedCampaign.campaignName}
-            </h2>
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                <span className="font-semibold">Code:</span>{" "}
-                {selectedCampaign.campaignCode}
-              </p>
-              <p>
-                <span className="font-semibold">Start Date:</span>{" "}
-                {new Date(selectedCampaign.startDate).toLocaleDateString()}
-              </p>
-              <p>
-                <span className="font-semibold">End Date:</span>{" "}
-                {new Date(selectedCampaign.endDate).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">No campaign selected</p>
-        )}
-      </Modal>
     </>
   );
 };

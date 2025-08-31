@@ -12,6 +12,7 @@ import Button from "../../../components/ui/button/Button";
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
 import Toast from "../../../components/ui/toast/Toast";
 import Title from "antd/es/skeleton/Title";
+import LoaderEmpt from "../../../components/loader/LoaderEmpt"
 
 const CampaignList = () => {
   const location = useLocation();
@@ -64,12 +65,6 @@ const CampaignList = () => {
             refreshCampaigns();
           })
           .catch(() => {
-            // Swal.fire(
-            //   "Error",
-            //   "There was a problem deleting the campaign.",
-            //   "error"
-            // );
-
             Toast.error("Error",
               "There was a problem deleting the campaign.")
           });

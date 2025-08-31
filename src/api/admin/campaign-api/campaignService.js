@@ -31,7 +31,6 @@ export const getCampaignRevenueRequestAPI = async () => {
 export const transferRevenueAPI = async (id) => {
   const response = await axiosInstance.put(
     `/api/v2/campaign/${id}/transfer`,
-    null,
     { withCredentials: true }
   );
   return response.data;

@@ -1,7 +1,7 @@
 import { Modal as MUIModal, Box, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect } from "react";
-
+import LoaderEmpt from "../../../components/loader/LoaderEmpt"
 export const Modal = ({
   isOpen,
   onClose,
@@ -13,6 +13,7 @@ export const Modal = ({
   containerSx = {},
   modalSx = {},
   disableBackdropClick = false,
+  formLoading =false
 }) => {
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
@@ -73,7 +74,12 @@ export const Modal = ({
             <CloseIcon />
           </IconButton>
         )}
-        {children}
+        {formLoading && (
+  <LoaderEmpt size="large" />)}
+{children}
+
+
+
       </Box>
     </MUIModal>
   );
