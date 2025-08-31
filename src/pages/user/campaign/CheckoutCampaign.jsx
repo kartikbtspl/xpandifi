@@ -16,7 +16,7 @@ import {
 import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
 import Toast from "../../../components/ui/toast/Toast";
 // import Swal from "sweetalert2";
-
+import LoaderEmpt  from "../../../components/loader/LoaderEmpt"
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
     year: "numeric",
@@ -106,12 +106,6 @@ const CheckoutCampaign = () => {
             });
 
             if (verifyRes?.success) {
-              // Swal.fire({
-              //   icon: "success",
-              //   title: "Payment Successful",
-              //   text: "Your campaign has been activated!",
-              //   confirmButtonColor: "#3085d6",
-              // }).then(() => navigate("/campaigns-list"));
               navigate("/campaigns-list");
               Toast.success(
                 "Payment Successful",
@@ -119,11 +113,6 @@ const CheckoutCampaign = () => {
               );
               dispatch(fetchCampaigns());
             } else {
-              // Swal.fire({
-              //   icon: "error",
-              //   title: "Verification Failed",
-              //   text: "Payment could not be verified. Please contact support.",
-              // });
               Toast.error(
                 "Verification Failed",
                 "Payment could not be verified. Please contact support."
@@ -131,11 +120,6 @@ const CheckoutCampaign = () => {
             }
           } catch (err) {
             console.error("Verification error:", err);
-            // Swal.fire({
-            //   icon: "error",
-            //   title: "Verification Error",
-            //   text: err?.response?.data?.message || "Something went wrong verifying your payment.",
-            // });
             Toast.error(
               "Verification Error",
               err?.response?.data?.message ||
@@ -151,11 +135,6 @@ const CheckoutCampaign = () => {
       razorpay.open();
     } catch (error) {
       console.error("Payment Error:", error);
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "Something went wrong",
-      //   text: error?.message || "Unable to process payment. Please try again.",
-      // });
       Toast.error("Something went wrong",error?.message || "Unable to process payment. Please try again.")
       setIsLoading(false);
     }
@@ -205,12 +184,6 @@ const CheckoutCampaign = () => {
           const statusRes = await checkCashfreePaymentStatus(sessionId);
           if (statusRes?.success && statusRes?.status === "PAID") {
             clearInterval(poll);
-
-            // Swal.fire({
-            //   icon: "success",
-            //   title: "Payment Successful",
-            //   text: "Your campaign has been activated!",
-            // }).then(() => navigate("/campaigns-list"));
             Toast.success(
               "Payment Successful",
               "Your campaign has been activated!"
@@ -219,33 +192,18 @@ const CheckoutCampaign = () => {
             dispatch(fetchCampaigns());
           } else if (attempts >= maxAttempts) {
             clearInterval(poll);
-            // Swal.fire(
-            //   "Timeout",
-            //   "Payment verification timed out. Please check status later.",
-            //   "warning"
-            // );
             Toast.warning("Timeout",
               "Payment verification timed out. Please check status later.")
           }
         } catch (err) {
           clearInterval(poll);
           console.error("Polling error:", err);
-          // Swal.fire(
-          //   "Error",
-          //   "Something went wrong while verifying payment.",
-          //   "error"
-          // );
           Toast.error(   "Error",
             "Something went wrong while verifying payment.")
         }
       }, interval);
     } catch (err) {
       console.error("Cashfree order error:", err);
-      // Swal.fire(
-      //   "Error",
-      //   err?.message || "Failed to create Cashfree order",
-      //   "error"
-      // );
       Toast.error("Error",
         err?.message || "Failed to create Cashfree order")
     } finally {
@@ -267,6 +225,7 @@ const CheckoutCampaign = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 md:px-10 pb-8 pt-4">
+      {isLoading &&(<LoaderEmpt size="large"/>)}
       <header className="mb-8">
         <Breadcrumbs />
         <h1 className="text-3xl font-bold text-gray-800 mt-2">{name}</h1>

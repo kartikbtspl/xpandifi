@@ -158,7 +158,7 @@ const UserDetails = () => {
                 src={
                   profilePicPreview ||
                   user?.profilePic ||
-                  "/images/profile.jpg"
+                  "logo.svg"
                 }
                 alt="Profile"
                 className="w-32 h-32 rounded-full border-4 border-white shadow-md object-cover"

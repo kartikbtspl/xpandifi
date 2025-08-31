@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchWalletBalance, fetchWithdrawalRequests, cancelWithdrawalRequest } from '../../../redux/slices/user/walletSlice';
 import Swal from 'sweetalert2';
 import Loader from '../../../components/loader/Loader';
-
+import Toast from "../../../components/ui/toast/Toast"
 const Wallets = () => {
     const [balanceVisible, setBalanceVisible] = useState(false);
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -28,6 +28,8 @@ const Wallets = () => {
         cancellationLoading,
         
     } = useSelector((state) => state.wallet);
+
+
 
     useEffect(() => {
         dispatch(fetchWalletBalance());
@@ -59,12 +61,7 @@ const Wallets = () => {
         const hasPending = withdrawalRequests.some((row) => row.status === "PENDING");
 
         if (hasPending) {
-            Swal.fire({
-                icon: "warning",
-                title: "Pending Request Found",
-                text: "You already have a pending withdrawal request. Please wait for it to be approved or rejected before making a new request.",
-                confirmButtonColor: "#445C91",
-            });
+            Toast.warning("Pending Request Found","You already have a pending withdrawal request. Please wait for it to be approved or rejected before making a new request." )
             return;
         }
         setIsWithdrawModalOpen(true);
@@ -84,35 +81,26 @@ const Wallets = () => {
 
         try {
             const result = await Swal.fire({
+                position:"top-right",
                 title: "Cancel Request?",
-                text: "Are you sure you want to cancel this withdrawal request?",
+                text: "Are you sure you want to cancel this request?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
+                cancelButtonColor: "#445E94",
                 confirmButtonText: "Yes, Cancel it",
                 cancelButtonText: "No, Keep it",
             });
 
             if (result.isConfirmed) {
                 await dispatch(cancelWithdrawalRequest(walletId)).unwrap();
-                Swal.fire({
-                    icon: "success",
-                    title: "Cancelled!",
-                    text: "Your withdrawal request has been cancelled.",
-                    confirmButtonColor: "#445C91",
-                });
+                Toast.success("Cancelled!","Your withdrawal request has been cancelled.")
 
                 
                 dispatch(fetchWithdrawalRequests());
             }
         } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Failed",
-                text: error.message || "Failed to cancel withdrawal request. Please try again.",
-                confirmButtonColor: "#445C91",
-            });
+            Toast.error("Failed",error.message || "Failed to cancel withdrawal request. Please try again.")
         }
     };
 

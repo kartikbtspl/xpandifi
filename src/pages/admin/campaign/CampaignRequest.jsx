@@ -83,6 +83,7 @@ const handleReferesh=()=>{
           filterOptions={["all","APPROVED","PENDING","REJECTED"]}
           onRefresh={handleReferesh}
           loading={loading}
+          searchableColumns={["campaignCode","name","brandName","baseBid"]}
         
         />
       </div>

@@ -39,7 +39,7 @@ const CampaignRevenueRequest = () => {
     { id: "campaignName", label: "Campaign Name" },
     { id: "retailerBusinessName", label: "Retailer Name" },
     {
-      id: "createdAt",
+      id: "updatedAt",
       label: "Request Date",
       render: (row) => new Date(row.createdAt).toLocaleDateString(),
     },
@@ -79,7 +79,7 @@ const CampaignRevenueRequest = () => {
         onRefresh={handleRefresh}
         isFilter={false}
         loading={requestLoading}
-        searchableColumns={["campaignName","retailerBusinessName","amount"]}
+        searchableColumns={["campaignName","retailerBusinessName","amount","updatedAt"]}
       />
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="lg">

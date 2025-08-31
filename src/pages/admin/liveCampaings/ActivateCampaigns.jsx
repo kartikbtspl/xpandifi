@@ -24,12 +24,6 @@ const ActivateCampaigns = () => {
   const handleActivate = async (id, isActive) => {
     // If campaign is already active, show alert and stop
     if (isActive) {
-      // Swal.fire({
-      //   icon: "warning",
-      //   title: "Already Active",
-      //   text: "This campaign is already active. You cannot deactivate it.",
-      //   confirmButtonColor: "#445C91",
-      // });
       return Toast.warning("Already Active","This campaign is already active. You cannot deactivate it.");
     }
 
@@ -71,6 +65,7 @@ const ActivateCampaigns = () => {
         filterKey="statusLabel"
         filterOptions={["all", "ACTIVE", "INACTIVE"]}
         onRefresh={() => dispatch(fetchCampaigns())}
+        searchableColumns={["campaignCode","name","baseBid","dateRange"]}
       />
     </div>
   );
