@@ -101,34 +101,12 @@ const TicketSystem = () => {
   const columns = [
     {
       id: "ticketID",
-      label: "Ticket ID",
-      // render: (row) => (
-      //   <span
-      //     // onClick={(e) => {
-      //     //   e.stopPropagation();
-      //     //   handleOpenModal(row);
-      //     // }}
-      //     className="cursor-pointer hover:text-blue-600 hover:underline "
-      //   >
-      //     {row.ticketID}
-      //   </span>
-      // ),
+      label: "Ticket ID"
     },
     
     {
       id: "subject",
-      label: "Subject",
-      // render: (row) => (
-      //   <span
-      //     // onClick={(e) => {
-      //     //   e.stopPropagation();
-      //     //   handleOpenModal(row);
-      //     // }}
-      //     className="cursor-pointer hover:text-blue-600 hover:underline "
-      //   >
-      //     {row.subject}
-      //   </span>
-      // ),
+      label: "Subject"
     },
     
     { id: "priority", label: "Priority" },
@@ -201,6 +179,7 @@ const TicketSystem = () => {
           filterOptions={["all", "OPEN", "INPROGRESS", "RESOLVED", "REOPEN", "CLOSED"]}
           filterKey="status"
           onRowClick={handleOpenModal} 
+          searchableColumns={["ticketID","subject","priority","raisedAt"]}
         />
       </div>
 

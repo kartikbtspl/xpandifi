@@ -132,6 +132,7 @@ const RevenuePayouts = () => {
           filterOptions={["all", "paid", "unpaid"]}
           onRefresh={() => dispatch(fetchPayouts())}
           loading={loading}
+          searchableColumns={["withdrawalRequestCode","name","amount","paymentMethod","updatedAt"]}
         />
       )}
     </div>

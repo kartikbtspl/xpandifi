@@ -71,7 +71,7 @@ const PaymentsHistory = () => {
         loading={paymentsLoading}
         rows={payments}
         isFilter={false}
-        searchableColumns={["campaignCode", "campaignName", "transactionId"]}
+        searchableColumns={["campaignCode", "campaignName", "transactionId","amount"]}
       />
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="lg">

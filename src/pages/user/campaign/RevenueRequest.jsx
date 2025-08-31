@@ -87,7 +87,7 @@ const RevenueRequest = () => {
         rows={endedCampaigns}
         loading={endedLoading}
         onRefresh={handleRefresh}
-        searchableColumns={["campaignCode", "campaignName"]}
+        searchableColumns={["campaignCode", "campaignName","startDate","endDate"]}
       />
     </>
   );

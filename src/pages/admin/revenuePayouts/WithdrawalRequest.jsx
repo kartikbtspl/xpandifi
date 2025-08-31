@@ -133,6 +133,7 @@ const handStatusUpdate = async (withdrawalId, status) => {
         filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
         onRefresh={() => dispatch(fetchPayouts())}
         loading={loading}
+        searchableColumns={["withdrawalRequestCode","name","amount","updatedAt","paymentMethod"]}
       />
 
       {/* Modal for details and accept/reject */}

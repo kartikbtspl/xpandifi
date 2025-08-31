@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { fetchPayouts } from "../../../redux/slices/admin/payoutSlice";
 import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
 import Toast from "../../../components/ui/toast/Toast";
+import LoaderEmpt from "../../../components/loader/LoaderEmpt";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -90,6 +91,8 @@ Reference: ${referenceId || "-"} | UTR: ${utr || "-"}`
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 md:px-10 pb-8 pt-4">
+      {isLoading && <LoaderEmpt size="large" />}
+
       <header className="mb-8">
         <Breadcrumbs />
         <h1 className="text-3xl font-bold text-gray-800 mt-2">

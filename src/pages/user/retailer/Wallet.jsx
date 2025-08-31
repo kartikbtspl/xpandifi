@@ -186,7 +186,7 @@ const Wallets = () => {
                 onRowClick={handleOpenDetailsModal}
                 loading={withdrawalLoading}
                 onRefresh={()=>dispatch(fetchWithdrawalRequests())}
-                
+                searchableColumns={["requestCode","amount","reqDate","paymentMethod"]}
             />
 
             {/* Withdraw Modal */}

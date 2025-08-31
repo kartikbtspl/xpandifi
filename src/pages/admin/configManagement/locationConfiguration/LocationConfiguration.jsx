@@ -116,6 +116,7 @@ const LocationConfiguration = () => {
           onRefresh={handleRefresh}
           isFilter={false}
           onRowClick={handleRowClick}
+          searchableColumns={["srNo","name","price"]}
         />
       </div>
     </div>
