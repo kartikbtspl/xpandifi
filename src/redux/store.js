@@ -16,6 +16,7 @@ import deviceReducer from './slices/admin/deviceSlice'
 import tierReducer from './slices/admin/tierSlice'
 import productReducer from './slices/admin/productSlice'
 import payoutReducer from './slices/admin/payoutSlice'
+import adminRevenueReducer from './slices/admin/adminRevenueSlice'
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     // Admin Slices
     adminCampaign: adminCampaignReducer,
     admin: adminReducer,
+    adminRevenue:adminRevenueReducer,
     usersManagement: usersManagementReducer,
     device: deviceReducer,
     tier: tierReducer,

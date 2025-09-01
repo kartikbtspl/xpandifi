@@ -21,7 +21,7 @@ export const getDeviceColumns = () => [
   {
     id: "price",
     label: "Price",
-        render: (row) =>  `₹${row.price.toFixed(2)}`,
+        render: (row) =>  `₹${row.price}`,
 
   },
 ];
@@ -40,7 +40,7 @@ export const getTierColumns = () => [
   {
     id: "price",
     label: "Tier Price",
-    render: (row) =>  `₹${row.price.toFixed(2)}`,
+    render: (row) =>  `₹${row.price}`,
   },
 ];
 
@@ -58,6 +58,6 @@ export const getProductColumns = () => [
   {
     id: "price",
     label: "Price",
-    render: (row) =>  `₹${row.price.toFixed(2)}`,
+    render: (row) =>  `₹${row.price}`,
   },
 ];
