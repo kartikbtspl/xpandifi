@@ -9,7 +9,7 @@ import {
   fetchPayouts,
   updateWithdrawStatus,
 } from "../../../redux/slices/admin/payoutSlice";
-
+import Toast from "../../../components/ui/toast/Toast";
 
 
 const WithdrawalRequest = () => {
@@ -38,11 +38,28 @@ const WithdrawalRequest = () => {
     setSelectedRow(null);
   };
 
+// const handStatusUpdate = async (withdrawalId, status) => {
+//   await dispatch(updateWithdrawStatus({ id: withdrawalId, status }));
+//   dispatch(fetchPayouts());
+//   handleCloseModal();
+// };
 const handStatusUpdate = async (withdrawalId, status) => {
-  await dispatch(updateWithdrawStatus({ id: withdrawalId, status }));
-  dispatch(fetchPayouts());
-  handleCloseModal();
+  try {
+    await dispatch(updateWithdrawStatus({ id: withdrawalId, status })).unwrap();
+
+    if (status === "APPROVED") {
+      Toast.success("Success", "Withdrawal request approved!");
+    } else if (status === "REJECTED") {
+      Toast.error("Rejected", "Withdrawal request rejected!");
+    }
+
+    dispatch(fetchPayouts());
+    handleCloseModal();
+  } catch (error) {
+    Toast.error("Error", error?.message || "Failed to update withdrawal status");
+  }
 };
+
 
 
   const columns = [
@@ -116,6 +133,7 @@ const handStatusUpdate = async (withdrawalId, status) => {
         filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
         onRefresh={() => dispatch(fetchPayouts())}
         loading={loading}
+        searchableColumns={["withdrawalRequestCode","name","amount","updatedAt","paymentMethod"]}
       />
 
       {/* Modal for details and accept/reject */}

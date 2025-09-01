@@ -6,6 +6,7 @@ import Button from "../../../../components/ui/button/Button";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Select from "react-select";
 import { createDevice } from "../../../../redux/slices/admin/deviceSlice";
+import Toast from "../../../../components/ui/toast/Toast"
 
 const deviceOptions = [
   { label: "Cube", value: "Cube" },
@@ -42,11 +43,15 @@ const AddDeviceModal = ({ isOpen, onClose }) => {
   };
 
   dispatch(createDevice(finalData)).then((res) => {
-    if (!res.error) {
-      reset();
-      onClose();
-    }
-  });
+  if (!res.error) {
+    Toast.success("Device added successfully!");
+    reset();
+    onClose();
+  } else {
+    Toast.error(res?.error?.message || "Failed to add device!");
+  }
+});
+
 };
 
 

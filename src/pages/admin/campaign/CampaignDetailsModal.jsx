@@ -19,7 +19,6 @@ const CampaignDetailsModal = ({
   onClose,
   campaign,
   onApprove,
-  onReject,
 }) => {
   if (!campaign) return null;
 
@@ -58,7 +57,7 @@ const infoItems = [
 
         {/* Campaign Info in Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          {infoItems.map(({ label, value, icon }, index) => (
+          {infoItems.map(({ label, value }, index) => (
             <div key={index}>
               <label className="text-sm text-gray-600 flex items-center gap-2">
                 {label}

@@ -8,6 +8,36 @@ export const getCampaignsAPI = async () => {
 };
 
 
+
+export const getCampaignPaymentHistoryAPI = async () => {
+  const response = await axiosInstance.get("/api/v2/campaign/payment-history", {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+
+
+
+export const getCampaignRevenueRequestAPI = async () => {
+  const response = await axiosInstance.get("/api/v2/campaign/revenue-request", {
+    withCredentials: true,
+  });
+  console.log(response)
+  return response?.data;
+};
+
+
+export const transferRevenueAPI = async (id) => {
+  const response = await axiosInstance.put(
+    `/api/v2/campaign/${id}/transfer`,
+    { withCredentials: true }
+  );
+  return response.data;
+};
+
+
+
 export const toggleCampaignStatusAPI = async (id, status) => {
   const response = await axiosInstance.put(`/api/v2/campaign/${id}/activate`, {status});
   return response.data;

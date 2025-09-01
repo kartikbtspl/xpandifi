@@ -60,7 +60,7 @@ export const fields = [
       options: [
         { label: "Informative", value: "informative" },
         { label: "Market Research", value: "marketResearch" },
-        { label: "Market Sarvey", value: "marketSarvey" },
+        { label: "Market Survey", value: "marketSurvey" },
       ],
       validation: yup.string().required("Select a store type"),
     },

@@ -20,47 +20,10 @@ const getColumns = (handleActivate, switchLoading) => [
   //   render: (row) => row.regions?.join(", ") || "N/A",
   // },
   {
-    id: "budget",
+    id: "baseBid",
     label: "Amount",
     render: (row) => `₹ ${row.baseBid}`,
   },
-  // {
-  //   id: "status",
-  //   label: "Status",
-  //   render: (row) => (
-  //     <span
-  //       className={`px-2 py-1 rounded ${
-  //         row.isActive === "ACTIVE"
-  //           ? "bg-green-100 text-green-700"
-  //           : "bg-gray-200 text-gray-600"
-  //       }`}
-  //     >
-  //       {row.isActive}
-  //     </span>
-  //   ),
-  // },
-  // {
-  //   id: "actions",
-  //   label: "Actions",
-  //   render: (row) => {
-  //     if (switchLoading?.[row.id]) {
-  //       return <Loader className="p-0" size="small" />;
-  //     }
-  //     return (
-  //       <Switch
-  //         checked={row.isActive === "ACTIVE"}
-  //         onChange={() => handleActivate(row.id, row.isActive === "ACTIVE")}
-  //         size="small"
-  //         sx={{
-  //           "& .MuiSwitch-switchBase.Mui-checked": { color: "#445C91" },
-  //           "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-  //             backgroundColor: "#445C91",
-  //           },
-  //         }}
-  //       />
-  //     );
-  //   },
-  // },
 
   {
   id: "status",

@@ -12,8 +12,7 @@ import LoaderEmpt from "../../../components/loader/LoaderEmpt";
 
 import { fields } from "../../../util/Form-menu/campaign-fields";
 import { campaignValidationSchema,customizePayload } from "../../../util/validation/campaignValidationSchema";
-import Swal from "sweetalert2";
-
+import Toast from "../../../components/ui/toast/Toast"
 import { createCampaign, fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
 
@@ -140,25 +139,10 @@ const CreateCampaign = () => {
       dispatch(fetchCampaigns());
       methods.reset();
       navigate("/");
-      Swal.fire({
-        icon: "success",
-        title: "Campaign created successfully!",
-        position: "top-end",
-        toast: true,
-        timer: 3000,
-        showConfirmButton: false,
-        background: "#445E94",
-        color: "#fff",
-        iconColor: "#fff",
-      })
+      Toast.success("Campaign created successfully!")
     } else if (createCampaign.rejected.match(result)) {
       const errorMessage = result.payload?.message || "Something went wrong.";
-      Swal.fire({
-        title: "Error",
-        text: errorMessage,
-        icon: "warning",
-        confirmButtonText: "OK",
-      });
+      Toast.error(errorMessage)
     }
   };
 

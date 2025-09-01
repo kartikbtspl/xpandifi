@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Loader from "../../components/loader/Loader";
 import { getforgotPassOTP, submitNewPassOTP } from "../../api/admin/admin-api/admin-api";
-import Swal from "sweetalert2";
 import { Modal } from "antd";
+import Toast from "../../components/ui/toast/Toast";
 
 const ForgotPassAdmin = ({ isForgotOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -63,36 +63,19 @@ const ForgotPassAdmin = ({ isForgotOpen, onClose }) => {
       setIsOtpSent(true);
       setExpirationTime(600);
       setIsExpired(false);
-      Swal.fire({
-        icon: "success",
-        title: "OTP Sent",
-        text: "Check your email for the OTP.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+     
+      Toast.success("OTP Sent","Check your email for the OTP.")
     } catch (error) {
       console.error("Error sending OTP:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Failed to Send OTP",
-        text: "Please try again.",
-      });
+      Toast.error( "Failed to Send OTP","Please try again.")
     } finally {
       setLoading(false);
     }
   };
 
   const onForgot = async (data) => {
-    if (isExpired) {
-      Swal.fire({
-        icon: "warning",
-        title: "OTP Expired",
-        text: "Please resend the OTP.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
-      return;
-    }
+    if (isExpired) return Toast.warning("OTP Expired","Please resend the OTP.");
+
 
     try {
       setLoading(true);
@@ -102,22 +85,12 @@ const ForgotPassAdmin = ({ isForgotOpen, onClose }) => {
         newPassword: data.newPassword,
       };
       await submitNewPassOTP(payload);
-      Swal.fire({
-        icon: "success",
-        title: "Password Reset",
-        text: "You can now log in with your new password.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+      Toast.success("Password Reset","You can now log in with your new password.")
       reset();
       onClose();
     } catch (error) {
       console.error("Error resetting password:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text: "Could not reset password. Check OTP or try again.",
-      });
+      Toast.error("Failed","Could not reset password. Check OTP or try again.")
     } finally {
       setLoading(false);
     }

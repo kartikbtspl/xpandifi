@@ -29,7 +29,6 @@ export const getAdminProfile = async () => {
   const response = await axiosInstance.get('/api/v2/admin/getProfile' , {
       withCredentials: true,
     });
-    console.log(response.data.data)
   return response.data.data;
 };
 

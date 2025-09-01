@@ -6,6 +6,7 @@ import Button from "../../../../components/ui/button/Button";
 import Input from "../../../../components/ui/input/Input";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Select from "react-select";
+import Toast from "../../../../components/ui/toast/Toast";
 
 import { updateDevice } from "../../../../redux/slices/admin/deviceSlice";
 
@@ -19,7 +20,13 @@ const deviceOptions = [
   { label: "Ipad", value: "Ipad" },
 ];
 
-const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrientation }) => {
+const EditDeviceModal = ({
+  isOpen,
+  onClose,
+  initialData,
+  orientation,
+  setOrientation,
+}) => {
   const dispatch = useDispatch();
   const formLoading = useSelector((state) => state.device?.formLoading);
 
@@ -59,12 +66,17 @@ const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrienta
       orientation,
     };
 
-    dispatch(updateDevice({ id: initialData.id, data: finalData })).then((res) => {
-      if (!res.error) {
-        reset();
-        onClose();
+    dispatch(updateDevice({ id: initialData.id, data: finalData })).then(
+      (res) => {
+        if (!res.error) {
+          reset();
+          onClose();
+          Toast.success("Device update successfully!");
+        } else {
+          Toast.error(res?.error?.message || "Failed to update device!");
+        }
       }
-    });
+    );
   };
 
   return (
@@ -83,7 +95,9 @@ const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrienta
                 {...field}
                 options={deviceOptions}
                 placeholder="Select device type"
-                value={deviceOptions.find((opt) => opt.value === field.value) || null}
+                value={
+                  deviceOptions.find((opt) => opt.value === field.value) || null
+                }
                 onChange={(selected) => field.onChange(selected?.value)}
               />
             )}
@@ -94,7 +108,10 @@ const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrienta
             <Controller
               control={control}
               name="height"
-              rules={{ required: "Height is required", min: { value: 1, message: "Height must be positive" } }}
+              rules={{
+                required: "Height is required",
+                min: { value: 1, message: "Height must be positive" },
+              }}
               render={({ field }) => (
                 <Input
                   {...field}
@@ -109,7 +126,10 @@ const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrienta
             <Controller
               control={control}
               name="width"
-              rules={{ required: "Width is required", min: { value: 1, message: "Width must be positive" } }}
+              rules={{
+                required: "Width is required",
+                min: { value: 1, message: "Width must be positive" },
+              }}
               render={({ field }) => (
                 <Input
                   {...field}
@@ -126,7 +146,9 @@ const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrienta
           {/* Orientation & Price */}
           <div className="flex w-full items-center justify-between">
             <div>
-              <label className="block text-sm font-medium mb-1">Orientation</label>
+              <label className="block text-sm font-medium mb-1">
+                Orientation
+              </label>
               <div className="flex gap-4">
                 {["Horizontal", "Vertical"].map((opt) => (
                   <Button
@@ -171,7 +193,7 @@ const EditDeviceModal = ({ isOpen, onClose, initialData, orientation, setOrienta
             <Button
               type="submit"
               variant="primary"
-              label= "Update Device"
+              label="Update Device"
               isIcon={false}
               className="px-6 py-2"
               loading={formLoading}

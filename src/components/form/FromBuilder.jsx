@@ -101,7 +101,7 @@ const FormBuilder = ({
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="p-6 bg-white rounded-xl shadow space-y-6"
+      className="p-6 bg-white rounded-xl space-y-6"
     >
       <h2 className="text-xl font-semibold text-gray-800">
         {/* {title || (isEdit ? "Update Campaign" : "Create Campaign")} */}

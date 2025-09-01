@@ -9,6 +9,7 @@ import { fetchAdminProfile,loginAdmin } from "../../redux/slices/admin/adminSlic
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
 import PageTitle from "../../components/ui/page-title/PageTitle";
+import Toast from "../../components/ui/toast/Toast"
 
 const AdminLogin = () => {
   const [isForgotOpen, setIsForgotOpen] = useState(false);
@@ -34,9 +35,11 @@ const AdminLogin = () => {
         dispatch(fetchAdminProfile());
         dispatch(fetchCampaigns());
         navigate("/");
+        Toast.success("Singin Successfully!")
       }
     } catch (error) {
       console.error("Login error:", error);
+      Toast.error("Failed","Failed to Signin!")
     } finally {
       setLoading(false);
     }
@@ -49,7 +52,7 @@ const AdminLogin = () => {
         {/* Left Section */}
         <div className="w-1/2 hidden lg:flex flex-col justify-center items-center bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-10">
           <img
-            src="/images/logo/xpandifi-logo.svg"
+            src="/images/Logo.svg"
             alt="Xpandifi Logo"
             className="h-10 mb-4"
           />

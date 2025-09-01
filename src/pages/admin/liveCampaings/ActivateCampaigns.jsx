@@ -7,6 +7,7 @@ import {
   fetchCampaigns,
   toggleCampaignStatus,
 } from "../../../redux/slices/admin/campaignSlice";
+import Toast from "../../../components/ui/toast/Toast"
 
 const ActivateCampaigns = () => {
   const dispatch = useDispatch();
@@ -23,13 +24,7 @@ const ActivateCampaigns = () => {
   const handleActivate = async (id, isActive) => {
     // If campaign is already active, show alert and stop
     if (isActive) {
-      Swal.fire({
-        icon: "warning",
-        title: "Already Active",
-        text: "This campaign is already active. You cannot deactivate it.",
-        confirmButtonColor: "#445C91",
-      });
-      return;
+      return Toast.warning("Already Active","This campaign is already active. You cannot deactivate it.");
     }
 
     const newStatus = true; // ✅ send boolean now instead of "ACTIVE"
@@ -70,6 +65,7 @@ const ActivateCampaigns = () => {
         filterKey="statusLabel"
         filterOptions={["all", "ACTIVE", "INACTIVE"]}
         onRefresh={() => dispatch(fetchCampaigns())}
+        searchableColumns={["campaignCode","name","baseBid","dateRange"]}
       />
     </div>
   );

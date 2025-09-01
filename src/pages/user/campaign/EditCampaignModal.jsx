@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
-
+import Toast from "../../../components/ui/toast/Toast";
 import { Modal } from "../../../components/ui/modal/Modal";
 import FormBuilder from "../../../components/form/FromBuilder";
 import Loader from "../../../components/loader/Loader";
@@ -14,6 +13,7 @@ import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceS
 
 import { fields } from "../../../util/Form-menu/campaign-fields";
 import { customizePayload } from "../../../util/validation/campaignValidationSchema";
+import LoaderEmpt from "../../../components/loader/LoaderEmpt"
 
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
@@ -198,11 +198,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
     ];
 
     if (!cityPostcodes.length)
-      return Swal.fire({
-        icon: "error",
-        title: "Validation Error",
-        text: "Select at least one city/postcode.",
-      });
+      return Toast.error("Select at least one city/postcode.")
 
     const payload = customizePayload({
       ...formData,
@@ -219,23 +215,10 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
       await refreshCampaigns();
       await onSuccess?.();
       onClose?.();
-      Swal.fire({
-        icon: "success",
-        title: "Campaign Updated Successfully.",
-        position: "top-end",
-        toast: true,
-        timer: 3000,
-        showConfirmButton: false,
-        background: "#445E94",
-        color: "#fff",
-        iconColor: "#fff",
-      });
+      Toast.success("Campaign Updated Successfully!")
+
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err?.message || "Failed to update campaign",
-      });
+      Toast.error(err?.message || "Failed to update campaign",)
     }
   };
 
@@ -323,13 +306,12 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
       )}
     />
   );
+  // if(formLoading) return  <LoaderEmpt size="large" />
+
 
   return (
        <>
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" >
-       {formLoading && (
-          <LoaderEmpt size="large" />
-      )}
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <FormProvider {...methods}>
         <div className="max-h-[80vh] rounded-lg relative">
           <FormBuilder

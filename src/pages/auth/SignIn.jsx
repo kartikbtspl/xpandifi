@@ -7,6 +7,7 @@ import { fetchCampaigns } from "../../redux/slices/user/campaignSlice";
 import ForgotPass from "./ForgotPass";
 import Button from "../../components/ui/button/Button";
 import PageTitle from "../../components/ui/page-title/PageTitle";
+import Toast from "../../components/ui/toast/Toast"
 
 const Spinner = ({ size = "sm", className = "" }) => (
   <svg
@@ -35,7 +36,7 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   // ✅ use redux loading state
-  const { formLoading, error } = useSelector((state) => state.user);
+  const { formLoading } = useSelector((state) => state.user);
 
   const {
     register: loginRegister,
@@ -53,9 +54,11 @@ const SignIn = () => {
         dispatch(fetchCampaigns());
         dispatch(fetchUserProfile());
         navigate("/");
+        Toast.success("Signin Successfully!")
       }
     } catch (err) {
       console.error("Login failed:", err);
+      Toast.error("Failed","Failed to Singin")
     }
   };
 
@@ -162,13 +165,6 @@ const SignIn = () => {
                 {isLoginSubmitting || formLoading ? <Spinner /> : null}
                 {isLoginSubmitting || formLoading ? "Logging in..." : "Login"}
               </button>
-
-              {/* Error Message */}
-              {error && (
-                <p className="text-sm text-red-500 text-center mt-2">
-                  {error}
-                </p>
-              )}
 
               {/* Forgot Password */}
               <div className="text-right">

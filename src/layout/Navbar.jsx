@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { routeMap } from "../routes/routeMaps";
+import { agencyRouteMap, retailerRouteMap, adminRouteMap } from "../routes/routeMaps"; // ✅ import all maps
 import Input from "../components/ui/input/Input";
 import { SearchIcon } from "../icon";
 import { Modal } from "../components/ui/modal/Modal";
@@ -28,7 +28,6 @@ const Navbar = ({ toggleSidebar }) => {
 
   const dispatch = useDispatch();
 
-
   // fetch correct profile depending on role
   useEffect(() => {
     if (!user?.role) return; // don't dispatch until role is known
@@ -49,10 +48,19 @@ const Navbar = ({ toggleSidebar }) => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  //  pick routeMap dynamically based on role
+  const availableRoutes = useMemo(() => {
+    if (!user?.role) return [];
+    if (["SUPERADMIN", "ADMIN"].includes(user.role)) return adminRouteMap;
+    if (user.role === "Retailer") return retailerRouteMap;
+    if (user.role === "Ad-Agency") return agencyRouteMap;
+    return [];
+  }, [user?.role]);
+
   const handleSearch = (value) => {
     setQuery(value);
     if (!value.trim()) return setResult([]);
-    const filtered = routeMap
+    const filtered = availableRoutes
       .filter((route) => route.name && route.path)
       .filter((route) =>
         route.name.toLowerCase().includes(value.toLowerCase())
@@ -130,9 +138,9 @@ const Navbar = ({ toggleSidebar }) => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src={user?.avatar || user?.profile_url || "/images/profile.jpeg"}
-              alt="User Avatar"
-              className="w-8 h-8 rounded-full"
+              src={user?.avatar || user?.profile_url || "logo.svg"}
+              alt="User"
+              className="w-8 h-8 rounded-full border-gray-400 border"
             />
             <span className="text-sm font-medium text-gray-700 hidden sm:block">
               {user?.fullName || user?.name || "Loading..."}

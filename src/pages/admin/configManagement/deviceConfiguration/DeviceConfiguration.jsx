@@ -128,6 +128,7 @@ const DeviceConfiguration = () => {
           filterOptions={["Vertical", "Horizontal"]}
           onRefresh={handleRefresh}
           onRowClick={handleRowClick}
+          searchableColumns={["srNo","name","price"]}
         />
       </div>
     </div>

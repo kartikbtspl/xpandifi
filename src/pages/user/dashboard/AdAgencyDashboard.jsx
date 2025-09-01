@@ -10,31 +10,30 @@ import {
   getMaxBidCapSumsByStatus,
 } from "../../../util/helper/sumFunctions";
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
-import {fetchDropdownData} from "../../../redux/slices/user/cityProductDeviceSlice"
-import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge"
-import {formatDate} from "../../../util/helper/formatDate"
-
+import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
+import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
+import { formatDate } from "../../../util/helper/formatDate";
+import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
 
 const AdAgencyDashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const user = useCurrentUser();
   const { campaigns, loading } = useSelector((state) => state.campaign);
-  const { profile: user } = useSelector((state) => state.user);
 
   const [baseBidSums, setBaseBidSums] = useState({});
   const [maxBidCapSums, setMaxBidCapSums] = useState({});
 
+  useEffect(() => {
+    dispatch(fetchDropdownData());
+  }, [dispatch]);
 
-  useEffect(() => {dispatch(fetchDropdownData())}, [dispatch]);
-
-  const filter_camp =campaigns?.filter((c)=>c.isPayment===false)
-
+  const filter_camp = campaigns?.filter((c) => c.isPayment === false);
 
   useEffect(() => {
     setBaseBidSums(getBaseBidSumsByStatus(filter_camp));
     setMaxBidCapSums(getMaxBidCapSumsByStatus(filter_camp));
-  },[]);
+  }, []);
 
   const statsData = [
     { title: "Revenue", value: "25.1k", change: "+15%", currency: true },
@@ -57,18 +56,19 @@ const AdAgencyDashboard = () => {
     { id: "campaignCode", label: "Campaign ID" },
     { id: "name", label: "Campaign Name" },
     { id: "timings", label: "Time Slots" },
-    { id: "baseBid", label: "Bid Amount",
-      render:(row)=>`₹${row.baseBid}`
-     },
+    { id: "baseBid", label: "Bid Amount", render: (row) => `₹${row.baseBid}` },
     {
       id: "isApproved",
       label: "Status",
-      render: (row) => <ApprovalBadge status={row.isApproved} size={12}/>,
+      render: (row) => <ApprovalBadge status={row.isApproved} size={12} />,
     },
-    { id: "createdAt", label: "Result In",
-      render: (row)=>formatDate(row.createdAt)
-     },
+    {
+      id: "createdAt",
+      label: "Result In",
+      render: (row) => formatDate(row.createdAt),
+    },
   ];
+
 
   return (
     <div className="w-full">
@@ -99,7 +99,7 @@ const AdAgencyDashboard = () => {
         filterKey="isApproved"
         filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
         order="desc"
-            orderBy="updatedAt"
+        orderBy="updatedAt"
       />
     </div>
   );

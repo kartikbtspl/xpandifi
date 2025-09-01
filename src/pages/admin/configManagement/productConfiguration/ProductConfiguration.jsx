@@ -67,6 +67,7 @@ useEffect(() => {
           onRefresh={handleRefresh}
           onRowClick={handleRowClick}
           isFilterable={false}
+          searchableColumns={["srNo","name","price"]}
         />
       </div>
     </div>

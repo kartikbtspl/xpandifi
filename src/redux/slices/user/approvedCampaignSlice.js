@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getRetailerCampaigns } from '../../../api/user/retailer/retailer-campaign-api';
+import { getEndedCampaigns, getRetailerCampaigns ,requestRevenue} from '../../../api/user/retailer/retailer-campaign-api';
 
 // Async thunk to fetch approved campaigns
 export const fetchApprovedCampaigns = createAsyncThunk(
@@ -14,15 +14,54 @@ export const fetchApprovedCampaigns = createAsyncThunk(
   }
 );
 
+// Async thunk to fetch ended campaigns
+export const fetchEndedCampaigns = createAsyncThunk(
+  'approvedCampaigns/fetchEndedCampaigns',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getEndedCampaigns();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch approved campaigns');
+    }
+  }
+);
+
+
+
+export const raiseRevenueRequest = createAsyncThunk(
+  'approvedCampaigns/raiseRevenueRequest',
+  async (campaignId, { rejectWithValue }) => {
+    try {
+      const response = await requestRevenue(campaignId);
+      return { campaignId, data: response }; // return campaignId to update state
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to raise revenue request');
+    }
+  }
+);
 const approvedCampaignSlice = createSlice({
   name: 'approvedCampaigns',
   initialState: {
     campaigns: [],
     loading: false,
     error: null,
-    fetched: false, // <-- added fetched flag
+    fetched: false,
+     endedCampaigns: [],
+    endedLoading: false,
+   endedError: null,
+    endedFetched: false,
+
   },
-  reducers: {},
+  reducers: {
+    setCampaigns: (state, action) => {
+      state.campaigns = action.payload || [];
+    },
+    clearCampaigns: (state) => {
+      state.campaigns = [];
+      state.fetched = false;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchApprovedCampaigns.pending, (state) => {
@@ -32,58 +71,46 @@ const approvedCampaignSlice = createSlice({
       .addCase(fetchApprovedCampaigns.fulfilled, (state, action) => {
         state.loading = false;
         state.campaigns = action.payload;
-        state.fetched = true; // <-- set fetched = true on success
+        state.fetched = true;
       })
       .addCase(fetchApprovedCampaigns.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.fetched = true; // <-- reset fetched on failure
-      });
+        state.fetched = true;
+      })
+      /// expired ended campaigns
+      .addCase(fetchEndedCampaigns.pending, (state) => {
+        state.endedLoading = true;
+        state.endedError = null;
+      })
+      .addCase(fetchEndedCampaigns.fulfilled, (state, action) => {
+        state.endedLoading = false;
+        state.endedCampaigns = action.payload;
+        state.endedFetched = true;
+      })
+      .addCase(fetchEndedCampaigns.rejected, (state, action) => {
+        state.endedLoading = false;
+        state.endedError = action.payload;
+        state.endedFetched = true;
+      })
+
+      .addCase(raiseRevenueRequest.pending, (state) => {
+      state.endedLoading = true; // optionally, show loading
+      state.endedError = null;
+    })
+    .addCase(raiseRevenueRequest.fulfilled, (state, action) => {
+      state.endedLoading = false;
+      const { campaignId } = action.payload;
+      state.endedCampaigns = state.endedCampaigns.map(c =>
+        c.id === campaignId ? { ...c, isRequested: true } : c
+      );
+    })
+    .addCase(raiseRevenueRequest.rejected, (state, action) => {
+      state.endedLoading = false;
+      state.endedError = action.payload;
+    });
   },
 });
 
+export const { setCampaigns, clearCampaigns } = approvedCampaignSlice.actions;
 export default approvedCampaignSlice.reducer;
-
-
-// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import {getRetailerCampaigns} from '../../api/retailer/retailer-campaign-api'
-
-// // Async thunk to fetch approved campaigns
-// export const fetchApprovedCampaigns = createAsyncThunk(
-//   'approvedCampaigns/fetchApprovedCampaigns',
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await getRetailerCampaigns();
-//       return response;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data || 'Failed to fetch approved campaigns');
-//     }
-//   }
-// );
-
-// const approvedCampaignSlice = createSlice({
-//   name: 'approvedCampaigns',
-//   initialState: {
-//     campaigns: [],
-//     loading: false,
-//     error: null,
-//   },
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(fetchApprovedCampaigns.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(fetchApprovedCampaigns.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.campaigns = action.payload;
-//       })
-//       .addCase(fetchApprovedCampaigns.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       });
-//   },
-// });
-
-// export default approvedCampaignSlice.reducer;

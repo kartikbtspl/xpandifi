@@ -5,6 +5,7 @@ import {
   getCampaignsAPI,
   updateUserCampaign,
   deleteCampaignAPI,
+  getCampaignsPaymentHistoryAPI,
 } from "../../../api/user/campaign-api/campaignService";
 
 // ===================== Thunks =====================
@@ -72,17 +73,33 @@ export const deleteCampaign = createAsyncThunk(
   }
 );
 
+// Fetch Campaign Payments
+export const fetchCampaignPayments = createAsyncThunk(
+  "campaign/fetchCampaignPayments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getCampaignsPaymentHistoryAPI(); // your API
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 // ===================== Slice =====================
 
 const campaignSlice = createSlice({
   name: "campaign",
   initialState: {
-    loading: false,      // For global fetch/list operations
-    formLoading: false,  // For create/update form operations
+    loading: false, // For global fetch/list operations
+    formLoading: false, // For create/update form operations
     error: null,
     data: null,
     campaigns: [],
     fetched: false,
+    payments: [],
+    paymentsFetched: false,
+    paymentsLoading: false,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -153,6 +170,27 @@ const campaignSlice = createSlice({
       .addCase(deleteCampaign.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // -------- Fetch Campaign Payments --------
+      .addCase(fetchCampaignPayments.pending, (state) => {
+        state.paymentsLoading = true;
+        state.error = null;
+      })
+
+      .addCase(fetchCampaignPayments.fulfilled, (state, action) => {
+        state.paymentsLoading = false;
+        state.payments = (action.payload || []).map((row, idx) => ({
+          ...row,
+          id: row.id || row._id || row.transactionId || `row-${idx}`,
+        }));
+        state.paymentsFetched = true;
+      })
+
+      .addCase(fetchCampaignPayments.rejected, (state, action) => {
+        state.paymentsLoading = false;
+        state.error = action.payload;
+        state.paymentsFetched = true;
       });
   },
 });
