@@ -29,7 +29,7 @@ const getColumns = (handleActivate, switchLoading) => [
 {
   id: "status",
   label: "Status",
-  render: (row) => (
+  render: (row) => (  
     <StatusBadge isActive={row.isActive} isExpired={row.isExpired} size={11} />
   ),
 }
@@ -44,6 +44,7 @@ const getColumns = (handleActivate, switchLoading) => [
     return (
       <Switch
         checked={row.isActive}
+        disabled={row?.isExpired}
         onChange={() => handleActivate(row.id, row.isActive)}
         size="small"
         sx={{
