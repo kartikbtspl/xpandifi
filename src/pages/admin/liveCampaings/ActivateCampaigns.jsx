@@ -41,15 +41,35 @@ const ActivateCampaigns = () => {
   };
 
   const filteredCampaigns = useMemo(
-    () =>
-      campaigns
-        .filter((c) => c.isPayment)
-        .map((campaign) => ({
+  () =>
+    campaigns
+      .filter((c) => c.isPayment)
+      .map((campaign) => {
+        let statusLabel;
+        if (campaign.isExpired) {
+          statusLabel = "EXPIRED";
+        } else {
+          statusLabel = campaign.isActive ? "ACTIVE" : "INACTIVE";
+        }
+
+        return {
           ...campaign,
-          statusLabel: campaign.isActive ? "ACTIVE" : "INACTIVE", // purely for UI text
-        })),
-    [campaigns]
-  );
+          statusLabel,
+        };
+      }),
+  [campaigns]
+);
+
+  // const filteredCampaigns = useMemo(
+  //   () =>
+  //     campaigns
+  //       .filter((c) => c.isPayment)
+  //       .map((campaign) => ({
+  //         ...campaign,
+  //         statusLabel: campaign.isActive ? "ACTIVE" : "INACTIVE", // purely for UI text
+  //       })),
+  //   [campaigns]
+  // );
 
   const columns = getColumns(handleActivate, switchLoading);
 
