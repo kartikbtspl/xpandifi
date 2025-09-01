@@ -60,16 +60,7 @@ const ActivateCampaigns = () => {
   [campaigns]
 );
 
-  // const filteredCampaigns = useMemo(
-  //   () =>
-  //     campaigns
-  //       .filter((c) => c.isPayment)
-  //       .map((campaign) => ({
-  //         ...campaign,
-  //         statusLabel: campaign.isActive ? "ACTIVE" : "INACTIVE", // purely for UI text
-  //       })),
-  //   [campaigns]
-  // );
+
 
   const columns = getColumns(handleActivate, switchLoading);
 
@@ -83,7 +74,7 @@ const ActivateCampaigns = () => {
         rows={filteredCampaigns}
         loading={loading}
         filterKey="statusLabel"
-        filterOptions={["all", "ACTIVE", "INACTIVE"]}
+        filterOptions={["all", "ACTIVE", "INACTIVE","EXPIRED"]}
         onRefresh={() => dispatch(fetchCampaigns())}
         searchableColumns={["campaignCode","name","baseBid","dateRange"]}
       />

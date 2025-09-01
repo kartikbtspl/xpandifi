@@ -26,7 +26,7 @@ const BidReview = () => {
       ),
     },
     {
-      id: "campaignName",
+      id: "name",
       label: "Campaign",
       render: (row) => (
         <div className="flex items-center gap-2">
