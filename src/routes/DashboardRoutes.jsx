@@ -1,47 +1,48 @@
+import { lazy } from "react";
 import { Route } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import PrivateRoute from "./PrivateRoute";
+
 // ================= USER ROUTES =================
-import Dashboard from "../pages/Dashboard";
-import CreateCampaign from "../pages/user/campaign/CreateCampaign";
-import CampaignList from "../pages/user/campaign/CampaignList";
-import CampaignReports from "../pages/user/campaign/CampaignReports";
-import BidManagement from "../pages/user/campaign/BidManagement";
-import UserDetails from "../pages/shared/UserDetails";
-import Devices from "../pages/user/retailer/Devices";
-import AdPerformance from "../pages/user/retailer/AdPerformance";
-import WithdrawEarning from "../pages/user/retailer/WithdrawEarning";
-import ProductAnalytics from "../pages/user/retailer/ProductAnalytics";
-import DataPrivacy from "../pages/user/retailer/DataPrivacy";
-import ActiveCampaigns from "../pages/user/campaign/ActiveCampaigns";
-import CheckoutCampaign from "../pages/user/campaign/CheckoutCampaign";
-import Campaigns from "../pages/user/retailer/Campaigns";
-import Wallets from "../pages/user/retailer/Wallet";
-import Reports from "../pages/user/retailer/Reports";
-import Settings from "../pages/user/retailer/Settings";
-import Support from "../pages/user/retailer/Support";
-import TicketRaise from "../pages/user/Ticket/TicketRaise";
-import RevenueRequest from "../pages/user/campaign/RevenueRequest"
-import PaymentsHistory from "../pages/user/campaign/PaymentsHistory"
+const Dashboard = lazy(() => import("../pages/Dashboard"));
+const CreateCampaign = lazy(() => import("../pages/user/campaign/CreateCampaign"));
+const CampaignList = lazy(() => import("../pages/user/campaign/CampaignList"));
+const CampaignReports = lazy(() => import("../pages/user/campaign/CampaignReports"));
+const BidManagement = lazy(() => import("../pages/user/campaign/BidManagement"));
+const UserDetails = lazy(() => import("../pages/shared/UserDetails"));
+const Devices = lazy(() => import("../pages/user/retailer/Devices"));
+const AdPerformance = lazy(() => import("../pages/user/retailer/AdPerformance"));
+const WithdrawEarning = lazy(() => import("../pages/user/retailer/WithdrawEarning"));
+const ProductAnalytics = lazy(() => import("../pages/user/retailer/ProductAnalytics"));
+const DataPrivacy = lazy(() => import("../pages/user/retailer/DataPrivacy"));
+const ActiveCampaigns = lazy(() => import("../pages/user/campaign/ActiveCampaigns"));
+const CheckoutCampaign = lazy(() => import("../pages/user/campaign/CheckoutCampaign"));
+const Campaigns = lazy(() => import("../pages/user/retailer/Campaigns"));
+const Wallets = lazy(() => import("../pages/user/retailer/Wallet"));
+const Reports = lazy(() => import("../pages/user/retailer/Reports"));
+const Settings = lazy(() => import("../pages/user/retailer/Settings"));
+const Support = lazy(() => import("../pages/user/retailer/Support"));
+const TicketRaise = lazy(() => import("../pages/user/Ticket/TicketRaise"));
+const RevenueRequest = lazy(() => import("../pages/user/campaign/RevenueRequest"));
+const PaymentsHistory = lazy(() => import("../pages/user/campaign/PaymentsHistory"));
 
 // ================= ADMIN ROUTES =================
-import UserManagement from "../pages/admin/userManagement/UserManagement";
-import CampaignRequest from "../pages/admin/campaign/CampaignRequest";
-import BidReview from "../pages/admin/bidsReview/BidReview";
-import RevenuePayouts from "../pages/admin/revenuePayouts/RevenuePayouts";
-// import AdminUserDetails from "../pages/admin/User/UserDetails"; 
-import Setting from "../pages/admin/setting/Setting";
-import ConfigurationManagement from "../pages/admin/configManagement/ConfigurationManagement";
-import ActivateCampaigns from "../pages/admin/liveCampaings/ActivateCampaigns";
-import TicketSystem from "../pages/admin/TicketSystem/TicketSystem";
-import AdminMyEarnings from "../pages/admin/earn/MyEarnigs"; 
-import PayoutCheckout from "../pages/admin/revenuePayouts/PayoutCheckout";
-import WithdrawalRequest from "../pages/admin/revenuePayouts/WithdrawalRequest";
-import CampaignPaymentHistory from "../pages/admin/campaign/CampaignPaymentHistory"
-import CampaignRevenueRequest from "../pages/admin/campaign/CampaignRevenueRequest";
-
+const UserManagement = lazy(() => import("../pages/admin/userManagement/UserManagement"));
+const CampaignRequest = lazy(() => import("../pages/admin/campaign/CampaignRequest"));
+const BidReview = lazy(() => import("../pages/admin/bidsReview/BidReview"));
+const RevenuePayouts = lazy(() => import("../pages/admin/revenuePayouts/RevenuePayouts"));
+const Setting = lazy(() => import("../pages/admin/setting/Setting"));
+const ConfigurationManagement = lazy(() => import("../pages/admin/configManagement/ConfigurationManagement"));
+const ActivateCampaigns = lazy(() => import("../pages/admin/liveCampaings/ActivateCampaigns"));
+const TicketSystem = lazy(() => import("../pages/admin/TicketSystem/TicketSystem"));
+const AdminMyEarnings = lazy(() => import("../pages/admin/earn/MyEarnigs"));
+const PayoutCheckout = lazy(() => import("../pages/admin/revenuePayouts/PayoutCheckout"));
+const WithdrawalRequest = lazy(() => import("../pages/admin/revenuePayouts/WithdrawalRequest"));
+const CampaignPaymentHistory = lazy(() => import("../pages/admin/campaign/CampaignPaymentHistory"));
+const CampaignRevenueRequest = lazy(() => import("../pages/admin/campaign/CampaignRevenueRequest"));
 
 export const dashboardRoutes = [
+
     <Route
     key="layout"
     element={
