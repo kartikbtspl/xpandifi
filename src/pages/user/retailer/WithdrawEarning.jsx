@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import Button from "../../../components/ui/button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { createWithdrawalRequest,fetchWithdrawalRequests } from "../../../redux/slices/user/walletSlice";
-
+import Toast from "../../../components/ui/toast/Toast";
 const WithdrawEarnings = ({ onClose, balance }) => {
 
   const {formLoading} = useSelector((state)=>state.wallet)
@@ -27,11 +27,7 @@ const WithdrawEarnings = ({ onClose, balance }) => {
 
   const onSubmit = async (data) => {
     if (parseFloat(data.amount) > balance) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid Amount",
-        text: "Withdrawal amount cannot exceed your current balance.",
-      });
+      Toast.error("Invalid Amount","Withdrawal amount cannot exceed your current balance.")
       return;
     }
 
@@ -40,23 +36,12 @@ const WithdrawEarnings = ({ onClose, balance }) => {
 
       onClose();
 
-      setTimeout(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Request Sent!",
-          text: "Please keep checking your status updates and email for further updates.",
-          confirmButtonColor: "#445C91",
-        });
-      }, 150);
+     Toast.success("Request Sent!","Please keep checking your status updates and email for further updates.")
       dispatch(fetchWithdrawalRequests());
 
       console.log("Withdrawal request form data ", data);  // ❌ commented out
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Request Failed",
-        text: error || "Something went wrong. Please try again later.",
-      });
+      Toast.error("Request Failed",error || "Something went wrong. Please try again later.")
     }
   };
 
@@ -129,94 +114,3 @@ const WithdrawEarnings = ({ onClose, balance }) => {
 };
 
 export default WithdrawEarnings;
-
-
-// import React, { useState } from 'react';
-// import { useForm } from 'react-hook-form';
-// import FormBuilder from "../../components/form/FromBuilder";
-
-// const WithdrawEarnings = () => {
-//   const methods = useForm();
-//   const [withdrawMethod, setWithdrawMethod] = useState("upi");
-
-//   const upiFields = [
-//     [{ name: "amount", label: "Amount", type: "input" },
-//      { name: "upi", label: "UPI ID", type: "input" }],
-//   ];
-
-//   const bankFields = [
-//     [
-//       { name: "amount", label: "Amount", type: "input" },
-//       { name: "accountNo", label: "Account No", type: "input" },
-//       { name: "ifsc", label: "IFSC Code", type: "input" },
-//       { name: "remark", label: "Remarks", type: "input" ,gridSpan:2},
-//     ],
-//   ];
-
-//   const handleMethodChange = (method) => {
-//     setWithdrawMethod(method);
-//     methods.reset();
-//   };
-
-//   const handleSubmit = (data) => {
-//     console.log(`Submitted via ${withdrawMethod}:`, data);
-//   };
-
-//   // const currentFields = withdrawMethod === "upi" ? upiFields : bankFields;
-
-//   return (
-//     <>
-//     <FormBuilder
-//           methods={methods}
-//           onSubmit={handleSubmit}
-//           fieldsConfig={upiFields}
-//           title={"UPI Info"}
-//           submitLabel="Submit Request"
-//           isIcon={false}
-//           isPlus={false}
-//           /></>
-//     // <div className="w-full h-screen overflow-y-auto p-4">
-//     //   <h1 className="text-xl font-bold mb-6 text-gray-800">Withdraw Earnings</h1>
-
-//     //   <div className="flex items-center space-x-6 mb-8">
-//     //     <label className="flex items-center">
-//     //       <input
-//     //         type="radio"
-//     //         name="withdrawMethod"
-//     //         value="upi"
-//     //         checked={withdrawMethod === "upi"}
-//     //         onChange={() => handleMethodChange("upi")}
-//     //         className="h-4 w-4 text-blue-600"
-//     //       />
-//     //       <span className="ml-2 text-gray-700 text-lg">UPI</span>
-//     //     </label>
-
-//     //     <label className="flex items-center">
-//     //       <input
-//     //         type="radio"
-//     //         name="withdrawMethod"
-//     //         value="bank"
-//     //         checked={withdrawMethod === "bank"}
-//     //         onChange={() => handleMethodChange("bank")}
-//     //         className="h-4 w-4 text-blue-600"
-//     //       />
-//     //       <span className="ml-2 text-gray-700 text-lg">Bank Account</span>
-//     //     </label>
-//     //   </div>
-
-//     //   <div className="bg-white w-full max-w-4xl">
-//     //     <FormBuilder
-//     //       methods={methods}
-//     //       onSubmit={handleSubmit}
-//     //       fieldsConfig={currentFields}
-//     //       title={`Withdraw via ${withdrawMethod === 'upi' ? 'UPI' : 'Bank Account'}`}
-//     //       submitLabel="Withdraw"
-//     //       isIcon={false}
-//     //       className
-//     //     />
-//     //   </div>
-//     // </div>
-//   );
-// };
-
-// export default WithdrawEarnings;

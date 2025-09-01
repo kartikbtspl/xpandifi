@@ -35,11 +35,11 @@ const AdminLogin = () => {
         dispatch(fetchAdminProfile());
         dispatch(fetchCampaigns());
         navigate("/");
-        Toast.success("Singin Successfully!")
+        Toast.success("Sign in Successfully!")
       }
     } catch (error) {
       console.error("Login error:", error);
-      Toast.error("Failed","Failed to Signin!")
+      Toast.error("Failed","Failed to Sign in!")
     } finally {
       setLoading(false);
     }

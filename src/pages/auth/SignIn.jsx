@@ -54,11 +54,11 @@ const SignIn = () => {
         dispatch(fetchCampaigns());
         dispatch(fetchUserProfile());
         navigate("/");
-        Toast.success("Signin Successfully!")
+        Toast.success("Sign in Successfully!")
       }
     } catch (err) {
       console.error("Login failed:", err);
-      Toast.error("Failed","Failed to Singin")
+      Toast.error("Failed","Failed to Sign in")
     }
   };
 
