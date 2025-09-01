@@ -10,6 +10,7 @@ import {
   updateWithdrawStatus,
 } from "../../../redux/slices/admin/payoutSlice";
 import Toast from "../../../components/ui/toast/Toast";
+import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
@@ -82,30 +83,7 @@ const WithdrawalRequest = () => {
     {
       id: "isApproved",
       label: "Status",
-      render: (row) => {
-        const status = row.isApproved;
-        let bgColor = "bg-gray-200";
-        let textColor = "text-gray-700";
-
-        if (status === "PENDING") {
-          bgColor = "bg-yellow-100";
-          textColor = "text-yellow-700";
-        } else if (status === "REJECTED") {
-          bgColor = "bg-red-100";
-          textColor = "text-red-700";
-        } else if (status === "APPROVED") {
-          bgColor = "bg-green-100";
-          textColor = "text-green-700";
-        }
-
-        return (
-          <span
-            className={`${bgColor} ${textColor} rounded-full px-3 py-1 text-sm font-semibold inline-block`}
-          >
-            {status}
-          </span>
-        );
-      },
+      render: (row) => <ApprovalBadge status={row.isApproved} size={11} />,
     },
     {
       id: "updatedAt",
@@ -149,48 +127,70 @@ const WithdrawalRequest = () => {
             </h2>
 
             {/* Content */}
-            <div className="space-y-3 text-sm text-gray-700">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Request Code</span>
-                <span>{selectedRow.withdrawalRequestCode}</span>
+
+            <div className="divide-y divide-gray-100 text-sm">
+              {/* Request Code */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-500 text-xs uppercase tracking-wide">
+                  Request Code
+                </span>
+                <span className="text-gray-800 font-medium">
+                  {selectedRow.withdrawalRequestCode}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Name</span>
-                <span>{selectedRow.name}</span>
+
+              {/* Name */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-500 text-xs uppercase tracking-wide">
+                  Name
+                </span>
+                <span className="text-gray-800">{selectedRow.name}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Amount</span>
-                <span className="font-medium text-gray-900">
+
+              {/* Amount */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-500 text-xs uppercase tracking-wide">
+                  Amount
+                </span>
+                <span className="text-gray-900 font-semibold text-base">
                   ₹{selectedRow.amount}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Payment Method</span>
-                <span className="uppercase">{selectedRow.paymentMethod}</span>
-              </div>
-              {selectedRow?.upiId && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">UPI ID</span>
-                  <span>{selectedRow.upiId}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-gray-500">Status</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                    selectedRow.isApproved === "APPROVED"
-                      ? "bg-green-100 text-green-700"
-                      : selectedRow.isApproved === "REJECTED"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}
-                >
-                  {selectedRow.isApproved}
+
+              {/* Payment Method */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-500 text-xs uppercase tracking-wide">
+                  Payment Method
+                </span>
+                <span className="text-gray-800 uppercase">
+                  {selectedRow.paymentMethod}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Date</span>
-                <span>
+
+              {/* UPI ID */}
+              {selectedRow?.upiId && (
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">
+                    UPI ID
+                  </span>
+                  <span className="text-gray-800">{selectedRow.upiId}</span>
+                </div>
+              )}
+
+              {/* Status */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-500 text-xs uppercase tracking-wide">
+                  Status
+                </span>
+                <ApprovalBadge status={selectedRow.isApproved} size={12} />
+              </div>
+
+              {/* Date */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-500 text-xs uppercase tracking-wide">
+                  Date
+                </span>
+                <span className="text-gray-800">
                   {moment(selectedRow.createdAt).format("DD/MM/YYYY")}
                 </span>
               </div>
@@ -201,13 +201,13 @@ const WithdrawalRequest = () => {
               <div className="flex gap-3 mt-8 justify-end">
                 <button
                   onClick={() => handStatusUpdate(selectedRow.id, "REJECTED")}
-                  className="px-4 py-2 cursor-pointer rounded-full bg-red-200 text-red-700 font-semibold transition duration-150 hover:scale-95"
+                  className="px-5 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   REJECT
                 </button>
                 <button
                   onClick={() => handStatusUpdate(selectedRow.id, "APPROVED")}
-                  className="px-4 py-2 cursor-pointer rounded-full bg-green-200 text-green-700 font-semibold transition duration-150 hover:scale-95"
+                  className="px-5 py-2 rounded-md bg-green-100 text-green-600 hover:bg-green-200 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   APPROVE
                 </button>
