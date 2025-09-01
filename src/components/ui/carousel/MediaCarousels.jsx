@@ -81,6 +81,7 @@ const MediaCarousels = ({ mediaFiles = { images: [], videos: [] }, size = "md", 
                   src={file}
                   alt={`Media ${idx + 1}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               )}
             </div>
