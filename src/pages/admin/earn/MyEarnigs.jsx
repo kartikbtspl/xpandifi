@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getRevenue } from "../../../api/admin/admin-api/admin-api";
 import { getAllRevenueHistory } from "../../../redux/slices/admin/adminRevenueSlice";
 import ReusableTable from "../../../components/table/ReusableTable"; 
-import  Modal from "../../../components/modal/Modal"
+import  {Modal} from "../../../components/ui/modal/Modal"
 
 const AdminMyEarnings = () => {
   const dispatch = useDispatch();
@@ -117,7 +117,7 @@ const AdminMyEarnings = () => {
       <Modal
         isOpen={!!selectedTransaction}
         onClose={() => setSelectedTransaction(null)}
-        size="lg"
+        size="md"
       >
         {selectedTransaction && (
           <div>

@@ -195,7 +195,7 @@ const Wallets = () => {
             </Modal>
 
             {/* Details Modal */}
-            <Modal isOpen={modalOpen} onClose={handleCloseModal} size="md" containerClassName="bg-white rounded-xl p-6">
+            <Modal isOpen={modalOpen} onClose={handleCloseModal} size="md">
                 {selectedRow && (
                     <div>
                         <h2 className="text-xl font-semibold mb-4">Withdrawal Request Details</h2>

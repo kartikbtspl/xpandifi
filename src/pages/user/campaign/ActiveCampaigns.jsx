@@ -51,7 +51,7 @@ const ActiveCampaigns = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => <StatusBadge isActive={row.isActive} size={11} />,
+      render: (row) => <StatusBadge isActive={row.isActive} isExpired={row?.isExpired} size={11} />,
     },
   ];
 

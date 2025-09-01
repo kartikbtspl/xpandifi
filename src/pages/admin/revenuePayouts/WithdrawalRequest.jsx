@@ -11,7 +11,6 @@ import {
 } from "../../../redux/slices/admin/payoutSlice";
 import Toast from "../../../components/ui/toast/Toast";
 
-
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
 
@@ -38,29 +37,27 @@ const WithdrawalRequest = () => {
     setSelectedRow(null);
   };
 
-// const handStatusUpdate = async (withdrawalId, status) => {
-//   await dispatch(updateWithdrawStatus({ id: withdrawalId, status }));
-//   dispatch(fetchPayouts());
-//   handleCloseModal();
-// };
-const handStatusUpdate = async (withdrawalId, status) => {
-  try {
-    await dispatch(updateWithdrawStatus({ id: withdrawalId, status })).unwrap();
+  const handStatusUpdate = async (withdrawalId, status) => {
+    try {
+      await dispatch(
+        updateWithdrawStatus({ id: withdrawalId, status })
+      ).unwrap();
 
-    if (status === "APPROVED") {
-      Toast.success("Success", "Withdrawal request approved!");
-    } else if (status === "REJECTED") {
-      Toast.error("Rejected", "Withdrawal request rejected!");
+      if (status === "APPROVED") {
+        Toast.success("Success", "Withdrawal request approved!");
+      } else if (status === "REJECTED") {
+        Toast.error("Rejected", "Withdrawal request rejected!");
+      }
+
+      dispatch(fetchPayouts());
+      handleCloseModal();
+    } catch (error) {
+      Toast.error(
+        "Error",
+        error?.message || "Failed to update withdrawal status"
+      );
     }
-
-    dispatch(fetchPayouts());
-    handleCloseModal();
-  } catch (error) {
-    Toast.error("Error", error?.message || "Failed to update withdrawal status");
-  }
-};
-
-
+  };
 
   const columns = [
     {
@@ -133,58 +130,89 @@ const handStatusUpdate = async (withdrawalId, status) => {
         filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
         onRefresh={() => dispatch(fetchPayouts())}
         loading={loading}
-        searchableColumns={["withdrawalRequestCode","name","amount","updatedAt","paymentMethod"]}
+        searchableColumns={[
+          "withdrawalRequestCode",
+          "name",
+          "amount",
+          "updatedAt",
+          "paymentMethod",
+        ]}
       />
 
       {/* Modal for details and accept/reject */}
       <Modal isOpen={modalOpen} onClose={handleCloseModal} size="md">
         {selectedRow && (
           <div>
-            <h2 className="text-xl font-semibold mb-4">Request Details</h2>
-            <p>
-              <strong>Request Code:</strong> {selectedRow.withdrawalRequestCode}
-            </p>
-            <p>
-              <strong>Name:</strong> {selectedRow.name}
-            </p>
-            <p>
-              <strong>Amount:</strong> ₹{selectedRow.amount}
-            </p>
-            <p>
-              <strong>Payment Method:</strong>{" "}
-              {selectedRow.paymentMethod.toUpperCase()}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedRow.isApproved}
-            </p>
-            <p>
-              <strong>Date:</strong>{" "}
-              {moment(selectedRow.createdAt).format("DD/MM/YYYY")}
-            </p>
-            <div className="flex gap-4 mt-6 justify-end">
-              {selectedRow.isApproved === "PENDING" && (
-                <>
-                  <Button
-                    isIcon={false}
-                    label="Approve"
-onClick={() => handStatusUpdate(selectedRow.id, "APPROVED")}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  />
-                  <Button
-                    isIcon={false}
-                    label="Reject"
-onClick={() => handStatusUpdate(selectedRow.id, "REJECTED")}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  />
-                </>
+            {/* Header */}
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Withdrawal Request
+            </h2>
+
+            {/* Content */}
+            <div className="space-y-3 text-sm text-gray-700">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Request Code</span>
+                <span>{selectedRow.withdrawalRequestCode}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Name</span>
+                <span>{selectedRow.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Amount</span>
+                <span className="font-medium text-gray-900">
+                  ₹{selectedRow.amount}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Payment Method</span>
+                <span className="uppercase">{selectedRow.paymentMethod}</span>
+              </div>
+              {selectedRow?.upiId && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">UPI ID</span>
+                  <span>{selectedRow.upiId}</span>
+                </div>
               )}
-              <Button
-                isIcon={false}
-                label="Close"
-                onClick={handleCloseModal}
-                className="bg-gray-400 hover:bg-gray-600"
-              />
+              <div className="flex justify-between">
+                <span className="text-gray-500">Status</span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                    selectedRow.isApproved === "APPROVED"
+                      ? "bg-green-100 text-green-700"
+                      : selectedRow.isApproved === "REJECTED"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {selectedRow.isApproved}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Date</span>
+                <span>
+                  {moment(selectedRow.createdAt).format("DD/MM/YYYY")}
+                </span>
+              </div>
             </div>
+
+            {/* Actions */}
+            {selectedRow.isApproved === "PENDING" && (
+              <div className="flex gap-3 mt-8 justify-end">
+                <button
+                  onClick={() => handStatusUpdate(selectedRow.id, "REJECTED")}
+                  className="px-4 py-2 cursor-pointer rounded-full bg-red-200 text-red-700 font-semibold transition duration-150 hover:scale-95"
+                >
+                  REJECT
+                </button>
+                <button
+                  onClick={() => handStatusUpdate(selectedRow.id, "APPROVED")}
+                  className="px-4 py-2 cursor-pointer rounded-full bg-green-200 text-green-700 font-semibold transition duration-150 hover:scale-95"
+                >
+                  APPROVE
+                </button>
+              </div>
+            )}
           </div>
         )}
       </Modal>

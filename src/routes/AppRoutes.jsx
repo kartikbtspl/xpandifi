@@ -7,7 +7,7 @@ import Loader from "../components/loader/Loader";
 const AppRoutes = () => {
 
   return (
-    <Suspense fallback={<Loader size="large"/>}>
+    <Suspense>
     <Routes>
       {[...dashboardRoutes, ...publicRoutes]}
     </Routes>
