@@ -25,11 +25,15 @@ const getColumns = (handleActivate, switchLoading) => [
     render: (row) => `₹ ${row.baseBid}`,
   },
 
-  {
+
+{
   id: "status",
   label: "Status",
-  render: (row) => <StatusBadge isActive={row.isActive} size={11}/>
-},
+  render: (row) => (  
+    <StatusBadge isActive={row.isActive} isExpired={row.isExpired} size={11} />
+  ),
+}
+,
 {
   id: "actions",
   label: "Actions",
@@ -40,6 +44,7 @@ const getColumns = (handleActivate, switchLoading) => [
     return (
       <Switch
         checked={row.isActive}
+        disabled={row?.isExpired}
         onChange={() => handleActivate(row.id, row.isActive)}
         size="small"
         sx={{
