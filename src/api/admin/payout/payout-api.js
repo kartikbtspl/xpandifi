@@ -7,10 +7,10 @@ export const makePayoutAPI = async (id) => {
 };
 
 
-export const verifyPayoutApi = async(raw)=>{
-  const response = await axiosInstance.post('/api/v2/transfer/payout/webhook',raw
-    );
-    return response.data;
+export const verifyPayoutApi = async (raw) => {
+  const response = await axiosInstance.post('/api/v2/transfer/payout/webhook', raw
+  );
+  return response.data;
 }
 
 export const fetchWithdrawalRequestAPI = async () => {
@@ -23,14 +23,17 @@ export const fetchWithdrawalRequestAPI = async () => {
   return response.data;
 };
 
-
-export const updateWithdrawStatusAPI = async (withdraw_id, status) => {
+export const updateWithdrawStatusAPI = async (withdraw_id, status, remark = "") => {
   const response = await axiosInstance.put(
-    `api/v2/withdrawal/${withdraw_id}/status`,
-    { isApproved: status }
+    `/api/v2/withdrawal/${withdraw_id}/status`,
+    {
+      isApproved: status,
+      remark   // ✅ include rejection reason
+    }
   );
   return response.data;
 };
+
 
 
 
