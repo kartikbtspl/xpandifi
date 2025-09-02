@@ -205,12 +205,12 @@ const WithdrawalRequest = () => {
               <div className="flex gap-3 mt-8 justify-end">
                 <button
                   onClick={() => setIsRejectModalOpen(true)}
-                  className="px-4 py-2 cursor-pointer rounded-full bg-red-200 text-red-700 font-semibold transition duration-150 hover:scale-95"
+                  className="px-4 py-2 cursor-pointer rounded-md bg-red-100 hover:bg-red-200 text-red-700 transition duration-150 "
                 >
                   REJECT
                 </button>
                 <button
-                  onClick={() => handStatusUpdate(selectedRow.id, "APPROVED")}
+                  onClick={() => handleStatusUpdate(selectedRow.id, "APPROVED")}
                   className="px-5 py-2 rounded-md bg-green-100 text-green-600 hover:bg-green-200 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   APPROVE
