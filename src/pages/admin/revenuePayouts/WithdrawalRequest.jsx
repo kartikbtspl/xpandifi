@@ -3,31 +3,32 @@ import { Typography } from "@mui/material";
 import moment from "moment";
 import ReusableTable from "../../../components/table/ReusableTable";
 import { Modal } from "../../../components/ui/modal/Modal";
-import Button from "../../../components/ui/button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPayouts,
   updateWithdrawStatus,
 } from "../../../redux/slices/admin/payoutSlice";
 import Toast from "../../../components/ui/toast/Toast";
+import RejectWithdrawalModal from "./RejectWithdrawalRequest";
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
-
-  // ✅ correct selector (slice key = payouts)
   const { payouts, loading } = useSelector((state) => state.payout);
-  console.log("payouts", payouts);
 
-  const filterdPayouts = payouts.filter((c) => c.isPaid === false);
+  const filteredPayouts = payouts.filter((c) => c.isPaid === false);
+
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Reject modal states
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [remark, setRemark] = useState("");
 
   useEffect(() => {
     dispatch(fetchPayouts());
   }, [dispatch]);
 
-  // Open modal on row click
   const handleRowClick = (row) => {
     setSelectedRow(row);
     setModalOpen(true);
@@ -38,10 +39,10 @@ const WithdrawalRequest = () => {
     setSelectedRow(null);
   };
 
-  const handStatusUpdate = async (withdrawalId, status) => {
+  const handleStatusUpdate = async (withdrawalId, status, remarkText = "") => {
     try {
       await dispatch(
-        updateWithdrawStatus({ id: withdrawalId, status })
+        updateWithdrawStatus({ id: withdrawalId, status, remark: remarkText })
       ).unwrap();
 
       if (status === "APPROVED") {
@@ -50,7 +51,7 @@ const WithdrawalRequest = () => {
         Toast.error("Rejected", "Withdrawal request rejected!");
       }
 
-      dispatch(fetchPayouts());
+      dispatch(fetchPayouts()); // ✅ always refetch from backend
       handleCloseModal();
     } catch (error) {
       Toast.error(
@@ -61,14 +62,8 @@ const WithdrawalRequest = () => {
   };
 
   const columns = [
-    {
-      id: "withdrawalRequestCode",
-      label: "Request Code",
-    },
-    {
-      id: "name",
-      label: "Name",
-    },
+    { id: "withdrawalRequestCode", label: "Request Code" },
+    { id: "name", label: "Name" },
     {
       id: "amount",
       label: "Amount",
@@ -102,7 +97,7 @@ const WithdrawalRequest = () => {
 
       <ReusableTable
         columns={columns}
-        rows={filterdPayouts}
+        rows={filteredPayouts}
         onRowClick={handleRowClick}
         filterKey="isApproved"
         filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
@@ -117,11 +112,10 @@ const WithdrawalRequest = () => {
         ]}
       />
 
-      {/* Modal for details and accept/reject */}
+      {/* Main Details Modal */}
       <Modal isOpen={modalOpen} onClose={handleCloseModal} size="md">
         {selectedRow && (
           <div>
-            {/* Header */}
             <h2 className="text-lg font-semibold text-gray-900 mb-6">
               Withdrawal Request
             </h2>
@@ -194,19 +188,29 @@ const WithdrawalRequest = () => {
                   {moment(selectedRow.createdAt).format("DD/MM/YYYY")}
                 </span>
               </div>
+
+              {/* Show rejection remark if rejected */}
+              {selectedRow.isApproved === "REJECTED" && selectedRow.remark && (
+                <div className="flex flex-col">
+                  <span className="text-gray-500">Remark</span>
+                  <span className="mt-1 px-1 py-2 bg-gray-100 rounded">
+                    {selectedRow.remark || " "}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Actions */}
+            {/* Action Buttons (only when pending) */}
             {selectedRow.isApproved === "PENDING" && (
               <div className="flex gap-3 mt-8 justify-end">
                 <button
-                  onClick={() => handStatusUpdate(selectedRow.id, "REJECTED")}
-                  className="px-5 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  onClick={() => setIsRejectModalOpen(true)}
+                  className="px-4 py-2 cursor-pointer rounded-md bg-red-100 hover:bg-red-200 text-red-700 transition duration-150 "
                 >
                   REJECT
                 </button>
                 <button
-                  onClick={() => handStatusUpdate(selectedRow.id, "APPROVED")}
+                  onClick={() => handleStatusUpdate(selectedRow.id, "APPROVED")}
                   className="px-5 py-2 rounded-md bg-green-100 text-green-600 hover:bg-green-200 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   APPROVE
@@ -216,8 +220,25 @@ const WithdrawalRequest = () => {
           </div>
         )}
       </Modal>
+
+      {/* Reject Modal */}
+      <RejectWithdrawalModal
+        isOpen={isRejectModalOpen}
+        onClose={() => {
+          setIsRejectModalOpen(false);
+          setRemark("");
+        }}
+        remark={remark}
+        setRemark={setRemark}
+        onSubmit={() => {
+          handleStatusUpdate(selectedRow.id, "REJECTED", remark);
+          setIsRejectModalOpen(false);
+          setRemark(""); // ✅ clear after submit
+        }}
+      />
     </div>
   );
 };
 
 export default WithdrawalRequest;
+

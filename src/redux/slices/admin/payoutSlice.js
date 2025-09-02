@@ -31,14 +31,21 @@ export const makePayout = createAsyncThunk(
   }
 );
 
-
 export const updateWithdrawStatus = createAsyncThunk(
   "payouts/updateWithdrawStatus",
-  async ({ id, status }) => {
-    await updateWithdrawStatusAPI(id, status);
-    return { id, status };
+  async ({ id, status, remark }) => {
+    await updateWithdrawStatusAPI(id, status, remark); // pass remark to API
+    return { id, status, remark };
   }
 );
+
+// export const updateWithdrawStatus = createAsyncThunk(
+//   "payouts/updateWithdrawStatus",
+//   async ({ id, status }) => {
+//     await updateWithdrawStatusAPI(id, status);
+//     return { id, status };
+//   }
+// );
 
 
 // Slice
@@ -91,12 +98,18 @@ const payoutSlice = createSlice({
         state.error = null;
       })
       .addCase(updateWithdrawStatus.fulfilled, (state, action) => {
-        const { id, status } = action.payload;
+        state.formLoading = false; // ✅ fix
+        const { id, status, remark } = action.payload;
         const idx = state.payouts.findIndex((p) => p.id === id);
         if (idx !== -1) {
-          state.payouts[idx].isApproved = status;  // ✅ update status only
+          state.payouts[idx].isApproved = status;
+          if (remark !== undefined) {
+            state.payouts[idx].remark = remark;
+          }
         }
       })
+
+
 
       // .addCase(updateWithdrawStatus.fulfilled, (state, action) => {
       //   state.formLoading = false;
