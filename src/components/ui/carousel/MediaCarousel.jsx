@@ -74,6 +74,7 @@ const MediaCarousel = ({ mediaFiles = [], size = "md", autoplay = false }) => {
                 <img
                   src={file}
                   alt={`Media ${idx + 1}`}
+                  loading="lazy"
                   className="w-full h-full object-cover"
                 />
               )}
