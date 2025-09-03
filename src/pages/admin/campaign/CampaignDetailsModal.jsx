@@ -11,9 +11,6 @@ const CampaignDetailsModal = ({
   onApprove,
 }) => {
   if (!campaign) return null;
-
-  console.log(campaign)
-
   const targeting =
   campaign.devices?.length > 0
     ? campaign.devices.map((device) => device.name).join(", ")
@@ -24,11 +21,10 @@ const regions =
     ? campaign.cityPostcodes.map((item) => item.city).join(", ")
     : "—";
 
-    console.log("Campaigns",campaign)
 const infoItems = [
   { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—"},
   { label: "Brand", value: campaign.brandName || "—" },
-  { label: "Date", value:campaign.startDate + " - " + campaign.endDate || "—" },
+  { label: "Date", value:campaign.startDate + " to " + campaign.endDate || "—" },
    { label: "Time Slot", value: campaign.timings || "—"},
   { label: "Ad Type", value: campaign.adType || "—" },
   { label: "Store Type", value: campaign.storeTypes || "—" },
