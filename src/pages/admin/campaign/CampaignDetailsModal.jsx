@@ -1,15 +1,5 @@
 import React from "react";
 import { Modal } from "../../../components/ui/modal/Modal";
-import {
-  FaCalendarAlt,
-  FaStore,
-  FaTag,
-  FaClock,
-  FaBullseye,
-  FaMoneyBillWave,
-  FaIndustry,
-} from "react-icons/fa";
-import { formatScheduleDate } from "../../../util/Form-menu/dateUtils";
 import MediaCarousels from "../../../components/ui/carousel/MediaCarousels";
 
 
@@ -21,9 +11,6 @@ const CampaignDetailsModal = ({
   onApprove,
 }) => {
   if (!campaign) return null;
-
-  console.log(campaign)
-
   const targeting =
   campaign.devices?.length > 0
     ? campaign.devices.map((device) => device.name).join(", ")
@@ -35,16 +22,17 @@ const regions =
     : "—";
 
 const infoItems = [
-  { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—", icon: <FaTag /> },
-  { label: "Brand", value: campaign.brandName || "—", icon: <FaIndustry /> },
-  { label: "Schedule", value: formatScheduleDate(campaign.startDate, campaign.endDate) || "—", icon: <FaCalendarAlt /> },
-  { label: "Ad Type", value: campaign.adType || "—", icon: <FaBullseye /> },
-  { label: "Store Type", value: campaign.storeTypes || "—", icon: <FaStore /> },
-  { label: "Product Type", value: campaign.product || "—", icon: <FaTag /> },
-  { label: "Devices", value: targeting, icon: <FaBullseye /> },
-  { label: "Duration", value: campaign.duration ? `${campaign.duration} sec` : "—", icon: <FaClock /> },
-  { label: "Base Value", value: campaign.baseBid !== undefined ? `₹ ${campaign.baseBid}` : "—", icon: <FaMoneyBillWave /> },
-  { label: "Regions", value: regions, icon: <FaBullseye /> },
+  { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—"},
+  { label: "Brand", value: campaign.brandName || "—" },
+  { label: "Date", value:campaign.startDate + " to " + campaign.endDate || "—" },
+   { label: "Time Slot", value: campaign.timings || "—"},
+  { label: "Ad Type", value: campaign.adType || "—" },
+  { label: "Store Type", value: campaign.storeTypes || "—" },
+  { label: "Product Type", value: campaign.product || "—" },
+  { label: "Devices", value: targeting},
+  { label: "Duration", value: campaign.duration ? `${campaign.duration} sec` : "—"},
+  { label: "Base Value", value: campaign.baseBid !== undefined ? `₹ ${campaign.baseBid}` : "—" },
+  { label: "Regions", value: regions},
 ];
 
   return (

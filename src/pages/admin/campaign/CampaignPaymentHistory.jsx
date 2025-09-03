@@ -75,7 +75,8 @@ const CampaignPaymentHistory = () => {
           rows={payments}
           onRowClick={handleRowClick}
           loading={paymentsLoading}
-         isFilter={false}
+          filterKey="status"
+          filterOptions={["all", "PAID", "UNPAID"]}
           onRefresh={handleRefresh}
           searchableColumns={[
             "campaignCode",

@@ -54,11 +54,11 @@ const SignIn = () => {
         dispatch(fetchCampaigns());
         dispatch(fetchUserProfile());
         navigate("/");
-        Toast.success("Sign in Successfully!")
+        Toast.success("Sign in Successful!")
       }
     } catch (err) {
       console.error("Login failed:", err);
-      Toast.error("Failed","Failed to Sign in")
+      Toast.error("Failed to Sign in")
     }
   };
 
@@ -156,7 +156,7 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={isLoginSubmitting || formLoading}
-                className={`w-full py-2 flex justify-center items-center gap-2 text-white rounded-full transition ${
+                className={`w-full hover:cursor-pointer  py-2 flex justify-center items-center gap-2 text-white rounded-full transition ${
                   isLoginSubmitting || formLoading
                     ? "bg-[#5F7C95] cursor-not-allowed"
                     : "bg-[#5F7C95] hover:bg-[#445E94]"

@@ -125,7 +125,7 @@ const DeviceConfiguration = () => {
           rows={devices}
           loading={loading}
           filterKey="orientation"
-          filterOptions={["Vertical", "Horizontal"]}
+          filterOptions={["all","Vertical", "Horizontal"]}
           onRefresh={handleRefresh}
           onRowClick={handleRowClick}
           searchableColumns={["srNo","name","price"]}
