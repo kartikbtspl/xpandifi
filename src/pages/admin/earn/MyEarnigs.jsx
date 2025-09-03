@@ -102,7 +102,7 @@ const AdminMyEarnings = () => {
             rows={revenueHistory}
             loading={loading}
             onRefresh={() => dispatch(getAllRevenueHistory())}
-            searchableColumns={["campaignName", "campaignCode", "businessName"]}
+            searchableColumns={["campaignName", "campaignCode", "businessName","amount"]}
             defaultOrder="desc"
             defaultOrderBy="createdAt"
             isFilter={false}
