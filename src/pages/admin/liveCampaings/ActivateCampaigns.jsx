@@ -76,7 +76,7 @@ const ActivateCampaigns = () => {
         filterKey="statusLabel"
         filterOptions={["all", "ACTIVE", "INACTIVE","EXPIRED"]}
         onRefresh={() => dispatch(fetchCampaigns())}
-        searchableColumns={["campaignCode","name","baseBid","dateRange"]}
+        searchableColumns={["campaignCode","name","baseBid","dateRange","brandName"]}
       />
     </div>
   );
