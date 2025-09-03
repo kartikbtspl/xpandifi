@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import Loader from "../../components/loader/Loader";
 import ForgotPassAdmin from "./ForgotPassAdmin";
 import { fetchCampaigns } from "../../redux/slices/admin/campaignSlice";
-import { fetchAdminProfile,loginAdmin } from "../../redux/slices/admin/adminSlice"
+import { fetchAdminProfile, loginAdmin } from "../../redux/slices/admin/adminSlice"
 import { Link } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
 import PageTitle from "../../components/ui/page-title/PageTitle";
@@ -35,11 +35,13 @@ const AdminLogin = () => {
         dispatch(fetchAdminProfile());
         dispatch(fetchCampaigns());
         navigate("/");
-        Toast.success("Sign in Successfully!")
+        Toast.success("Sign in Successful!");
+      } else {
+        Toast.error("Failed to Sign in!");
       }
     } catch (error) {
       console.error("Login error:", error);
-      Toast.error("Failed","Failed to Sign in!")
+      Toast.error("Failed", "Failed to Sign in!");
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ const AdminLogin = () => {
 
   return (
     <>
-         <PageTitle title="Xpandifi" /> {/* sets the title for signin page */} 
+      <PageTitle title="Xpandifi" /> {/* sets the title for signin page */}
       <div className="min-h-screen flex">
         {/* Left Section */}
         <div className="w-1/2 hidden lg:flex flex-col justify-center items-center bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-10">
@@ -68,7 +70,7 @@ const AdminLogin = () => {
 
         {/* Right Section - Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-6">
-            <Link to="/" className="absolute right-2 top-2">
+          <Link to="/" className="absolute right-2 top-2">
             <Button
               isIcon={false}
               label="Go Back"
@@ -148,11 +150,10 @@ const AdminLogin = () => {
               <button
                 type="submit"
                 disabled={isSubmitting || loading}
-                className={`w-full py-2 flex justify-center items-center gap-2 text-white rounded-full transition ${
-                  isSubmitting || loading
+                className={`w-full hover:cursor-pointer py-2 flex justify-center items-center gap-2 text-white rounded-full transition ${isSubmitting || loading
                     ? "bg-[#5F7C95] cursor-not-allowed"
                     : `bg-[#5F7C95] hover:bg-[#445E94]`
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-2">
                   {(isSubmitting || loading) && <Loader size="vs" />}
