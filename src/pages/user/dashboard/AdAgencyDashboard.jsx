@@ -84,7 +84,7 @@ const AdAgencyDashboard = () => {
 
       <div
         className="grid gap-4 w-full mb-6"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
       >
         {statsData.map((item, idx) => (
           <StatCard key={idx} {...item} />
