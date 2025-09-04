@@ -13,6 +13,8 @@ import { columns } from "./UserColumns";
 import Toast from "../../../components/ui/toast/Toast";
 
 const UserManagement = () => {
+
+  
   const dispatch = useDispatch();
   const { users, loading, fetched } = useSelector((state) => state.usersManagement);
   const [isOpen, setIsOpen] = useState(false);
@@ -28,22 +30,6 @@ const UserManagement = () => {
       dispatch(fetchUsers());
     }
   }, [fetched,loading,dispatch]);
-
-// const handleStatusChange = async (userId, currentStatus) => {
-//   const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-
-//   // Set loading true for this user
-//   setSwitchLoading((prev) => ({ ...prev, [userId]: true }));
-
-//   try {
-//     await dispatch(toggleUserStatus({ id: userId, status: newStatus }));
-//   } catch (error) {
-//     console.error("Failed to toggle status", error);
-//   } finally {
-//     // Set loading false for this user
-//     setSwitchLoading((prev) => ({ ...prev, [userId]: false }));
-//   }
-// };
 
 const handleStatusChange = async (userId, currentStatus) => {
   const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
@@ -78,6 +64,7 @@ const handleStatusChange = async (userId, currentStatus) => {
 
       {/* Add User Modal */}
       <AddUserModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
 
       <div className="mt-4">
         <ReusableTable
