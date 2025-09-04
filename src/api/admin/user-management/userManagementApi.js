@@ -37,5 +37,5 @@ export const registerUSerApi=async(data)=>{
       withCredentials:true
     }
   )
-  return response?.data;
+  return response;
 }
