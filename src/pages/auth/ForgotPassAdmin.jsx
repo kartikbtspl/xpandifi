@@ -109,7 +109,7 @@ const ForgotPassAdmin = ({ isForgotOpen, onClose }) => {
       onCancel={onClose}
       footer={null}
       centered
-      destroyOnClose
+      destroyOnHidden
     >
       <div className="max-w-md mx-auto">
         {!isOtpSent ? (

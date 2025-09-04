@@ -57,16 +57,38 @@ const Navbar = ({ toggleSidebar }) => {
     return [];
   }, [user?.role]);
 
+  // const handleSearch = (value) => {
+  //   setQuery(value);
+  //   if (!value.trim()) return setResult([]);
+  //   const filtered = availableRoutes
+  //     .filter((route) => route.name && route.path)
+  //     .filter((route) =>
+  //       route.name.toLowerCase().includes(value.toLowerCase())
+  //     );
+  //   setResult(filtered);
+  // };
+
+
+
   const handleSearch = (value) => {
-    setQuery(value);
-    if (!value.trim()) return setResult([]);
-    const filtered = availableRoutes
-      .filter((route) => route.name && route.path)
-      .filter((route) =>
-        route.name.toLowerCase().includes(value.toLowerCase())
-      );
-    setResult(filtered);
-  };
+  setQuery(value);
+  if (!value.trim()) {
+    setResult([]);
+    return;
+  }
+
+  const searchTerm = value.toLowerCase();
+
+  const filtered = availableRoutes.filter((route) => {
+    const inName = route.name?.toLowerCase().includes(searchTerm);
+    const inKeywords = route.keywords?.some((kw) =>
+      kw.toLowerCase().includes(searchTerm)
+    );
+    return inName || inKeywords;
+  });
+
+  setResult(filtered);
+};
 
   return (
     <div className="h-16 bg-white shadow-md flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">

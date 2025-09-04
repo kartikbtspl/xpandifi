@@ -83,7 +83,7 @@ export const getCampaignsPaymentHistoryAPI = async () => {
   const response = await axiosInstance.get("api/v1/campaign/payment-history", {
     withCredentials: true,
   });
-  return response?.data;
+  return response?.data?.data;
 };
 
 export const getCampaignByIdAPI = async (id) => {
