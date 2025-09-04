@@ -6,7 +6,7 @@ export const loginUserApi = async (credentials) => {
     `/api/v2/auth/login`,
     credentials
   );
-  return response.data;
+  return response?.data?.data;
 };
 
 
