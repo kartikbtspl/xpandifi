@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCampaignPayments } from "../../../redux/slices/user/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
-import Modal from "../../../components/modal/Modal";
+import {Modal} from "../../../components/ui/modal/Modal";
 
 const PaymentsHistory = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -74,7 +74,7 @@ const PaymentsHistory = () => {
         searchableColumns={["campaignCode", "campaignName", "transactionId","amount"]}
       />
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="lg">
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="md">
         {selectedTransaction ? (
           <div className="p-6 w-full">
             <h2 className="text-xl font-bold text-gray-800 mb-4">

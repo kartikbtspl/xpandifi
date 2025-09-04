@@ -3,10 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
 import MediaCarousel from "../../../components/ui/carousel/MediaCarousel";
 import Button from "../../../components/ui/button/Button";
-import {
-  verifyPayment,
-  createOrder,
-} from "../../../api/user/razor-api/razor-api";
 import { useDispatch } from "react-redux";
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import {
@@ -15,8 +11,8 @@ import {
 } from "../../../api/user/cashFree/cashFree-api";
 import { useCurrentUser } from "../../../components/ui/user/CurrentUser";
 import Toast from "../../../components/ui/toast/Toast";
-// import Swal from "sweetalert2";
 import LoaderEmpt  from "../../../components/loader/LoaderEmpt"
+
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
     year: "numeric",
@@ -37,7 +33,6 @@ const CheckoutCampaign = () => {
   const user = useCurrentUser();
 
   const campaignData = location.state?.row;
-  console.log(campaignData, "data");
 
   if (!campaignData) {
     return (
@@ -45,100 +40,11 @@ const CheckoutCampaign = () => {
     );
   }
 
-  //   const { raw: campaign = {}, campaignCode = "", name = "", image = [] } = campaignData;
 
   useEffect(() => {
     if (!campaignData) navigate("/campaigns-list");
   }, [campaignData, navigate]);
 
-  // Razorpay Payment Handler
-  const handlePayment = useCallback(async () => {
-    if (!campaignData || !user) {
-      Toast.warning(
-        "Missing Information",
-        "Campaign or user data is not available."
-      );
-    }
-
-    if (!window.Razorpay) {
-      return Toast.error("Please refresh and try again.");
-    }
-
-    setIsLoading(true);
-
-    try {
-      const campaign = campaignData;
-      const orderPayload = {
-        campaignId: campaign.id,
-        campaignCode: campaignData.campaignCode,
-        amount: campaign.baseBid,
-        currency: "INR",
-      };
-
-      const { order } = await createOrder(orderPayload);
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        order_id: order.id,
-        name: user.businessName || "Your Company",
-        description: campaignData.name || "Campaign Payment",
-        prefill: {
-          name: user?.fullName || "",
-          email: user?.email || "",
-          contact: cleanPhone(user?.phone) || "",
-        },
-        theme: { color: "#3399cc" },
-        modal: {
-          ondismiss: () => {
-            setIsLoading(false);
-            Toast.info("Payment Cancelled", "You closed the payment popup.");
-          },
-        },
-        handler: async (response) => {
-          try {
-            const verifyRes = await verifyPayment({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              campaignId: campaign.id,
-            });
-
-            if (verifyRes?.success) {
-              navigate("/campaigns-list");
-              Toast.success(
-                "Payment Successful",
-                "Your campaign has been activated!"
-              );
-              dispatch(fetchCampaigns());
-            } else {
-              Toast.error(
-                "Verification Failed",
-                "Payment could not be verified. Please contact support."
-              );
-            }
-          } catch (err) {
-            console.error("Verification error:", err);
-            Toast.error(
-              "Verification Error",
-              err?.response?.data?.message ||
-                "Something went wrong verifying your payment."
-            );
-          } finally {
-            setIsLoading(false);
-          }
-        },
-      };
-
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-    } catch (error) {
-      console.error("Payment Error:", error);
-      Toast.error("Something went wrong",error?.message || "Unable to process payment. Please try again.")
-      setIsLoading(false);
-    }
-  }, [campaignData, user, navigate, dispatch]);
 
   // Cashfree Payment Handler
   const handleCashfreePayment = useCallback(async () => {
@@ -186,7 +92,7 @@ const CheckoutCampaign = () => {
             clearInterval(poll);
             Toast.success(
               "Payment Successful",
-              "Your campaign has been activated!"
+              "Your campaign wil be activated soon!"
             );
             navigate("/campaigns-list");
             dispatch(fetchCampaigns());
@@ -283,16 +189,6 @@ const CheckoutCampaign = () => {
                 loading={isLoading}
                 disabled={isLoading}
               />
-              {/* Uncomment if Razorpay is needed */}
-              {/* <Button
-                type="button"
-                label={`Pay with Razorpay ₹${baseBid || 0}`}
-                isIcon={false}
-                className="cursor-pointer"
-                onClick={handlePayment}
-                loading={isLoading}
-                disabled={isLoading}
-              /> */}
             </div>
           </div>
         </div>

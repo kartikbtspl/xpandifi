@@ -16,7 +16,7 @@ export const loginUserApi = async (credentials) => {
     `/api/v1/auth/login`,
     credentials
   );
-  return response.data;
+  return response.data?.data;
 };
 
 export const getUserProfileAPI = async () => {

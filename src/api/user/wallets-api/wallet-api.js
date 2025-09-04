@@ -5,7 +5,7 @@ export const getWithdrawalRequestsAPI = async () => {
   try {
     const response = await axiosInstance.get('/api/v1/wallet/fetchWithDrawReq', { withCredentials: true });
     //console.log("Respopnse list of Withdrawal requests :", response.data)
-    return response.data;
+    return response?.data;
 
   } catch (error) {
     console.error('Fetch user Withdrawal request list -  API call failed:', error);

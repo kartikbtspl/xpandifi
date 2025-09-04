@@ -17,13 +17,13 @@ export const fetchUserAPI = async () => {
       withCredentials: true,
     }
   );
-  return response.data;
+  return response?.data?.data;
 };
 
 
 export const updateUserAPI = async (data) => {
   const response = await axiosInstance.put(`/me`, data);
-  return response.data;
+  return response?.data?.data;
 };
 
 
@@ -40,7 +40,7 @@ export const updateUserProfile = async (data) => {
     
       withCredentials: true,
   });
-  return response.data;
+  return response?.data?.data;
 };
 export const getRevenue = async () => {
   const response = await axiosInstance.get('/api/v2/admin/revenue', {
@@ -56,7 +56,7 @@ export const resetUserPassword = async (passwordData) => {
       withCredentials: true,
   });
   
-  return response.data;
+  return response?.data?.data;
 }
 
 
@@ -65,12 +65,12 @@ export const getforgotPassOTP= async (data)=>{
       withCredentials: true,
   })
 
-  return response.data
+  return response?.data.data
 }
 export const submitNewPassOTP= async (data)=>{
   const response = await axiosInstance.post('/api/v2/auth/reset-password-with-otp',data,{
       withCredentials: true,
   })
 
-  return response.data
+  return response?.data?.data
 }

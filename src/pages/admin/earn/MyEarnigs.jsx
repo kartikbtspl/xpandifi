@@ -91,7 +91,7 @@ const AdminMyEarnings = () => {
       </section>
 
       {/* Transactions */}
-      <section className="max-w-7xl mx-auto mt-6">
+      <section className="w-full mt-6">
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4">
             Recent Transactions

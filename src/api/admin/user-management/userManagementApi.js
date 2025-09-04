@@ -4,7 +4,7 @@ export const getUsersAPI = async () => {
   const response = await axiosInstance.get("/api/v2/users", {
     withCredentials: true,
   });  
-  return response.data;
+  return response?.data?.data;
 };
 
 export const createUserAPI = async (payload) => {
@@ -15,7 +15,7 @@ export const createUserAPI = async (payload) => {
       withCredentials: true,
     }
   );
-  return response.data;
+  return response?.data?.data;
 };
 
 export const toggleUserStatusAPI = async (id, status) => {
@@ -26,7 +26,7 @@ export const toggleUserStatusAPI = async (id, status) => {
       withCredentials: true,
     }
   );
-  return response.data;
+  return response?.data?.data;
 };
 
 
@@ -37,5 +37,5 @@ export const registerUSerApi=async(data)=>{
       withCredentials:true
     }
   )
-  return response;
+  return response?.data?.data;
 }
