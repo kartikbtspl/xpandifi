@@ -4,6 +4,7 @@ import { registerUSerApi } from "../../../api/admin/user-management/userManageme
 import Button from "../button/Button";
 import Input from "../input/Input";
 import { useState } from "react";
+import Toast from "../../ui/toast/Toast"
 
 const AddAdminForm = ({ onClose }) => {
   const [isLoading, setLoading]=useState(false);
@@ -18,29 +19,19 @@ const AddAdminForm = ({ onClose }) => {
     setLoading(true);
     try {
       const response = await registerUSerApi(data);
-      if (response?.data?.status === 200 || response?.data?.status === 201) {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Admin added successfully",
-          showConfirmButton: false,
-          timer: 1200,
-          width: "400px",
-        });
+      if (response?.status === 200 || response?.status === 201) {
+        Toast.success("success",response?.message||"Admin added successfully",)
         setLoading(false);
         reset();
         onClose();
       }
+      console.log(response,"res")
     } catch (error) {
       setLoading(false);
+      Toast.error(error?.message|| "Failed to ad Admin")
       console.error("Add admin error:", error);
       onClose();
       reset();
-      Swal.fire({
-        icon: "error",
-        title: "Failed to add admin",
-        text: error?.response?.data?.message || "Please try again.",
-      });
     }
   };
 
