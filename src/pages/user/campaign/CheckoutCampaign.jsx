@@ -20,10 +20,7 @@ const formatDate = (date) =>
     day: "numeric",
   });
 
-const cleanPhone = (phone) => {
-  const digits = phone?.match(/\d{10}$/);
-  return digits ? digits[0] : "";
-};
+
 
 const CheckoutCampaign = () => {
   const location = useLocation();
@@ -34,17 +31,15 @@ const CheckoutCampaign = () => {
 
   const campaignData = location.state?.row;
 
-  if (!campaignData) {
-    return (
-      <div className="text-center text-gray-500 mt-20">Redirecting...</div>
-    );
-  }
-
-
+  
+  
   useEffect(() => {
-    if (!campaignData) navigate("/campaigns-list");
+    if (!campaignData) {
+      navigate("/campaigns-list");
+    }
   }, [campaignData, navigate]);
-
+  
+  
 
   // Cashfree Payment Handler
   const handleCashfreePayment = useCallback(async () => {
@@ -88,13 +83,16 @@ const CheckoutCampaign = () => {
         attempts++;
         try {
           const statusRes = await checkCashfreePaymentStatus(sessionId);
-          if (statusRes?.success && statusRes?.status === "PAID") {
+          if (statusRes?.success && statusRes?.data?.status === "PAID") {
             clearInterval(poll);
-            Toast.success(
-              "Payment Successful",
-              "Your campaign wil be activated soon!"
-            );
+          Toast.success(
+            "Payment Successful",
+            "Your campaign will be activated soon!",
+            10000
+          );
+
             navigate("/campaigns-list");
+
             dispatch(fetchCampaigns());
           } else if (attempts >= maxAttempts) {
             clearInterval(poll);
@@ -116,6 +114,14 @@ const CheckoutCampaign = () => {
       setIsLoading(false);
     }
   }, [campaignData, user, navigate, dispatch]);
+
+
+
+  if (!campaignData) {
+    return (
+      <div className="text-center text-gray-500 mt-20">Redirecting...</div>
+    );
+  }
 
   const {
     brandName,
