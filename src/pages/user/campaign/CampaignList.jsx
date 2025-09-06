@@ -131,7 +131,7 @@ const CampaignList = () => {
             rows={filter_camp}
             loading={loading}
             onRefresh={refreshCampaigns}
-            filterKey="status"
+            filterKey="isApproved"
             filterOptions={["all", "APPROVED", "PENDING", "REJECTED"]}
             order="desc"
             orderBy="updatedAt"
