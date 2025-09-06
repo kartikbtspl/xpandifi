@@ -85,7 +85,7 @@ const Toast = ({
 };
 
 // 🔹 Shortcuts
-Toast.success = (title, text) => Toast({ title, text, icon: "success" });
+Toast.success = (title, text,timer) => Toast({ title, text, icon: "success",timer });
 Toast.error = (title, text) => Toast({ title, text, icon: "error" });
 Toast.warning = (title, text) => Toast({ title, text, icon: "warning" });
 Toast.info = (title, text) => Toast({ title, text, icon: "info" });
