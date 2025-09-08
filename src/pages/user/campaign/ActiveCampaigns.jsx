@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
-import StatusBadge from "../../../components/ui/badges/StatusBadge";
+import StatusBadge from "../../../components/ui/badges/StatusBadge"
 import CampaignDetailsModal from "../../admin/campaign/CampaignDetailsModal"
 
 const ActiveCampaigns = () => {
@@ -14,7 +14,6 @@ const ActiveCampaigns = () => {
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
   const normalizeMedia = (files = []) => {
     const images = files.filter(file =>
       file.match(/\.(jpeg|jpg|png|gif)$/i)
@@ -26,29 +25,41 @@ const ActiveCampaigns = () => {
   };
 
 
+  const handleRowClick = (campaign) => {
+    setSelectedCampaign(campaign);
+    setIsModalOpen(true);
+  };
+
   const filter_camp = useMemo(
   () =>
-    campaigns
-      ?.filter((c) => c.isPayment)
-      .map((c) => {
-        let normalizedFiles = c.productFiles;
-        if (Array.isArray(c.productFiles)) {
-          normalizedFiles = normalizeMedia(c.productFiles);
-        }
-        return {
-          ...c,
-          status: c.isActive ? "ACTIVE" : "INACTIVE",
-          productFiles: normalizedFiles, 
-        };
-      })
-      .sort((a, b) => {
-        return a.isActive === b.isActive ? 0 : a.isActive ? 1 : -1;
-      }),
+    campaigns?.map((c) => {
+      let status = "INACTIVE";
+
+      if (c.isExpired) {
+        status = "EXPIRED";
+      } else if (c.isPayment && !c.isExpired && c.isActive) {
+        status = "ACTIVE";
+      }
+
+      let normalizedFiles = c.productFiles;
+      if (Array.isArray(c.productFiles)) {
+        normalizedFiles = normalizeMedia(c.productFiles);
+      }
+
+      return {
+        ...c,
+        status,
+        productFiles: normalizedFiles,
+      };
+    })
+    .sort((a, b) => {
+      return a.isActive === b.isActive ? 0 : a.isActive ? 1 : -1;
+    }),
   [campaigns]
 );
-
-
-  console.log("Filtered Campaigns:", filter_camp);
+  //console.log("Raw camp:", campaigns);
+  console.log("Filter campaigns", filter_camp);
+  //  Fetch on mount
   useEffect(() => {
     if (!fetched && !loading) {
       dispatch(fetchCampaigns());
@@ -58,12 +69,6 @@ const ActiveCampaigns = () => {
   const refreshCampaigns = () => {
     dispatch(fetchCampaigns());
   };
-
-  const handleRowClick = (campaign) => {
-    setSelectedCampaign(campaign);
-    setIsModalOpen(true);
-  };
-
 
   const columns = [
     { id: "campaignCode", label: "Campaign ID" },
@@ -90,19 +95,18 @@ const ActiveCampaigns = () => {
         rows={filter_camp}
         loading={loading}
         onRefresh={refreshCampaigns}
-        onRowClick={handleRowClick}
         filterKey="status"
-        filterOptions={["all", "ACTIVE", "INACTIVE"]}
+        filterOptions={["all", "ACTIVE", "INACTIVE", "EXPIRED"]}
         order={"desc"}
         orderBy={"updatedAt"}
         searchableColumns={["name", "budget", "brandName", "campaignCode"]}
+        onRowClick={handleRowClick}
       />
 
       <CampaignDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         campaign={selectedCampaign}
-
         openRejectModal={() => { }}
         onApprove={() => { }}
       />
@@ -111,6 +115,7 @@ const ActiveCampaigns = () => {
 };
 
 export default ActiveCampaigns;
+
 
 
 // import React, { useEffect, useMemo } from "react";
