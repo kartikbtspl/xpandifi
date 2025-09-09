@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ReusableTable from "../../../components/table/ReusableTable";
-import Modal from "../../../components/modal/Modal";
+// import Modal from "../../../components/modal/Modal";
 import { fetchCampaignPayments } from "../../../redux/slices/admin/campaignSlice"; 
+import { Modal } from "../../../components/ui/modal/Modal";
 
 const CampaignPaymentHistory = () => {
   const [selectedCampaign, setSelectedCampaign] = useState(null);
@@ -86,7 +87,7 @@ const CampaignPaymentHistory = () => {
           ]}
         />
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="lg">
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="md" title="Campaign Payment Details">
         {selectedCampaign ? (
           <div className="p-6 w-full">
             <h2 className="text-xl font-bold text-gray-800 mb-4">

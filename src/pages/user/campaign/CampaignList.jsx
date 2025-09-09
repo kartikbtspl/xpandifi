@@ -89,7 +89,7 @@ const CampaignList = () => {
     const isApproved = row.isApproved;
     const canEdit = isApproved === "PENDING" || isApproved === "REJECTED";
 
-    if (row.isPayment === false) {
+    if (row.isPayment === false && row.isApproved === "APPROVED") {
       return (
         <Link to="checkout" state={{ row }}>
           <Button
@@ -117,44 +117,9 @@ const CampaignList = () => {
           Delete
         </button>
       </div>
-    ) : null; // Or display something else if needed when no payment and cannot edit
+    ) : null;
   },
 }
-
-    // {
-    //   id: "actions",
-    //   label: "Actions",
-    //   render: (row) => {
-    //     const isApproved = row.isApproved;
-    //     const canEdit = isApproved === "PENDING" || isApproved === "REJECTED";
-
-    //     return canEdit ? (
-    //       <div className="flex gap-2">
-    //         <button
-    //           className="text-blue-600 bg-blue-200 hover:underline cursor-pointer px-2 py-1 rounded"
-    //           onClick={() => handleEdit(row)}
-    //         >
-    //           Edit
-    //         </button>
-    //         <button
-    //           className="text-red-600 bg-red-200 hover:underline cursor-pointer px-2 py-1 rounded"
-    //           onClick={() => handleDelete(row)}
-    //         >
-    //           Delete
-    //         </button>
-    //       </div>
-    //     ) : (
-    //       <Link to="checkout" state={{ row }}>
-    //         <Button
-    //           type={"button"}
-    //           label={"Make Payment"}
-    //           isIcon={false}
-    //           className="cursor-pointer"
-    //         />
-    //       </Link>
-    //     );
-    //   },
-    // },
   ];
 
   return (
