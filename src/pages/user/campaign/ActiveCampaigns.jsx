@@ -32,7 +32,9 @@ const ActiveCampaigns = () => {
 
   const filter_camp = useMemo(
   () =>
-    campaigns?.map((c) => {
+    campaigns?.filter((c)=>c?.isPayment)
+  
+  .map((c) => {
       let status = "INACTIVE";
 
       if (c.isExpired) {
@@ -57,9 +59,8 @@ const ActiveCampaigns = () => {
     }),
   [campaigns]
 );
-  //console.log("Raw camp:", campaigns);
-  console.log("Filter campaigns", filter_camp);
-  //  Fetch on mount
+
+//  Fetch on mount
   useEffect(() => {
     if (!fetched && !loading) {
       dispatch(fetchCampaigns());
