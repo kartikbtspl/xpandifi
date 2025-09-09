@@ -2,7 +2,6 @@ import React from "react";
 import { Modal } from "../../../components/ui/modal/Modal";
 import MediaCarousels from "../../../components/ui/carousel/MediaCarousels";
 
-
 const CampaignDetailsModal = ({
   isOpen,
   openRejectModal,
@@ -12,36 +11,50 @@ const CampaignDetailsModal = ({
 }) => {
   if (!campaign) return null;
   const targeting =
-  campaign.devices?.length > 0
-    ? campaign.devices.map((device) => device.name).join(", ")
-    : "—";
+    campaign.devices?.length > 0
+      ? campaign.devices.map((device) => device.name).join(", ")
+      : "—";
 
-const regions =
-  campaign.cityPostcodes?.length > 0
-    ? campaign.cityPostcodes.map((item) => item.city).join(", ")
-    : "—";
+  const regions =
+    campaign.cityPostcodes?.length > 0
+      ? campaign.cityPostcodes.map((item) => item.city).join(", ")
+      : "—";
 
-const infoItems = [
-  { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—"},
-  { label: "Brand", value: campaign.brandName || "—" },
-  { label: "Date", value:campaign.startDate + " to " + campaign.endDate || "—" },
-   { label: "Time Slot", value: campaign.timings || "—"},
-  { label: "Ad Type", value: campaign.adType || "—" },
-  { label: "Store Type", value: campaign.storeTypes || "—" },
-  { label: "Product Type", value: campaign.product || "—" },
-  { label: "Devices", value: targeting},
-  { label: "Duration", value: campaign.duration ? `${campaign.duration} sec` : "—"},
-  { label: "Base Value", value: campaign.baseBid !== undefined ? `₹ ${campaign.baseBid}` : "—" },
-  { label: "Regions", value: regions},
-];
+  const infoItems = [
+    { label: "Campaign Name", value: campaign.name || campaign.campaignName || "—" },
+    { label: "Brand", value: campaign.brandName || "—" },
+    { label: "Date", value: campaign.startDate + " to " + campaign.endDate || "—" },
+    { label: "Time Slot", value: campaign.timings || "—" },
+    { label: "Ad Type", value: campaign.adType || "—" },
+    { label: "Store Type", value: campaign.storeTypes || "—" },
+    { label: "Product Type", value: campaign.product || "—" },
+    { label: "Devices", value: targeting },
+    { label: "Duration", value: campaign.duration ? `${campaign.duration} sec` : "—" },
+    { label: "Base Value", value: campaign.baseBid !== undefined ? `₹ ${campaign.baseBid}` : "—" },
+    { label: "Regions", value: regions },
+  ];
+
+  const showPaymentPendingBadge =
+    campaign.isPayment === false &&
+    campaign.isApproved === "APPROVED";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton={true}>
       <div className="p-6 space-y-6">
-        {/* Title */}
-        <h2 className="text-2xl font-semibold">
-          {campaign?.name || campaign?.campaignName || "Campaign Details"}
-        </h2>
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <h2 className="text-2xl font-semibold">
+            {campaign?.name || campaign?.campaignName || "Campaign Details"}
+          </h2>
+
+          {/* Payment Pending Badge */}
+          {showPaymentPendingBadge && (
+            <div className="inline-flex items-center bg-yellow-100 text-yellow-600 text-xs px-3 py-1 rounded-full">
+              PAYMENT PENDING
+            </div>
+          )}
+        </div>
+
 
         {/* Campaign Info in Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
