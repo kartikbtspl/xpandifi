@@ -83,39 +83,43 @@ const CampaignList = () => {
       render: (row) => <ApprovalBadge status={row.isApproved} size={12} />,
     },
     {
-      id: "actions",
-      label: "Actions",
-      render: (row) => {
-        const isApproved = row.isApproved;
-        const canEdit = isApproved === "PENDING" || isApproved === "REJECTED";
+  id: "actions",
+  label: "Actions",
+  render: (row) => {
+    const isApproved = row.isApproved;
+    const canEdit = isApproved === "PENDING" || isApproved === "REJECTED";
 
-        return canEdit ? (
-          <div className="flex gap-2">
-            <button
-              className="text-blue-600 bg-blue-200 hover:underline cursor-pointer px-2 py-1 rounded"
-              onClick={() => handleEdit(row)}
-            >
-              Edit
-            </button>
-            <button
-              className="text-red-600 bg-red-200 hover:underline cursor-pointer px-2 py-1 rounded"
-              onClick={() => handleDelete(row)}
-            >
-              Delete
-            </button>
-          </div>
-        ) : (
-          <Link to="checkout" state={{ row }}>
-            <Button
-              type={"button"}
-              label={"Make Payment"}
-              isIcon={false}
-              className="cursor-pointer"
-            />
-          </Link>
-        );
-      },
-    },
+    if (row.isPayment === false && row.isApproved === "APPROVED") {
+      return (
+        <Link to="checkout" state={{ row }}>
+          <Button
+            type={"button"}
+            label={"Make Payment"}
+            isIcon={false}
+            className="cursor-pointer"
+          />
+        </Link>
+      );
+    }
+
+    return canEdit ? (
+      <div className="flex gap-2">
+        <button
+          className="text-blue-600 bg-blue-200 hover:underline cursor-pointer px-2 py-1 rounded"
+          onClick={() => handleEdit(row)}
+        >
+          Edit
+        </button>
+        <button
+          className="text-red-600 bg-red-200 hover:underline cursor-pointer px-2 py-1 rounded"
+          onClick={() => handleDelete(row)}
+        >
+          Delete
+        </button>
+      </div>
+    ) : null;
+  },
+}
   ];
 
   return (
