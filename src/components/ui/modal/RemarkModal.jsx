@@ -1,11 +1,17 @@
-import React from "react";
-import { Modal } from "../../../components/ui/modal/Modal";
+import { Modal } from "./Modal";
 
-const RejectWithdrawalModal = ({ isOpen, onClose, remark, setRemark, onSubmit }) => {
+const RemarkModal = ({
+  label,
+  isOpen,
+  onClose,
+  remark,
+  setRemark,
+  onSubmit,
+}) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md" showCloseButton={true}>
       <div className="p-4 space-y-3">
-        <h3 className="text-lg font-semibold">Reject Withdrawal Request</h3>
+        <h3 className="text-lg font-semibold">{label || ""}</h3>
         <textarea
           value={remark}
           onChange={(e) => setRemark(e.target.value)}
@@ -19,7 +25,7 @@ const RejectWithdrawalModal = ({ isOpen, onClose, remark, setRemark, onSubmit })
           <button
             className={`px-4 py-2 text-white rounded ${
               remark.trim()
-                ? "bg-red-600 hover:bg-red-700 hover:cursor-pointer"
+                ? "bg-red-600 hover:bg-red-700"
                 : "bg-red-300 cursor-not-allowed"
             }`}
             onClick={onSubmit}
@@ -33,4 +39,4 @@ const RejectWithdrawalModal = ({ isOpen, onClose, remark, setRemark, onSubmit })
   );
 };
 
-export default RejectWithdrawalModal;
+export default RemarkModal;

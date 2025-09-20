@@ -1,6 +1,7 @@
 import axiosInstance from "../../../config/axiosConfig";
 
 export const createCampaignAPI = async (data) => {
+  console.log(data)
   const token = localStorage.getItem("token");
 
   const formData = new FormData();

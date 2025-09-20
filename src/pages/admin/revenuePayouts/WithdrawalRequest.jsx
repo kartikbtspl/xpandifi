@@ -9,7 +9,7 @@ import {
   updateWithdrawStatus,
 } from "../../../redux/slices/admin/payoutSlice";
 import Toast from "../../../components/ui/toast/Toast";
-import RejectWithdrawalModal from "./RejectWithdrawalRequest";
+import RemarkModal from "../../../components/ui/modal/RemarkModal";
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
 
 const WithdrawalRequest = () => {
@@ -222,7 +222,8 @@ const WithdrawalRequest = () => {
       </Modal>
 
       {/* Reject Modal */}
-      <RejectWithdrawalModal
+      <RemarkModal
+      label="Reject Withdrawal Request"
         isOpen={isRejectModalOpen}
         onClose={() => {
           setIsRejectModalOpen(false);

@@ -40,7 +40,7 @@ const PayoutCheckout = lazy(() => import("../pages/admin/revenuePayouts/PayoutCh
 const WithdrawalRequest = lazy(() => import("../pages/admin/revenuePayouts/WithdrawalRequest"));
 const CampaignPaymentHistory = lazy(() => import("../pages/admin/campaign/CampaignPaymentHistory"));
 const CampaignRevenueRequest = lazy(() => import("../pages/admin/campaign/CampaignRevenueRequest"));
-
+const DeviceRequest = lazy(()=>import("../pages/admin/Terminal/DeviceRequest"))
 export const dashboardRoutes = [
 
     <Route
@@ -233,6 +233,14 @@ export const dashboardRoutes = [
         element={
           <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
             <AdminMyEarnings />
+          </PrivateRoute>
+        } 
+      />
+       <Route 
+        path="device-request" 
+        element={
+          <PrivateRoute allowedRoles={["SUPERADMIN","ADMIN"]}>
+            <DeviceRequest />
           </PrivateRoute>
         } 
       />

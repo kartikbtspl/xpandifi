@@ -3,153 +3,123 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  estimatePrice,
-} from "../../../api/user/campaign-api/targetingOptionService";
 
 import FormBuilder from "../../../components/form/FromBuilder";
 import LoaderEmpt from "../../../components/loader/LoaderEmpt";
-
+import Toast from "../../../components/ui/toast/Toast";
 import { fields } from "../../../util/Form-menu/campaign-fields";
-import { campaignValidationSchema,customizePayload } from "../../../util/validation/campaignValidationSchema";
-import Toast from "../../../components/ui/toast/Toast"
-import { createCampaign, fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
+import {
+  campaignValidationSchema,
+  customizePayload,
+} from "../../../util/validation/campaignValidationSchema";
+import {
+  createCampaign,
+  fetchCampaigns,
+} from "../../../redux/slices/user/campaignSlice";
 import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
-
+import { estimatePrice } from "../../../api/user/campaign-api/targetingOptionService";
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { formLoading } = useSelector((state) => state.campaign);
-  const { data: dropdownData, loading: dropdownLoading } = useSelector(
-    (state) => state.cityProductDevice
-  );
+  const {
+    data: dropdownData = {
+      cityRegionMap: {},
+      products: [],
+      devices: [],
+      cities: [],
+    },
+    loading: dropdownLoading,
+  } = useSelector((state) => state.cityProductDevice);
 
   const methods = useForm({
     resolver: yupResolver(campaignValidationSchema),
+    defaultValues: {
+      regions: [],
+    },
   });
-  const { watch, setValue } = methods;
 
   const [dropdowns, setDropdowns] = useState({
     product: [],
     targetDevices: [],
+    cities: [],
     regions: [],
-    pincodes: [],
-    regionMap: {},
-    pincodeMap: {},
   });
 
-  // Fetch dropdown data if not available
+  // Load dropdowns
   useEffect(() => {
-    if (!dropdownData) {
+    if (dropdownData && Object.keys(dropdownData).length) {
+      const allRegions = Object.values(dropdownData.cityRegionMap || {}).flat();
+      setDropdowns({
+        product: dropdownData.products || [],
+        targetDevices: dropdownData.devices || [],
+        cities: dropdownData.cities || [],
+        regions: allRegions,
+      });
+    } else {
       dispatch(fetchDropdownData());
     }
-  }, [dispatch, dropdownData]);
-
-  // Build dropdown options and maps when data arrives
-  useEffect(() => {
-    if (!dropdownData) return;
-
-    const regionOptions = [];
-    const pincodeOptions = [];
-    const regionMap = {};
-    const pincodeMap = {};
-
-    dropdownData.locations.forEach((loc) => {
-      if (loc.name) regionOptions.push({ label: loc.name, value: loc.name });
-      if (loc.postcode)
-        pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
-
-      regionMap[loc.name] = regionMap[loc.name] || [];
-      if (loc.postcode) regionMap[loc.name].push(loc.postcode);
-
-      if (loc.postcode) pincodeMap[loc.postcode] = loc.name;
-    });
-
-    const productOptions = dropdownData.products.map((p) => ({
-      label: p.name,
-      value: p.name,
-    }));
-    const deviceOptions = dropdownData.devices.map((d) => ({
-      label: d.name,
-      value: d.name,
-    }));
-
-    setDropdowns({
-      product: productOptions,
-      targetDevices: deviceOptions,
-      regions: regionOptions,
-      pincodes: pincodeOptions,
-      regionMap,
-      pincodeMap,
-    });
-  }, [dropdownData]);
-
-  // Sync regions ↔ pincodes selections
-  useEffect(() => {
-    const subscription = watch((values, { name: changedField }) => {
-      const selectedRegions = values.regions || [];
-      const selectedPincodes = values.pincode || [];
-
-      if (!dropdowns.regionMap || !dropdowns.pincodeMap) return;
-
-      if (changedField === "regions") {
-        const derivedPincodes = [
-          ...new Set(
-            selectedRegions.flatMap(
-              (region) => dropdowns.regionMap[region] || []
-            )
-          ),
-        ];
-        if (
-          JSON.stringify(selectedPincodes.sort()) !==
-          JSON.stringify(derivedPincodes.sort())
-        ) {
-          setValue("pincode", derivedPincodes, { shouldValidate: false });
-        }
-      } else if (changedField === "pincode") {
-        const derivedRegions = [
-          ...new Set(
-            selectedPincodes
-              .map((pin) => dropdowns.pincodeMap[pin])
-              .filter(Boolean)
-          ),
-        ];
-        if (
-          JSON.stringify(selectedRegions.sort()) !==
-          JSON.stringify(derivedRegions.sort())
-        ) {
-          setValue("regions", derivedRegions, { shouldValidate: false });
-        }
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [watch, dropdowns, setValue]);
+  }, [dropdownData, dispatch]);
 
   // Submit handler
-  const handleSubmit = async (formData) => {
-    if (formLoading) return;
+const handleSubmit = async (formData) => {
+  if (formLoading) return;
 
-    const payload = customizePayload(formData);
-    const result = await dispatch(createCampaign(payload));
+  // Build cityregions directly
+  const cityregions = {};
 
-    if (createCampaign.fulfilled.match(result)) {
-      dispatch(fetchCampaigns());
-      methods.reset();
-      navigate("/");
-      Toast.success("Campaign created successfully!")
-    } else if (createCampaign.rejected.match(result)) {
-      const errorMessage = result.payload?.message || "Something went wrong.";
-      Toast.error(errorMessage)
-    }
+  // formData.regions contains selected region IDs
+  (formData.regions || []).forEach((regionId) => {
+    const regionObj = Object.values(dropdownData.cityRegionMap)
+      .flat()
+      .find((r) => r.value === regionId);
+
+    if (!regionObj) return;
+
+    const cityName = regionObj.cityName;
+    if (!cityregions[cityName]) cityregions[cityName] = [];
+
+    cityregions[cityName].push({
+      name: regionObj.label,
+      postcode: regionObj.postcode,
+    });
+  });
+
+  // Customize payload and remove the extra 'regions' field
+  const payload = {
+    ...customizePayload(formData, dropdownData.cityRegionMap),
+    cityregions, // ✅ only this is needed
   };
 
-  // Show loader while dropdowns loading
-  if (dropdownLoading || !dropdownData) {
-    return <LoaderEmpt size="large" />;
+  const result = await dispatch(createCampaign(payload));
+
+  if (createCampaign.fulfilled.match(result)) {
+    dispatch(fetchCampaigns());
+    methods.reset();
+    Toast.success("Campaign created successfully!");
+    navigate("/");
+  } else if (createCampaign.rejected.match(result)) {
+    Toast.error(result.payload?.message || "Something went wrong.");
   }
+};
+
+
+  if (dropdownLoading || !dropdownData) return <LoaderEmpt size="large" />;
+
+  // Update fields with dropdowns
+  const updatedFields = fields.map((group) =>
+    group.map((field) => {
+      if (field.name === "product")
+        return { ...field, options: dropdowns.product };
+      if (field.name === "targetDevices")
+        return { ...field, options: dropdowns.targetDevices };
+      if (field.name === "regions")
+        return { ...field, options: dropdowns.regions, multi: true };
+      return field;
+    })
+  );
 
   return (
     <div className="w-full">
@@ -157,22 +127,17 @@ const CreateCampaign = () => {
       <h2 className="text-xl lg:2xl font-semibold text-gray-800 mb-4">
         Create Campaign
       </h2>
+
       <FormBuilder
         onSubmit={handleSubmit}
-        fieldsConfig={fields}
+        fieldsConfig={updatedFields}
         isEdit={false}
-        dropdowns={{
-          ...dropdowns,
-          regions: dropdowns.regions,
-          pincode: dropdowns.pincodes,
-        }}
         methods={methods}
         estimateApi={estimatePrice}
         estimateWatchFields={["product", "regions", "targetDevices"]}
         estimateSetField="baseBid"
         title=""
         submitLabel="Submit For Approval"
-        loading={formLoading}
       />
     </div>
   );
