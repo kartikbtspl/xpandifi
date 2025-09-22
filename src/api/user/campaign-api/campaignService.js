@@ -34,7 +34,7 @@ export const createCampaignAPI = async (data) => {
   return response?.data;
 };
 
-export const updateUserCampaign = async (id, data, oldImages = [], oldVideos = []) => {
+export const updateUserCampaign = async (id, data) => {
   const formData = new FormData();
 
   // Append new files only if they are actual File instances
@@ -46,12 +46,16 @@ export const updateUserCampaign = async (id, data, oldImages = [], oldVideos = [
     }
   });
 
-  // Append old files info for backend to keep existing files
-  formData.append("existingFiles", JSON.stringify([...oldImages, ...oldVideos]));
+  // Append existing files from payload (stringified array)
+  if (data.existingFiles) {
+    formData.append("existingFiles", data.existingFiles); // already JSON string from handleUpdate
+  } else {
+    formData.append("existingFiles", JSON.stringify([]));
+  }
 
   // Append other fields (skip file keys)
   Object.entries(data).forEach(([key, value]) => {
-    if (['imageFiles', 'videoFiles', 'productFiles'].includes(key)) return;
+    if (['imageFiles', 'videoFiles', 'productFiles', 'existingFiles'].includes(key)) return;
 
     if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
       formData.append(key, JSON.stringify(value));
@@ -72,7 +76,6 @@ export const updateUserCampaign = async (id, data, oldImages = [], oldVideos = [
 
   return response?.data;
 };
-
 
 export const getCampaignsAPI = async () => {
   const response = await axiosInstance.get("api/v1/campaign/all", {

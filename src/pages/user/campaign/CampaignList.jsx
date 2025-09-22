@@ -20,7 +20,6 @@ const CampaignList = () => {
   const { campaigns, loading, fetched } = useSelector(
     (state) => state.campaign
   );
-  console.log(campaigns);
 
   const isViewAnalytics = location.pathname.includes("checkout");
 

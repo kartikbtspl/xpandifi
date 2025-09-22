@@ -64,13 +64,66 @@ const CreateCampaign = () => {
   }, [dropdownData, dispatch]);
 
   // Submit handler
+// const handleSubmit = async (formData) => {
+//   if (formLoading) return;
+
+//   // Build cityregions directly
+//   const cityregions = {};
+
+//   // formData.regions contains selected region IDs
+//   (formData.regions || []).forEach((regionId) => {
+//     const regionObj = Object.values(dropdownData.cityRegionMap)
+//       .flat()
+//       .find((r) => r.value === regionId);
+
+//     if (!regionObj) return;
+
+//     const cityName = regionObj.cityName;
+//     if (!cityregions[cityName]) cityregions[cityName] = [];
+
+//     cityregions[cityName].push({
+//       name: regionObj.label,
+//       postcode: regionObj.postcode,
+//     });
+//   });
+
+//   // Customize payload and remove the extra 'regions' field
+//   const payload = {
+//     ...customizePayload(formData, dropdownData.cityRegionMap),
+//     cityregions, // ✅ only this is needed
+//      dateRange: JSON.stringify({
+//     start: formData.dateRange[0], // start date
+//     end: formData.dateRange[1],   // end date
+//   }),
+//   };
+
+//   const result = await dispatch(createCampaign(payload));
+
+//   if (createCampaign.fulfilled.match(result)) {
+//     dispatch(fetchCampaigns());
+//     methods.reset();
+//     Toast.success("Campaign created successfully!");
+//     navigate("/");
+//   } else if (createCampaign.rejected.match(result)) {
+//     Toast.error(result.payload?.message || "Something went wrong.");
+//   }
+// };
+
 const handleSubmit = async (formData) => {
   if (formLoading) return;
 
+  // Map objective value → label
+  const objectiveField = fields
+    .flat()
+    .find((f) => f.name === "objective");
+
+  const objectiveLabel =
+    objectiveField?.options.find(
+      (opt) => opt.value === formData.objective
+    )?.label || "";
+
   // Build cityregions directly
   const cityregions = {};
-
-  // formData.regions contains selected region IDs
   (formData.regions || []).forEach((regionId) => {
     const regionObj = Object.values(dropdownData.cityRegionMap)
       .flat()
@@ -90,8 +143,14 @@ const handleSubmit = async (formData) => {
   // Customize payload and remove the extra 'regions' field
   const payload = {
     ...customizePayload(formData, dropdownData.cityRegionMap),
-    cityregions, // ✅ only this is needed
+    cityregions,
+    dateRange: JSON.stringify({
+      start: formData.dateRange[0],
+      end: formData.dateRange[1],
+    }),
+    objective: objectiveLabel,
   };
+
 
   const result = await dispatch(createCampaign(payload));
 

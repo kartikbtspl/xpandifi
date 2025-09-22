@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useForm, FormProvider, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../../../components/ui/toast/Toast";
 import { Modal } from "../../../components/ui/modal/Modal";
 import FormBuilder from "../../../components/form/FromBuilder";
-import Loader from "../../../components/loader/Loader";
-import Select from "react-select";
-
+import LoaderEmpt from "../../../components/loader/LoaderEmpt";
 import { estimatePrice } from "../../../api/user/campaign-api/targetingOptionService";
 import { updateCampaign, fetchCampaigns } from "../../../redux/slices/user/campaignSlice";
 import { fetchDropdownData } from "../../../redux/slices/user/cityProductDeviceSlice";
-
 import { fields } from "../../../util/Form-menu/campaign-fields";
-import { customizePayload } from "../../../util/validation/campaignValidationSchema";
-import LoaderEmpt from "../../../components/loader/LoaderEmpt"
 
 const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
   const dispatch = useDispatch();
@@ -24,348 +19,207 @@ const EditCampaignModal = ({ isOpen, onClose, campaignData, onSuccess }) => {
 
   const [dropdowns, setDropdowns] = useState({
     product: [],
-    targetDevices: [],
+    devices: [],
     regions: [],
-    pincodes: [],
     regionMap: {},
-    pincodeMap: {},
   });
 
-  const methods = useForm({
-    defaultValues: {},
-  });
+  const methods = useForm({ defaultValues: {} });
 
   // Fetch dropdown data if not present
   useEffect(() => {
-    if (!dropdownData) {
-      dispatch(fetchDropdownData());
-    }
+    if (!dropdownData) dispatch(fetchDropdownData());
   }, [dispatch, dropdownData]);
 
-  const refreshCampaigns = () => {
-    dispatch(fetchCampaigns());
-  };
-
-  // Prepare dropdown options with NAMES as values
+  // Prepare dropdown options
   useEffect(() => {
     if (!dropdownData) return;
 
+    const productOptions = (dropdownData.products || []).map((p) => ({
+      label: p.label || p.name,
+      value: p.value ?? p.id,
+      price: p.price,
+    }));
+
+    const deviceOptions = (dropdownData.devices || []).map((d) => ({
+      label: d.label || d.name,
+      value: d.value ?? d.id,
+      price: d.price,
+    }));
+
     const regionOptions = [];
-    const pincodeOptions = [];
     const regionMap = {};
-    const pincodeMap = {};
-
-    dropdownData.locations.forEach((loc) => {
-      if (loc.name) regionOptions.push({ label: loc.name, value: loc.name });
-      if (loc.postcode)
-        pincodeOptions.push({ label: loc.postcode, value: loc.postcode });
-
-      if (regionMap[loc.name]) {
-        if (loc.postcode) regionMap[loc.name].push(loc.postcode);
-      } else {
-        regionMap[loc.name] = loc.postcode ? [loc.postcode] : [];
-      }
-
-      if (loc.postcode) pincodeMap[loc.postcode] = loc.name;
-    });
-
-    const productOptions = dropdownData.products.map((p) => ({
-      label: p.name,
-      value: p.name,
-    }));
-
-    const deviceOptions = dropdownData.devices.map((d) => ({
-      label: d.name,
-      value: d.name,
-    }));
+    Object.values(dropdownData.cityRegionMap || {})
+      .flat()
+      .forEach((r) => {
+        const option = {
+          label: r.label || r.name,
+          value: r.value ?? r.id,
+          cityName: r.cityName,
+          postcode: r.postcode,
+        };
+        regionOptions.push(option);
+        if (!regionMap[option.value]) regionMap[option.value] = [];
+        if (option.postcode) regionMap[option.value].push(option.postcode);
+      });
 
     setDropdowns({
       product: productOptions,
-      targetDevices: deviceOptions,
+      devices: deviceOptions,
       regions: regionOptions,
-      pincodes: pincodeOptions,
       regionMap,
-      pincodeMap,
     });
   }, [dropdownData]);
 
-  // Reset form values when campaignData or dropdowns.regionMap changes
+  // Reset form values
   useEffect(() => {
-    if (campaignData && Object.keys(dropdowns.regionMap).length > 0) {
-      const selectedRegions = [
-        ...new Set(campaignData.cityPostcodes?.map((item) => item.city) || []),
-      ];
-      const selectedPincodes = [
-        ...new Set(
-          campaignData.cityPostcodes?.map((item) => item.postcode) || []
-        ),
-      ];
+    if (
+      !campaignData ||
+      !dropdowns.product.length ||
+      !dropdowns.devices.length ||
+      !dropdowns.regions.length
+    )
+      return;
 
-      // Map devices and product to their NAMES (not IDs)
-      const selectedTargetDeviceNames =
-        campaignData.devices?.map((d) => d.name) || [];
-      const selectedProductName =
-        campaignData.product?.name || campaignData.product || "";
+    const selectedProduct =
+      dropdowns.product.find((p) => p.label === campaignData.product)?.value || "";
 
-      methods.reset({
-        ...campaignData,
-        product: selectedProductName,
-        targetDevices: selectedTargetDeviceNames,
-        regions: selectedRegions,
-        pincode: selectedPincodes,
-        productFiles: campaignData.productFiles || [],
-        timings: campaignData.timings || "",
-        startDate: campaignData.startDate,
-        endDate: campaignData.endDate,
-        startTime: campaignData.startTime,
-        endTime: campaignData.endTime,
-      });
-    }
-  }, [campaignData, dropdowns.regionMap, methods]);
+    const selectedTargetDevices = (campaignData.devices || [])
+      .map((d) => dropdowns.devices.find((opt) => opt.label === d.name)?.value)
+      .filter(Boolean);
 
-  // Keep regions and pincodes in sync when changed
-  useEffect(() => {
-    const subscription = methods.watch((values, { name }) => {
-      const selectedRegions = values.regions || [];
-      const selectedPincodes = values.pincode || [];
+    const selectedRegions = Object.values(campaignData.cityRegions || {})
+      .flat()
+      .map((r) => dropdowns.regions.find((opt) => opt.label === r.name)?.value)
+      .filter(Boolean);
 
-      if (!dropdowns.regionMap || !dropdowns.pincodeMap) return;
+    const objectiveField = fields.flat().find((f) => f.name === "objective");
+    const objectiveValue =
+      objectiveField?.options?.find(
+        (opt) => opt.label === (campaignData.campaingObjective || campaignData.objective)
+      )?.value || "";
 
-      if (name === "regions") {
-        const derivedPincodes = [
-          ...new Set(
-            selectedRegions.flatMap(
-              (region) => dropdowns.regionMap[region] || []
-            )
-          ),
-        ];
+    const dateRange = {
+      start:
+        campaignData.dateRange?.start ||
+        campaignData.startDate ||
+        campaignData.start ||
+        "",
+      end:
+        campaignData.dateRange?.end ||
+        campaignData.endDate ||
+        campaignData.end ||
+        "",
+    };
 
-        const currentSorted = [...selectedPincodes].sort();
-        const derivedSorted = [...derivedPincodes].sort();
-
-        if (JSON.stringify(currentSorted) !== JSON.stringify(derivedSorted)) {
-          methods.setValue("pincode", derivedPincodes, {
-            shouldValidate: false,
-          });
-        }
-      }
-
-      if (name === "pincode") {
-        const derivedRegions = [
-          ...new Set(
-            selectedPincodes
-              .map((pin) => dropdowns.pincodeMap[pin])
-              .filter(Boolean)
-          ),
-        ];
-
-        const currentSorted = [...selectedRegions].sort();
-        const derivedSorted = [...derivedRegions].sort();
-
-        if (JSON.stringify(currentSorted) !== JSON.stringify(derivedSorted)) {
-          methods.setValue("regions", derivedRegions, {
-            shouldValidate: false,
-          });
-        }
-      }
+    methods.reset({
+      ...campaignData,
+      product: selectedProduct,
+      targetDevices: selectedTargetDevices,
+      regions: selectedRegions,
+      productFiles: campaignData.productFiles || [], // mix of File + string handled later
+      timings: campaignData.timings || "",
+      dateRange,
+      startTime: campaignData.startTime,
+      endTime: campaignData.endTime,
+      ageGroup: campaignData.ageGroup || "",
+      objective: objectiveValue,
     });
+  }, [campaignData, dropdowns, methods]);
 
-    return () => subscription.unsubscribe();
-  }, [methods, dropdowns.regionMap, dropdowns.pincodeMap]);
+  // Handle campaign update
+const handleUpdate = async (formData) => {
+  if (!formData.regions?.length) return Toast.error("Select at least one region");
 
-  // Handle campaign update submit
-  const handleUpdate = async (formData) => {
-    const allFiles = formData.productFiles || [];
-    const oldImages = allFiles.filter((item) => typeof item === "string");
-    const newFiles = allFiles.filter((item) => item instanceof File);
+  // Separate old files vs new files
+  const oldFiles = (formData.productFiles || []).filter((f) => typeof f === "string"); // existing
+  const newFiles = (formData.productFiles || []).filter((f) => f instanceof File); // new uploads
 
-    const cityPostcodes = [
-      ...new Set(
-        (formData.regions || [])
-          .flatMap((r) =>
-            (dropdowns.regionMap[r] || []).map((p) => ({
-              city: r,
-              postcode: p,
-            }))
-          )
-          .concat(
-            (formData.pincode || []).map((p) => ({
-              city: dropdowns.pincodeMap[p],
-              postcode: p,
-            }))
-          )
-      ),
-    ];
+  // Build cityregions
+  const cityregions = {};
+  (formData.regions || []).forEach((regionId) => {
+    const regionObj = dropdowns.regions.find((r) => r.value === regionId);
+    if (!regionObj) return;
+    const cityName = regionObj.cityName;
+    if (!cityregions[cityName]) cityregions[cityName] = [];
+    cityregions[cityName].push({ name: regionObj.label, postcode: regionObj.postcode });
+  });
 
-    if (!cityPostcodes.length)
-      return Toast.error("Select at least one city/postcode.")
+  // Devices
+  const selectedDevices = (formData.targetDevices || [])
+    .map((id) => {
+      const dev = dropdowns.devices.find((d) => d.value === id);
+      return dev ? { id: dev.value, name: dev.label } : null;
+    })
+    .filter(Boolean);
 
-    const payload = customizePayload({
-      ...formData,
-      productFiles: newFiles,
-      cityPostcodes,
-      targetDevices: formData.targetDevices,
-      product: formData.product,
-    });
+  // Objective label
+  const objectiveField = fields.flat().find((f) => f.name === "objective");
+  const objectiveLabel =
+    objectiveField?.options?.find((opt) => opt.value === formData.objective)?.label ||
+    formData.objective ||
+    "";
 
-    try {
-      await dispatch(
-        updateCampaign({ id: campaignData.id, data: payload, oldImages })
-      ).unwrap();
-      await refreshCampaigns();
-      await onSuccess?.();
-      onClose?.();
-      Toast.success("Campaign Updated Successfully!")
+  const startStr = formData.dateRange?.start || null;
+  const endStr = formData.dateRange?.end || null;
 
-    } catch (err) {
-      Toast.error(err?.message || "Failed to update campaign",)
-    }
+  // --- FIXED: stringify existingFiles for backend ---
+  const payload = {
+    ...formData,
+    cityregions,
+    devices: selectedDevices,
+    product: formData.product,            // product ID
+    productFiles: newFiles,               // only new uploads
+    existingFiles: JSON.stringify(oldFiles), // send as JSON string
+    objective: objectiveLabel,
+    dateRange: JSON.stringify({ start: startStr, end: endStr }),
   };
 
-  // Prepare payload for estimate API: send arrays of names and cityPostcodes
-  const prepareEstimatePayload = (formData) => {
-    const productNames = formData.product ? [formData.product] : [];
-    const deviceNames = formData.targetDevices || [];
 
-    const cityPostcodes = (formData.regions || []).flatMap((region) =>
-      (dropdowns.regionMap[region] || []).map((postcode) => ({
-        city: region,
-        postcode,
-      }))
-    );
-
-    return { productNames, deviceNames, cityPostcodes };
-  };
-
-  if (dropdownLoading || !dropdownData) {
-    return (
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
-        <div className="flex items-center justify-center h-48">
-          <Loader />
-        </div>
-      </Modal>
-    );
+  try {
+    await dispatch(updateCampaign({ id: campaignData.id, data: payload })).unwrap();
+    dispatch(fetchCampaigns());
+    onSuccess?.();
+    onClose?.();
+    Toast.success("Campaign updated successfully!");
+  } catch (err) {
+    Toast.error(err?.message || "Failed to update campaign");
   }
+};
 
-  // Deep map fields for dropdowns injection
-  const deepFieldsConfig = fields.map((row) =>
+
+
+  if (dropdownLoading || !dropdownData) return <LoaderEmpt size="large" />;
+
+  const updatedFields = fields.map((row) =>
     row.map((field) => {
-      if (field.name === "product") {
-        return { ...field, options: dropdowns.product };
-      }
-      if (field.name === "targetDevices") {
-        return { ...field, options: dropdowns.targetDevices };
-      }
-      if (field.name === "regions") {
-        return { ...field, options: dropdowns.regions };
-      }
-      if (field.name === "pincode") {
-        return { ...field, options: dropdowns.pincodes };
-      }
+      if (field.name === "product") return { ...field, options: dropdowns.product, multi: false };
+      if (field.name === "targetDevices") return { ...field, options: dropdowns.devices, multi: true };
+      if (field.name === "regions") return { ...field, options: dropdowns.regions, multi: true };
+      if (field.name === "objective") return { ...field, options: field.options, multi: false };
       return field;
     })
   );
 
-  // Example custom field rendering for select fields
-  // Use this pattern in your FormBuilder for product and targetDevices
-  const renderProductSelect = (
-    <Controller
-      name="product"
-      control={methods.control}
-      render={({ field }) => (
-        <Select
-          {...field}
-          options={dropdowns.product}
-          isClearable
-          onChange={(opt) => field.onChange(opt ? opt.value : "")}
-          value={
-            dropdowns.product.find((opt) => opt.value === field.value) || null
-          }
-        />
-      )}
-    />
-  );
-
-  const renderTargetDevicesSelect = (
-    <Controller
-      name="targetDevices"
-      control={methods.control}
-      render={({ field }) => (
-        <Select
-          {...field}
-          options={dropdowns.targetDevices}
-          isMulti
-          onChange={(opts) =>
-            field.onChange(opts ? opts.map((opt) => opt.value) : [])
-          }
-          value={dropdowns.targetDevices.filter(
-            (opt) =>
-              Array.isArray(field.value) && field.value.includes(opt.value)
-          )}
-        />
-      )}
-    />
-  );
-  // if(formLoading) return  <LoaderEmpt size="large" />
-
-
   return (
-       <>
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <FormProvider {...methods}>
         <div className="max-h-[80vh] rounded-lg relative">
           <FormBuilder
             onSubmit={handleUpdate}
-            fieldsConfig={deepFieldsConfig}
-            dropdowns={{
-              ...dropdowns,
-              pincode: dropdowns.pincodes,
-            }}
+            fieldsConfig={updatedFields}
             methods={methods}
             isEdit={true}
             loading={formLoading}
             estimateApi={estimatePrice}
-            estimateWatchFields={[
-              "product",
-              "regions",
-              "targetDevices",
-              "pincode",
-            ]}
+            estimateWatchFields={["product", "regions", "targetDevices"]}
             estimateSetField="baseBid"
-            estimatePayloadFn={prepareEstimatePayload}
-            isPlus={false}
+            title="Update Campaign"
             submitLabel="Update"
-            customSelectRenderers={{
-              product: renderProductSelect,
-              targetDevices: renderTargetDevicesSelect,
-            }}
-            title={
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full pr-12">
-                <span className="text-xl font-bold text-gray-800">
-                  Update Campaign
-                </span>
-
-                {campaignData.remark && (
-                  <div className="flex items-center mt-1 sm:mt-0 text-sm sm:max-w-xs truncate text-right">
-                    <span className="relative flex size-2 mx-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex size-2 rounded-full bg-red-500"></span>
-                    </span>{" "}
-                    <span
-                      className="text-red-500 text-md truncate"
-                      title={campaignData.remark}
-                    >
-                      {campaignData.remark}
-                    </span>
-                  </div>
-                )}
-              </div>
-            }
           />
         </div>
       </FormProvider>
     </Modal>
-       </>
   );
 };
 
