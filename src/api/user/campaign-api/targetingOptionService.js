@@ -6,6 +6,7 @@ export const getDropDownDataAPI = async () => {
     const response = await axiosInstance.get("/api/v1/campaign/getCampDropData", {
       withCredentials: true,
     });
+    console.log(response.data)
     return response.data.data;  // return only dropdown data { products, locations, devices }
   } catch (error) {
     console.error("Error fetching dropdown data:", error);
@@ -16,6 +17,7 @@ export const getDropDownDataAPI = async () => {
 
 
 export const estimatePrice = async (data) => {
+  console.log(data)
   const response = await axiosInstance.post("/api/v1/campaign/baseCost", data, {
     withCredentials: true,
   });

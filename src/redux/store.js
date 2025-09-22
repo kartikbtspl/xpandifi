@@ -17,6 +17,10 @@ import tierReducer from './slices/admin/tierSlice'
 import productReducer from './slices/admin/productSlice'
 import payoutReducer from './slices/admin/payoutSlice'
 import adminRevenueReducer from './slices/admin/adminRevenueSlice'
+import adminTerminalReducer from './slices/admin/terminalSlice'
+import userTerminalReuder from './slices/user/terminalSlice'
+import retailerDeviceReducer from './slices/user/retailerDeviceSlice'
+
 
 export const store = configureStore({
   reducer: {
@@ -27,6 +31,10 @@ export const store = configureStore({
     tickets: ticketsReducer,
     cityProductDevice: cityProductDeviceReducer,
     wallet: walletReducer,
+    //actaul devices
+    retailerDevice:retailerDeviceReducer,
+    //device request
+    userTerminal:userTerminalReuder,
 
     // Admin Slices
     adminCampaign: adminCampaignReducer,
@@ -37,5 +45,6 @@ export const store = configureStore({
     tier: tierReducer,
     product: productReducer,
     payout: payoutReducer,
+    adminTerminal:adminTerminalReducer
   },
 })

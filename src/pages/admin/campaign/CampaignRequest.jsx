@@ -6,7 +6,7 @@ import {
 } from "../../../redux/slices/admin/campaignSlice";
 import ReusableTable from "../../../components/table/ReusableTable";
 import CampaignDetailsModal from "./CampaignDetailsModal";
-import RejectCampaignModal from "./RejectCampaignModal";
+import RemarkModal from "../../../components/ui/modal/RemarkModal"
 import getCampaignColumns from "./columns";
 
 const CampaignRequest = () => {
@@ -99,7 +99,8 @@ const handleReferesh=()=>{
       />
 
       {/* Reject Modal */}
-      <RejectCampaignModal
+      <RemarkModal
+      label="Reject Campaign"
         isOpen={isRejectModalOpen}
         onClose={closeRejectModal}
         remark={rejectionRemark}

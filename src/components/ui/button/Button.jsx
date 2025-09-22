@@ -14,10 +14,16 @@ const Button = ({
   const baseClass =
     'flex items-center justify-center px-4 py-2 rounded-full text-sm transition disabled:opacity-50  cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
 
-  const variants = {
-    primary: 'text-white bg-[#445E94] hover:bg-blue-900',
-    custom: '', // rely fully on className
-  };
+  // const variants = {
+  //   primary: 'text-white bg-[#445E94] hover:bg-blue-900',
+  //   custom: '', // rely fully on className
+  // };
+const variants = {
+  primary: 'text-white bg-[#445E94] hover:bg-blue-900',
+  outline:
+    'border border-[#445E94] text-[#445E94] bg-white hover:bg-[#445E94] hover:text-white',
+  custom: '', // rely fully on className
+};
 
   return (
     <button
