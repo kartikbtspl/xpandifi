@@ -2,8 +2,8 @@ import axiosInstance from "../../../config/axiosConfig"
 
 
 export const getAllRequestAPI = async ()=>{
-    const response = axiosInstance.get(`/api/v1/terminal/all`,{withCredentials:true});
-    return (await response).data;
+    const response = await axiosInstance.get(`/api/v1/terminal/all`,{withCredentials:true});
+    return response?.data?.data;
 }
 
 export const createRequestAPI = async(data)=>{
@@ -24,7 +24,8 @@ export const deleteRequestAPI = async(id)=>{
 }
 
 export const getAllDevicesAPI = async ()=>{
-    const response = axiosInstance.get("/api/v1/terminal/devices/all",{withCredentials:true});
-    return (await response).data;
+    const response = await axiosInstance.get("/api/v1/terminal/devices/all",{withCredentials:true});
+    console.log(response.data)
+    return response?.data?.data;
 }
 

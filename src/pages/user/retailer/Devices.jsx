@@ -3,44 +3,43 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../components/ui/button/Button";
 import AddDeviceModal from "./AddDeviceModal";
-import { fetchDevices } from "../../../redux/slices/user/retailerDeviceSlice";
-import { fetchRequest } from "../../../redux/slices/user/terminalSlice";
+import { fetchDevices, fetchRequests } from '../../../redux/slices/user/terminalSlice';
+import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
+import StatusBadge from "../../../components/ui/badges/StatusBadge";
 
 const Devices = () => {
   const dispatch = useDispatch();
 
-  // two slices
-  const { devices, loading: devicesLoading, fetched: devicesFetched } =
-    useSelector((state) => state.retailerDevice);
   const {
-    deviceRequest,
-    loading: requestsLoading,
-    fetched: requestsFetched,
+    devices,
+    deviceRequests,
+    devicesLoading,
+    requestsLoading,
     formLoading,
+    devicesFetched,
+    requestsFetched,
   } = useSelector((state) => state.userTerminal);
 
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-
-  // view toggle (devices | requests)
-  const [activeView, setActiveView] = useState("devices");
+  const [activeView, setActiveView] = useState("devices"); // toggle: devices | requests
 
   // fetch devices
   useEffect(() => {
     if (!devicesFetched && !devicesLoading) {
       dispatch(fetchDevices());
     }
-  }, [dispatch ]);
+  }, [dispatch, devicesFetched, devicesLoading]);
 
   // fetch requests
   useEffect(() => {
     if (!requestsFetched && !requestsLoading) {
-      dispatch(fetchRequest());
+      dispatch(fetchRequests());
     }
-  }, [dispatch]);
+  }, [dispatch, requestsFetched, requestsLoading]);
 
   const handleRowClick = (row) => {
-    setSelected(row); // pass row as initialData for update
+    setSelected(row);
     setIsOpen(true);
   };
 
@@ -52,49 +51,68 @@ const Devices = () => {
   // table columns
   const deviceColumns = [
     { id: "deviceName", label: "Device Name" },
-    { id: "qty", label: "Quantity" },
-    { id: "status", label: "Status" },
+    { id: "totalDevices", label: "Total Devices" },
+    {
+      id: "regions",
+      label: "Regions",
+      render: (row) =>
+        row.regions && row.regions.length > 0 ? row.regions.join(", ") : "-",
+    },
+    {
+      id: "status",
+      label: "Status",
+      render: (row) => <StatusBadge isActive={row.status === "ACTIVE"} size={12} />,
+    },
   ];
 
   const requestColumns = [
-    { id: "name", label: "Requested Device" },
-    { id: "country", label: "Country" },
-     { id: "state", label: "State" },
-      { id: "city", label: "City" },
-       { id: "regions", label: "Regions" }, 
+    { id: "deviceName", label: "Requested Device" },
     { id: "qty", label: "Quantity" },
-    { id: "status", label: "Status" },
+    { id: "country", label: "Country" },
+    { id: "state", label: "State" },
+    { id: "city", label: "City" },
+    { id: "regions", label: "Regions" },
+    { id: "status", label: "Status", render: (row) => <ApprovalBadge status={row.status} size={12} /> },
   ];
+
+  const mappedRequests = deviceRequests?.map((r) => ({
+    id: r.id,
+    deviceName: r.deviceName,
+    qty: r.qty,
+    status: r.status,
+    country: r.address?.country || "",
+    state: r.address?.state || "",
+    city: r.address?.city || "",
+    regions: Array.isArray(r.address?.region)
+      ? r.address.region.map((reg) => reg.name).join(", ")
+      : r.address?.region?.name || "",
+  }));
 
   return (
     <div className="p-4">
       {/* Top navigation buttons */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Devices</h2>
-
-          <Button
-            label="Request Device"
-            onClick={() => setIsOpen(true)}
-            type="button"
-          />
+        <Button label="Request Device" onClick={() => setIsOpen(true)} type="button" />
       </div>
-        <div className="flex space-x-3 mb-6">
-          <Button
-            label="My Devices"
-            onClick={() => setActiveView("devices")}
-            type="button"
-            isIcon={false}
-            variant={activeView === "devices" ? "primary" : "outline"}
-          />
-          <Button
-            label="Device Requests"
-            onClick={() => setActiveView("requests")}
-            type="button"
-            isIcon={false}
-            variant={activeView === "requests" ? "primary" : "outline"}
-            />
-            </div>
-      
+
+      {/* View toggle buttons */}
+      <div className="flex space-x-3 mb-6">
+        <Button
+          label="My Devices"
+          onClick={() => setActiveView("devices")}
+          type="button"
+          isIcon={false}
+          variant={activeView === "devices" ? "primary" : "outline"}
+        />
+        <Button
+          label="Device Requests"
+          onClick={() => setActiveView("requests")}
+          type="button"
+          isIcon={false}
+          variant={activeView === "requests" ? "primary" : "outline"}
+        />
+      </div>
 
       {/* Conditionally render tables */}
       {activeView === "devices" ? (
@@ -108,7 +126,7 @@ const Devices = () => {
       ) : (
         <ReusableTable
           columns={requestColumns}
-          rows={deviceRequest}
+          rows={mappedRequests}
           loading={requestsLoading}
           onRowClick={handleRowClick}
           filterKey="status"
@@ -116,7 +134,7 @@ const Devices = () => {
         />
       )}
 
-      {/* Modal for create / update */}
+      {/* Modal for create/update */}
       <AddDeviceModal
         isOpen={isOpen}
         onClose={handleClose}
