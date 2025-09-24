@@ -19,7 +19,6 @@ import payoutReducer from './slices/admin/payoutSlice'
 import adminRevenueReducer from './slices/admin/adminRevenueSlice'
 import adminTerminalReducer from './slices/admin/terminalSlice'
 import userTerminalReuder from './slices/user/terminalSlice'
-import retailerDeviceReducer from './slices/user/retailerDeviceSlice'
 
 
 export const store = configureStore({
@@ -31,9 +30,6 @@ export const store = configureStore({
     tickets: ticketsReducer,
     cityProductDevice: cityProductDeviceReducer,
     wallet: walletReducer,
-    //actaul devices
-    retailerDevice:retailerDeviceReducer,
-    //device request
     userTerminal:userTerminalReuder,
 
     // Admin Slices

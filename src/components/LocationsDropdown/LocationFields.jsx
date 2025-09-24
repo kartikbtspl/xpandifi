@@ -110,7 +110,8 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
           render={({ field }) => (
             <div className="space-y-1">
               <label className="block text-sm">
-                Pincode <span className="text-xs text-gray-500">(optional)</span>
+                Pincode 
+                {/* <span className="text-xs text-gray-500">(optional)</span> */}
               </label>
               <input
                 {...field}
