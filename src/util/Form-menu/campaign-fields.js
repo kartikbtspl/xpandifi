@@ -189,14 +189,14 @@ export const fields = [
       multi: true,
     },
 
-    // {
-    //   type: "select",
-    //   name: "pincode",
-    //   label: "Pin Code",
-    //   options: [],
-    //   multi: true,
-    //   validation: yup.array().min(1, "Select at least one pincode").required(),
-    // },
+    {
+      type: "select",
+      name: "pincode",
+      label: "Pin Code",
+      options: [],
+      multi: true,
+      validation: yup.array().min(1, "Select at least one pincode").required(),
+    },
   ],
 
   // Upload Creatives
@@ -244,6 +244,11 @@ export const fields = [
       label: "Bid Value",
       placeholder: "₹ Amount",
       validation: yup.string().required("Max Bid Cap is required"),
+    },
+     {
+      type: "button",
+      name: "draft",
+      label: "Save as Draft",
     },
   ],
 ];

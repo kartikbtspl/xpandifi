@@ -25,6 +25,7 @@ const Support = lazy(() => import("../pages/user/retailer/Support"));
 const TicketRaise = lazy(() => import("../pages/user/Ticket/TicketRaise"));
 const RevenueRequest = lazy(() => import("../pages/user/campaign/RevenueRequest"));
 const PaymentsHistory = lazy(() => import("../pages/user/campaign/PaymentsHistory"));
+const DraftCampaign = lazy(() => import("../pages/user/campaign/DraftCampaign"));
 
 // ================= ADMIN ROUTES =================
 const UserManagement = lazy(() => import("../pages/admin/userManagement/UserManagement"));
@@ -60,6 +61,14 @@ export const dashboardRoutes = [
       element={
         <PrivateRoute allowedRoles={["Ad-Agency"]}>
           <CreateCampaign />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/draft-campaign"
+      element={
+        <PrivateRoute allowedRoles={["Ad-Agency"]}>
+          <DraftCampaign />
         </PrivateRoute>
       }
     />

@@ -29,7 +29,9 @@ export const menuItems = [
   { name: "Bid Management", icon: <BidIcon />, path: "/bids" },
   { name: "Settings", icon: <SettingIcon />, path: "/settings" },
   { name: "Support", icon: <SupportIcon />, path: "/support" },
+  
   { name: "Data Privacy", icon: <PrivacyIcon />, path: "/data-privacy" },
+
 ];
 
 export const retailerMenuItems = [

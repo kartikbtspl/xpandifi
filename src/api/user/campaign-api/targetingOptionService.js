@@ -6,7 +6,6 @@ export const getDropDownDataAPI = async () => {
     const response = await axiosInstance.get("/api/v1/campaign/getCampDropData", {
       withCredentials: true,
     });
-    console.log(response.data)
     return response.data.data;  // return only dropdown data { products, locations, devices }
   } catch (error) {
     console.error("Error fetching dropdown data:", error);

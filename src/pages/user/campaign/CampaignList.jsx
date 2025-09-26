@@ -25,6 +25,7 @@ const CampaignList = () => {
 
   const filter_camp = campaigns.filter((c) => c.isPayment === false);
 
+  console.log("Filtered Campaigns:", filter_camp);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
