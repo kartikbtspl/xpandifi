@@ -165,7 +165,7 @@ const AddDeviceModal = ({ isOpen, onClose, initialData, formLoading = false }) =
             </div>
 
             {/* Postcode */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium">Postcode</label>
               <input
                 type="text"
@@ -178,7 +178,7 @@ const AddDeviceModal = ({ isOpen, onClose, initialData, formLoading = false }) =
                 {...register("regionPostcode", { required: isRegionEnabled })}
                 disabled={!isRegionEnabled}
               />
-            </div>
+            </div> */}
 
             {/* Submit */}
             <div className="flex justify-end">
