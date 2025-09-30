@@ -1,6 +1,7 @@
 import { Outlet, useLocation, Link } from "react-router-dom";
 import Button from "../../../components/ui/button/Button";
 import ReusableAccordion from "../../../components/ReusableAccordion/Accordion";
+import TicketRaise from "../../user/Ticket/TicketRaise"
 
 const Support = () => {
   const location = useLocation();
@@ -43,16 +44,10 @@ const Support = () => {
       ) : (
         <>
           {/* Header */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-800">Support</h2>
-            <Link to="raise-ticket">
-              <Button
-              isIcon={false}
-                label="Ticket System"
-                type="button"
-              />
-            </Link>
           </div>
+          <TicketRaise/>
 
           {/* FAQs Section */}
           <div className="mb-8">

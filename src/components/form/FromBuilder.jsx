@@ -23,7 +23,8 @@ const FormBuilder = ({
   estimateApi = null,
   estimateWatchFields = [],
   estimateSetField = null,
-  isPlus=true
+  isPlus=true,
+  indicator=''
 }) => {
   const {
     handleSubmit,
@@ -103,11 +104,16 @@ const FormBuilder = ({
       onSubmit={handleSubmit(handleFormSubmit)}
       className="p-6 bg-white rounded-xl space-y-6"
     >
-      <h2 className="text-xl font-semibold text-gray-800">
+      <div className="justify-between w-full flex">
+        <h2 className="text-xl font-semibold text-gray-800 text-left">
         {/* {title || (isEdit ? "Update Campaign" : "Create Campaign")} */}
         {title || (isEdit && "Update Campaign")}
 
       </h2>
+      <span className="text-right items-right origin-right">
+      { indicator}
+      </span>
+      </div>
 
       {injectedFields.map((row, rowIdx) => (
         <div key={rowIdx} className="grid grid-cols-1 md:grid-cols-3 gap-4">

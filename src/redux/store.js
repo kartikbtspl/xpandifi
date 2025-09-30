@@ -4,9 +4,10 @@ import { configureStore } from '@reduxjs/toolkit'
 import campaignReducer from './slices/user/campaignSlice'
 import userReducer from './slices/user/userSlice'
 import approvedCampaignReducer from './slices/user/approvedCampaignSlice'
-import ticketsReducer from './slices/user/ticketsSlice'
+import userTickeTReducer from './slices/user/ticketsSlice'
 import cityProductDeviceReducer from './slices/user/cityProductDeviceSlice'
 import walletReducer from './slices/user/walletSlice'
+import userTerminalReuder from './slices/user/terminalSlice'
 
 // Admin Slices
 import adminCampaignReducer from './slices/admin/campaignSlice'
@@ -18,7 +19,7 @@ import productReducer from './slices/admin/productSlice'
 import payoutReducer from './slices/admin/payoutSlice'
 import adminRevenueReducer from './slices/admin/adminRevenueSlice'
 import adminTerminalReducer from './slices/admin/terminalSlice'
-import userTerminalReuder from './slices/user/terminalSlice'
+import adminTickertReducer from './slices/admin/ticketsSlice'
 
 
 export const store = configureStore({
@@ -27,7 +28,7 @@ export const store = configureStore({
     campaign: campaignReducer,
     user: userReducer,
     approvedCampaigns: approvedCampaignReducer,
-    tickets: ticketsReducer,
+    userTicket: userTickeTReducer,
     cityProductDevice: cityProductDeviceReducer,
     wallet: walletReducer,
     userTerminal:userTerminalReuder,
@@ -41,6 +42,7 @@ export const store = configureStore({
     tier: tierReducer,
     product: productReducer,
     payout: payoutReducer,
-    adminTerminal:adminTerminalReducer
+    adminTerminal:adminTerminalReducer,
+    adminTicket:adminTickertReducer
   },
 })
