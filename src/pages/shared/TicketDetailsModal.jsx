@@ -3,6 +3,7 @@ import { Modal } from "../../components/ui/modal/Modal";
 import MediaCarousels from "../../components/ui/carousel/MediaCarousels";
 import RemarkModal from "../../components/ui/modal/RemarkModal";
 import Button from "../../components/ui/button/Button";
+import LoaderEmpt from "../../components/loader/LoaderEmpt";
 
 const TicketDetailsModal = ({
   isOpen,
@@ -10,13 +11,14 @@ const TicketDetailsModal = ({
   ticket,
   role = "user",
   onSubmit,
-  formLoading = false, // <- added loading prop
+  formLoading = false,
 }) => {
   const [userRemark, setUserRemark] = useState("");
   const [status, setStatus] = useState("ACTIVE");
   const [remarkError, setRemarkError] = useState(false);
   const [showRemarkModal, setShowRemarkModal] = useState(false);
 
+  // Initialize state when ticket changes
   useEffect(() => {
     if (ticket) {
       setStatus(ticket.status || "ACTIVE");
@@ -28,7 +30,7 @@ const TicketDetailsModal = ({
 
   const {
     ticketCode = "",
-    subject = "No Subject",
+    queryType = "No Subject",
     description = "No additional details provided",
     media = [],
     status: currentStatus = "ACTIVE",
@@ -45,8 +47,9 @@ const TicketDetailsModal = ({
 
   const getStatusColor = (status) => {
     const colors = {
+      
       ACTIVE: { bg: "bg-yellow-50", text: "text-yellow-600", border: "border-yellow-100" },
-      RESOLVED: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-100" },
+      RESOLVED: { bg: "bg-green-50", text: "text-green-600", border: "border-green-100" },
       CLOSED: { bg: "bg-red-50", text: "text-red-600", border: "border-red-100" },
     };
     return colors[status] || { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-100" };
@@ -60,24 +63,24 @@ const TicketDetailsModal = ({
     [media]
   );
 
+  // Dropdown options now include the current status
   const statusOptions = useMemo(() => {
     if (role === "admin") {
       const optionsMap = {
-        ACTIVE: ["RESOLVED", "CLOSED"],
-        RESOLVED: ["ACTIVE", "CLOSED"],
-        CLOSED: ["ACTIVE", "RESOLVED"],
+        ACTIVE: ["ACTIVE", "RESOLVED", "CLOSED"],
+        RESOLVED: ["RESOLVED", "ACTIVE", "CLOSED"],
+        CLOSED: ["CLOSED", "ACTIVE", "RESOLVED"],
       };
-      return optionsMap[currentStatus] || [];
+      return optionsMap[status] || [];
     } else {
-      return currentStatus === "ACTIVE" ? ["ACTIVE", "CLOSED"] : [];
+      return status === "ACTIVE" ? ["ACTIVE", "CLOSED"] : [status];
     }
-  }, [role, currentStatus]);
+  }, [role, status]);
 
   const handleStatusChange = (e) => {
     const selected = e.target.value;
     setStatus(selected);
 
-    // Show remark modal if status requires a mandatory remark
     if (
       (role === "admin" && (selected === "RESOLVED" || selected === "CLOSED")) ||
       (role !== "admin" && selected === "CLOSED")
@@ -114,10 +117,12 @@ const TicketDetailsModal = ({
 
   return (
     <>
+    {formLoading &&(<LoaderEmpt/>)}
+
       <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton={true}>
         <div className="p-6 space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">{subject}</h2>
+            <h2 className="text-2xl font-semibold">{queryType}</h2>
             <span
               className={`px-3 py-1 rounded-md text-sm font-medium ${getStatusColor(
                 currentStatus
@@ -172,8 +177,8 @@ const TicketDetailsModal = ({
               <Button
                 label="Update the Status"
                 onClick={handleSubmit}
-                isLoading={formLoading} // <- show loading on button
-                disabled={formLoading}  // <- disable while loading
+                isLoading={formLoading}
+                disabled={formLoading}
               />
             </div>
           )}
@@ -183,7 +188,7 @@ const TicketDetailsModal = ({
       <RemarkModal
         label="Reason for status change"
         isOpen={showRemarkModal}
-        onClose={() => setShowRemarkModal(true)}
+        onClose={() => setShowRemarkModal(false)}
         remark={userRemark}
         setRemark={setUserRemark}
         error={remarkError}

@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   // createTicketAPI,
- getAllTicketAPI,
- updateStatusTicketAPI
-} from "../../../api/admin/ticket/ticket-api"; // adjust path
+  getAllTicketAPI,
+  updateStatusTicketAPI,
+} from "../../../api/admin/ticket/ticket-api"
 
-// Thunks
+// // Thunks
 // export const createTicket = createAsyncThunk(
 //   "tickets/create",
 //   async (data, { rejectWithValue }) => {
@@ -48,6 +48,7 @@ const ticketSlice = createSlice({
   initialState: {
     tickets: [],
     loading: false,
+    formLoading: false,
     error: null,
     success: null,
   },
@@ -67,7 +68,8 @@ const ticketSlice = createSlice({
     //   .addCase(createTicket.fulfilled, (state, action) => {
     //     state.loading = false;
     //     state.success = "Ticket created successfully";
-    //     state.tickets.push(action.payload); // add new ticket
+    //     if (!state.tickets) state.tickets = [];
+    //     state.tickets.push(action.payload);
     //   })
     //   .addCase(createTicket.rejected, (state, action) => {
     //     state.loading = false;
@@ -82,31 +84,35 @@ const ticketSlice = createSlice({
       })
       .addCase(fetchAllTickets.fulfilled, (state, action) => {
         state.loading = false;
-        state.tickets = action.payload;
+        state.tickets = action.payload || [];
       })
       .addCase(fetchAllTickets.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
 
-    // Update ticket
+    // Update ticket status (form loading)
     builder
       .addCase(updateTicketStatus.pending, (state) => {
-        state.loading = true;
+        state.formLoading = true;
         state.error = null;
       })
       .addCase(updateTicketStatus.fulfilled, (state, action) => {
-        state.loading = false;
+        state.formLoading = false;
         state.success = "Ticket updated successfully";
-        const index = state.tickets.findIndex(
-          (ticket) => ticket.id === action.payload.id
-        );
-        if (index !== -1) {
-          state.tickets[index] = action.payload;
+
+        if (Array.isArray(state.tickets)) {
+          const index = state.tickets.findIndex(
+            (ticket) => ticket.id === action.payload.id
+          );
+          if (index !== -1) {
+            state.tickets[index] = action.payload;
+          }
         }
       })
+
       .addCase(updateTicketStatus.rejected, (state, action) => {
-        state.loading = false;
+        state.formLoading = false;
         state.error = action.payload;
       });
   },

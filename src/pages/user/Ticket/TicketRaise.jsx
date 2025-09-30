@@ -69,7 +69,7 @@ const TicketRaise = () => {
     {
       id: "createdAt",
       label: "Date",
-      render: (row) => new Date(row.createdAt).toLocaleString(), // format datetime
+      render: (row) => new Date(row.createdAt).toLocaleString()
     },
     {
       id: "status",
@@ -170,9 +170,9 @@ const TicketRaise = () => {
 
   return (
     <div>
-     <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl">Tickets</h2>
-      
+
         <Button
           isIcon={false}
           label="Raise Ticket"
@@ -181,25 +181,23 @@ const TicketRaise = () => {
         />
       </div>
 
-     <div className="flex w-full justify-between space-x-4">
-      <div className="w-2/3">
-         <ReusableTable
-        columns={columns}
-        rows={tickets || []}
-        filterOptions={["all", "ACTIVE", "RESOLVED", "CLOSED"]}
-        filterKey="status"
-        onRowClick={handleRowClick}
-        loading={loading}
-        onRefresh={() => dispatch(fetchAllTickets())}
-      searchableColumns={['queryType','ticketCode','status']}
-        
-      />
+      <div className="flex w-full justify-between space-x-4">
+        <div className="w-2/3">
+          <ReusableTable
+            columns={columns}
+            rows={tickets || []}
+            filterOptions={["all", "ACTIVE", "RESOLVED", "CLOSED"]}
+            filterKey="status"
+            onRowClick={handleRowClick}
+            loading={loading}
+            onRefresh={() => dispatch(fetchAllTickets())}
+            searchableColumns={["queryType", "ticketCode", "status"]}
+          />
+        </div>
+        <div className="w-1/3">
+          <ChatOption />
+        </div>
       </div>
-      <div className="w-1/3">
-
-      <ChatOption/>
-      </div>
-     </div>
 
       <Modal
         isOpen={isTicketModalOpen}
@@ -224,6 +222,7 @@ const TicketRaise = () => {
         ticket={selectedTicket}
         role="user "
         onSubmit={handleUpdate}
+        s
       />
     </div>
   );
