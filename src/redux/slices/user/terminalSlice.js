@@ -38,7 +38,9 @@ export const createRequest = createAsyncThunk(
   "terminal/createRequest",
   async (data, { rejectWithValue }) => {
     try {
-      return await createRequestAPI(data);
+      // 🔑 Only return normalized "data"
+      const res = await createRequestAPI(data);
+      return res;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -80,7 +82,7 @@ const terminalSlice = createSlice({
     devicesFetched: false,
     requestsLoading: false,
     requestsFetched: false,
-    
+
     formLoading: false,
     error: null,
   },
@@ -126,7 +128,13 @@ const terminalSlice = createSlice({
       })
       .addCase(createRequest.fulfilled, (state, action) => {
         state.formLoading = false;
-        state.deviceRequests.push(action.payload);
+
+        // ✅ normalize response in case API wraps it
+        const newReq = action.payload?.data || action.payload;
+
+        if (newReq) {
+          state.deviceRequests.push(newReq);
+        }
       })
       .addCase(createRequest.rejected, (state, action) => {
         state.formLoading = false;
@@ -141,7 +149,7 @@ const terminalSlice = createSlice({
       })
       .addCase(updateRequest.fulfilled, (state, action) => {
         state.formLoading = false;
-        const updated = action.payload;
+        const updated = action.payload?.data || action.payload;
         const index = state.deviceRequests.findIndex(
           (r) => r.id === updated.id
         );

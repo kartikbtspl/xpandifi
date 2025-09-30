@@ -1,22 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  createTicketAPI,
+  // createTicketAPI,
   getAllTicketAPI,
   updateStatusTicketAPI,
-} from "../../../api/user/tickets-api/ticket-api";
+} from "../../../api/admin/ticket/ticket-api"
 
-// Thunks
-export const createTicket = createAsyncThunk(
-  "tickets/create",
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await createTicketAPI(data);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
-    }
-  }
-);
+// // Thunks
+// export const createTicket = createAsyncThunk(
+//   "tickets/create",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       const response = await createTicketAPI(data);
+//       return response;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data || error.message);
+//     }
+//   }
+// );
 
 export const fetchAllTickets = createAsyncThunk(
   "tickets/fetchAll",
@@ -60,21 +60,21 @@ const ticketSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Create ticket
-    builder
-      .addCase(createTicket.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createTicket.fulfilled, (state, action) => {
-        state.loading = false;
-        state.success = "Ticket created successfully";
-        if (!state.tickets) state.tickets = [];
-        state.tickets.push(action.payload);
-      })
-      .addCase(createTicket.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
+    // builder
+    //   .addCase(createTicket.pending, (state) => {
+    //     state.loading = true;
+    //     state.error = null;
+    //   })
+    //   .addCase(createTicket.fulfilled, (state, action) => {
+    //     state.loading = false;
+    //     state.success = "Ticket created successfully";
+    //     if (!state.tickets) state.tickets = [];
+    //     state.tickets.push(action.payload);
+    //   })
+    //   .addCase(createTicket.rejected, (state, action) => {
+    //     state.loading = false;
+    //     state.error = action.payload;
+    //   });
 
     // Fetch tickets
     builder

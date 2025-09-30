@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
+import { ImageModal } from "../../../components/ui/modal/ImageModal";
 // Custom Next Arrow
 const NextArrow = ({ onClick }) => (
   <button
@@ -60,13 +60,23 @@ const MediaCarousels = ({ mediaFiles = { images: [], videos: [] }, size = "md", 
   };
 
   const heightClass = sizeClassMap[size] || sizeClassMap["md"];
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState(null);
 
+   const handleImageClick = (url) => {
+    if (!isVideo(url)) {
+      setSelectedImage(url);
+      setModalOpen(true);
+    }
+  };
   return (
     <div className="relative w-full">
       <Slider {...settings}>
         {files.map((file, idx) => (
           <div key={`${file}-${idx}`} className="w-full">
-            <div className={`w-full overflow-hidden rounded ${heightClass}`}>
+            <div className={`w-full overflow-hidden rounded ${heightClass}`}        
+                   onClick={() => handleImageClick(file)}
+                   >
               {isVideo(file) ? (
                 <video
                   src={file}
@@ -88,6 +98,14 @@ const MediaCarousels = ({ mediaFiles = { images: [], videos: [] }, size = "md", 
           </div>
         ))}
       </Slider>
+      {selectedImage && (
+        <ImageModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+        >
+          <img src={selectedImage} alt="Full view" className="w-full h-auto object-contain" />
+        </ImageModal>
+      )}
     </div>
   );
 };
