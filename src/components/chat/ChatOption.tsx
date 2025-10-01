@@ -3,12 +3,77 @@ import { LuSendHorizontal } from "react-icons/lu";
 import { FaHeadset } from "react-icons/fa6";
 import Input from "../../components/ui/input/Input";
 
-// Predefined bot responses
-const botReplies = [
-  "Sure, let me check that for you.",
-  "Currently, multiple team members can access the dashboard.",
-  "You can reset your password from the settings page.",
-  "Our team is working on that feature, stay tuned!",
+const faqItems = [
+  {
+    id: 1,
+    question: "How do I create a new ad campaign?",
+    keywords: ["create", "campaign", "ad", "new"],
+    solution:
+      "Navigate to 'Campaigns' > 'Create New'. Set your budget, target audience, and ad creative. Submit for review.",
+  },
+  {
+    id: 2,
+    question: "Why are my ads not visible?",
+    keywords: ["ads", "not visible", "hidden", "display"],
+    solution:
+      "Check your campaign status (pending/approved). Ensure your budget isn’t exhausted and targeting matches your audience.",
+  },
+  {
+    id: 3,
+    question: "How can I change device or location settings?",
+    keywords: ["device", "location", "settings", "targeting", "adjust"],
+    solution:
+      "Go to 'Settings' > 'Targeting'. Adjust device types (iOS/Android) and geolocation preferences.",
+  },
+  {
+    id: 4,
+    question: "When can I withdraw my earnings?",
+    keywords: ["withdraw", "earnings", "payout", "wallet", "payment"],
+    solution:
+      "Earnings are available 30 days after ad display. Withdraw via 'Wallet' > 'Payout' (minimum $10).",
+  },
+  {
+    id: 5,
+    question: "Revenue calculation seems incorrect. What should I do?",
+    keywords: ["revenue", "calculation", "incorrect", "report", "discrepancy"],
+    solution:
+      "Compare your dashboard with raw logs in 'Reports'. Contact support if discrepancies persist.",
+  },
+  {
+    id: 6,
+    question: "How do I pause or stop an active campaign?",
+    keywords: ["pause", "stop", "active", "campaign", "suspend"],
+    solution:
+      "Go to 'Campaigns' > select the campaign > click 'Pause' or 'Stop' to halt ad delivery.",
+  },
+  {
+    id: 7,
+    question: "Can I edit a campaign after it is live?",
+    keywords: ["edit", "campaign", "live", "modify", "update"],
+    solution:
+      "Yes, select the live campaign and click 'Edit'. Note that some changes may require review before applying.",
+  },
+  {
+    id: 8,
+    question: "How can I track my ad performance?",
+    keywords: ["track", "performance", "analytics", "report", "dashboard"],
+    solution:
+      "Go to 'Reports' or 'Analytics' to view metrics such as impressions, clicks, conversions, and ROI.",
+  },
+  {
+    id: 9,
+    question: "Is there a mobile app for managing campaigns?",
+    keywords: ["mobile", "app", "campaign", "manage", "application"],
+    solution:
+      "Yes, download our iOS or Android app from the App Store or Google Play to manage campaigns on the go.",
+  },
+  {
+    id: 10,
+    question: "How do I contact support for urgent issues?",
+    keywords: ["contact", "support", "urgent", "help", "assistance"],
+    solution:
+      "Click on 'Help' > 'Contact Support' in the dashboard. For urgent matters, use the live chat or call support directly.",
+  },
 ];
 
 const ChatOption = () => {
@@ -19,7 +84,6 @@ const ChatOption = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom whenever messages update
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -27,9 +91,27 @@ const ChatOption = () => {
     }
   }, [messages, isTyping]);
 
-  const getBotReply = () => {
-    const index = Math.floor(Math.random() * botReplies.length);
-    return botReplies[index];
+  // Keyword-based matching
+  const getBotReply = (userText: string) => {
+    const lowerText = userText.toLowerCase();
+
+    // Find FAQ with the most matching keywords
+    let bestMatch: any = null;
+    let maxMatches = 0;
+
+    faqItems.forEach((faq) => {
+      const matches = faq.keywords.filter((kw) =>
+        lowerText.includes(kw.toLowerCase())
+      ).length;
+      if (matches > maxMatches) {
+        maxMatches = matches;
+        bestMatch = faq;
+      }
+    });
+
+    if (bestMatch && maxMatches > 0) return bestMatch.solution;
+
+    return "I'm not sure about that. Please contact support for assistance.";
   };
 
   const sendMessage = () => {
@@ -39,10 +121,9 @@ const ChatOption = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    // simulate bot typing
     setIsTyping(true);
     setTimeout(() => {
-      const botMessage = { sender: "bot", text: getBotReply() };
+      const botMessage = { sender: "bot", text: getBotReply(input.trim()) };
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
     }, 800);
@@ -60,7 +141,7 @@ const ChatOption = () => {
       <div className="flex flex-col bg-gray-50">
         <div
           ref={messagesContainerRef}
-          className="overflow-y-auto flex flex-col gap-4 px-6 py-4 h-[400px]" 
+          className="overflow-y-auto flex flex-col gap-4 px-6 py-4 h-[400px]"
         >
           {messages.map((msg, idx) => (
             <div
@@ -77,7 +158,7 @@ const ChatOption = () => {
                   </div>
                 ) : (
                   <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+                    src="logo.svg"
                     alt="User"
                     className="h-10 w-10 rounded-full border-2 border-white shadow-sm"
                   />
@@ -97,7 +178,6 @@ const ChatOption = () => {
             </div>
           ))}
 
-          {/* Typing indicator */}
           {isTyping && (
             <div className="flex items-start gap-3">
               <div className="bg-[#445E94] h-10 w-10 rounded-full flex items-center justify-center">
