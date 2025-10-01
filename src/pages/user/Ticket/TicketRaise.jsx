@@ -16,7 +16,7 @@ import ChatOption from "../../../components/chat/ChatOption";
 
 const TicketRaise = () => {
   const dispatch = useDispatch();
-  const { tickets, loading } = useSelector((state) => state.userTicket);
+  const { tickets, loading, formLoading } = useSelector((state) => state.userTicket);
 
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -124,8 +124,8 @@ const TicketRaise = () => {
     async (data) => {
       try {
         await dispatch(updateTicketStatus({ id: selectedTicket.id, data }));
+        handleCloseDetailsModal()
         Toast.success("Raised!", "Ticket status updated successfully!");
-        console.log(data);
       } catch (error) {
         Toast.error(
           "Failed!",
@@ -150,7 +150,7 @@ const TicketRaise = () => {
         Toast.error("Failed!", error.message || "Failed to raise the Ticket!");
       }
     },
-    [dispatch, closeTicketModal, methods] // dependencies
+    [dispatch, closeTicketModal, methods]
   );
 
   return (
@@ -205,9 +205,9 @@ const TicketRaise = () => {
         isOpen={isDetailsModalOpen}
         onClose={handleCloseDetailsModal}
         ticket={selectedTicket}
-        role="user "
+        role="user"
         onSubmit={handleUpdate}
-        s
+        formLoading={formLoading}
       />
     </div>
   );

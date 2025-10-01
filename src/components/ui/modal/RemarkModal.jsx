@@ -7,15 +7,16 @@ const RemarkModal = ({
   remark,
   setRemark,
   onSubmit,
+  placeholder = "Reason for rejection..."
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md" showCloseButton={true}>
-      <div className="p-4 space-y-3">
+      <div className="space-y-3">
         <h3 className="text-lg font-semibold">{label || ""}</h3>
         <textarea
           value={remark}
           onChange={(e) => setRemark(e.target.value)}
-          placeholder="Reason for rejection..."
+          placeholder={placeholder}
           className="w-full h-24 p-2 border rounded"
         />
         <div className="flex justify-end gap-2">

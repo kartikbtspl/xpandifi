@@ -18,7 +18,7 @@ const TicketDetailsModal = ({
   const [remarkError, setRemarkError] = useState(false);
   const [showRemarkModal, setShowRemarkModal] = useState(false);
 
-  // Initialize state when ticket changes
+  // Reset state when ticket changes
   useEffect(() => {
     if (ticket) {
       setStatus(ticket.status || "ACTIVE");
@@ -47,7 +47,6 @@ const TicketDetailsModal = ({
 
   const getStatusColor = (status) => {
     const colors = {
-      
       ACTIVE: { bg: "bg-yellow-50", text: "text-yellow-600", border: "border-yellow-100" },
       RESOLVED: { bg: "bg-green-50", text: "text-green-600", border: "border-green-100" },
       CLOSED: { bg: "bg-red-50", text: "text-red-600", border: "border-red-100" },
@@ -63,15 +62,10 @@ const TicketDetailsModal = ({
     [media]
   );
 
-  // Dropdown options now include the current status
   const statusOptions = useMemo(() => {
+    const adminOptions = ["ACTIVE", "RESOLVED", "CLOSED"];
     if (role === "admin") {
-      const optionsMap = {
-        ACTIVE: ["ACTIVE", "RESOLVED", "CLOSED"],
-        RESOLVED: ["RESOLVED", "ACTIVE", "CLOSED"],
-        CLOSED: ["CLOSED", "ACTIVE", "RESOLVED"],
-      };
-      return optionsMap[status] || [];
+      return adminOptions.filter((s) => s !== status).concat(status); // keep current status on top
     } else {
       return status === "ACTIVE" ? ["ACTIVE", "CLOSED"] : [status];
     }
@@ -81,14 +75,11 @@ const TicketDetailsModal = ({
     const selected = e.target.value;
     setStatus(selected);
 
-    if (
+    const requiresRemark =
       (role === "admin" && (selected === "RESOLVED" || selected === "CLOSED")) ||
-      (role !== "admin" && selected === "CLOSED")
-    ) {
-      setShowRemarkModal(true);
-    } else {
-      setShowRemarkModal(false);
-    }
+      (role !== "admin" && selected === "CLOSED");
+
+    setShowRemarkModal(requiresRemark);
   };
 
   const handleSubmit = () => {
@@ -102,91 +93,71 @@ const TicketDetailsModal = ({
       return;
     }
 
-    if (typeof onSubmit === "function") {
-      onSubmit({
-        status,
-        remark: userRemark.trim(),
-      });
-    }
-
+    onSubmit?.({ status, remark: userRemark.trim() });
     setShowRemarkModal(false);
-    onClose();
   };
 
   if (!ticket) return null;
 
   return (
     <>
-    {formLoading &&(<LoaderEmpt/>)}
-
-      <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton={true}>
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-center">
+      <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton={!formLoading}>
+        {formLoading && <LoaderEmpt />}
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex justify-between items-center mt-4">
             <h2 className="text-2xl font-semibold">{queryType}</h2>
             <span
-              className={`px-3 py-1 rounded-md text-sm font-medium ${getStatusColor(
-                currentStatus
-              ).bg} ${getStatusColor(currentStatus).text} ${getStatusColor(currentStatus).border}`}
+              className={`px-3 py-1 rounded-md text-sm font-medium ${getStatusColor(currentStatus).bg} ${getStatusColor(currentStatus).text} ${getStatusColor(currentStatus).border}`}
             >
               {currentStatus}
             </span>
           </div>
 
+          {/* Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <InfoBox label="Ticket Code" value={ticketCode} />
             <InfoBox label="Raised At" value={formatDate(createdAt)} />
           </div>
 
+          {/* Description */}
+          <InfoBox label="Description" value={description} />
+
+          {/* Remark if exists */}
+          {ticket?.remark && (
+            <InfoBox label="Remark" value={ticket.remark} textColor="text-red-500" />
+          )}
+
+          {/* Media */}
           <div>
-            <label className="text-sm text-gray-600">Description</label>
-            <div className="w-full px-3 py-2 text-gray-800 bg-white border border-gray-200 rounded-md shadow-sm text-sm min-h-[80px]">
-              {description}
-            </div>
+            <label className="text-sm text-gray-600">Media</label>
+            {mediaFiles.images.length + mediaFiles.videos.length > 0 ? (
+              <div className="mt-2">
+                <MediaCarousels mediaFiles={mediaFiles} size="xs" />
+              </div>
+            ) : (
+              <p className="text-gray-400 mt-1 text-sm">No media attached</p>
+            )}
           </div>
 
-          {mediaFiles.images.length + mediaFiles.videos.length > 0 && (
-            <div>
-              <label className="text-sm text-gray-600">Media</label>
-              <div className="mt-2">
-                <MediaCarousels mediaFiles={mediaFiles} size="sm" />
-              </div>
-            </div>
-          )}
-
+          {/* Status Update */}
           {statusOptions.length > 0 && (
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-600">Update Status</label>
-                <select
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={status}
-                  onChange={handleStatusChange}
-                >
-                  {statusOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
-
-          {statusOptions.length > 0 && (
-            <div className="flex justify-end">
-              <Button
-                label="Update the Status"
-                onClick={handleSubmit}
-                isLoading={formLoading}
-                disabled={formLoading}
-              />
-            </div>
+            <StatusUpdateSection
+              role={role}
+              status={status}
+              statusOptions={statusOptions}
+              onStatusChange={handleStatusChange}
+              onSubmit={handleSubmit}
+              formLoading={formLoading}
+            />
           )}
         </div>
       </Modal>
 
+      {/* Remark Modal */}
       <RemarkModal
-        label="Reason for status change"
+        label="Remark"
+        placeholder="Reason for status change"
         isOpen={showRemarkModal}
         onClose={() => setShowRemarkModal(false)}
         remark={userRemark}
@@ -201,11 +172,36 @@ const TicketDetailsModal = ({
   );
 };
 
-const InfoBox = ({ label, value }) => (
+// --- Reusable InfoBox ---
+const InfoBox = ({ label, value, textColor = "text-gray-800" }) => (
   <div>
     <label className="text-sm text-gray-600">{label}</label>
-    <div className="mt-1 w-full px-3 py-2 text-gray-800 bg-white border border-gray-200 rounded-md shadow-sm text-sm">
+    <div className={`mt-1 w-full px-3 py-2 bg-white border border-gray-200 rounded-md shadow-sm text-sm ${textColor}`}>
       {value || "—"}
+    </div>
+  </div>
+);
+
+// --- Reusable Status Update Section ---
+const StatusUpdateSection = ({ role, status, statusOptions, onStatusChange, onSubmit, formLoading }) => (
+  <div className="space-y-2 mt-4">
+    <div>
+      <label className="text-sm font-medium text-gray-600">Update Status</label>
+      <select
+        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        value={status}
+        onChange={onStatusChange}
+        disabled={formLoading}
+      >
+        {statusOptions.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div className="flex justify-end">
+      <Button label="Update Status" onClick={onSubmit} isLoading={formLoading} disabled={formLoading} />
     </div>
   </div>
 );

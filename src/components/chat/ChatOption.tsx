@@ -19,16 +19,12 @@ const ChatOption = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom whenever messages update
-  const scrollToBottom = () => {
+  // Auto-scroll to bottom whenever messages update
+  useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
-  };
-
-  useEffect(() => {
-    scrollToBottom();
   }, [messages, isTyping]);
 
   const getBotReply = () => {
@@ -61,11 +57,10 @@ const ChatOption = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 flex flex-col bg-gray-50">
+      <div className="flex flex-col bg-gray-50">
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto flex flex-col gap-4 px-6 py-4"
-          style={{ maxHeight: "600px" }} // fixed height
+          className="overflow-y-auto flex flex-col gap-4 px-6 py-4 h-[400px]" 
         >
           {messages.map((msg, idx) => (
             <div
@@ -126,7 +121,7 @@ const ChatOption = () => {
         </div>
 
         {/* Input Section */}
-        <div className="px-4">
+        <div className="px-4 py-3 border-t border-gray-200 bg-white">
           <Input
             placeholder="Type your message..."
             value={input}
