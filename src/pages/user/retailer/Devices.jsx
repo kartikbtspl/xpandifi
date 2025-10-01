@@ -3,7 +3,10 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../components/ui/button/Button";
 import AddDeviceModal from "./AddDeviceModal";
-import { fetchDevices, fetchRequests } from '../../../redux/slices/user/terminalSlice';
+import {
+  fetchDevices,
+  fetchRequests,
+} from "../../../redux/slices/user/terminalSlice";
 import ApprovalBadge from "../../../components/ui/badges/ApprovalBadge";
 import StatusBadge from "../../../components/ui/badges/StatusBadge";
 
@@ -24,14 +27,14 @@ const Devices = () => {
   const [selected, setSelected] = useState(null);
   const [activeView, setActiveView] = useState("devices"); // toggle: devices | requests
 
-  // fetch devices
+  // Fetch devices
   useEffect(() => {
     if (!devicesFetched && !devicesLoading) {
       dispatch(fetchDevices());
     }
   }, [dispatch, devicesFetched, devicesLoading]);
 
-  // fetch requests
+  // Fetch requests
   useEffect(() => {
     if (!requestsFetched && !requestsLoading) {
       dispatch(fetchRequests());
@@ -48,7 +51,7 @@ const Devices = () => {
     setIsOpen(false);
   };
 
-  // table columns
+  // Table columns
   const deviceColumns = [
     { id: "deviceName", label: "Device Name" },
     { id: "totalDevices", label: "Total Devices" },
@@ -61,7 +64,9 @@ const Devices = () => {
     {
       id: "status",
       label: "Status",
-      render: (row) => <StatusBadge isActive={row.status === "ACTIVE"} size={12} />,
+      render: (row) => (
+        <StatusBadge isActive={row.status === "ACTIVE"} size={12} />
+      ),
     },
   ];
 
@@ -72,14 +77,19 @@ const Devices = () => {
     { id: "state", label: "State" },
     { id: "city", label: "City" },
     { id: "regions", label: "Regions" },
-    { id: "status", label: "Status", render: (row) => <ApprovalBadge status={row.status} size={12} /> },
+    {
+      id: "status",
+      label: "Status",
+      render: (row) => <ApprovalBadge status={row.status} size={12} />,
+    },
   ];
 
+  // Map device requests for table
   const mappedRequests = deviceRequests?.map((r) => ({
     id: r.id,
-    deviceName: r.deviceName,
-    qty: r.qty,
-    status: r.status,
+    deviceName: r.deviceName || "-",
+    qty: r.qty || 0,
+    status: r.status || "Pending",
     country: r.address?.country || "",
     state: r.address?.state || "",
     city: r.address?.city || "",
@@ -93,7 +103,13 @@ const Devices = () => {
       {/* Top navigation buttons */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Devices</h2>
-        <Button label="Request Device" onClick={() => setIsOpen(true)} type="button" />
+        {activeView === "requests" && (
+          <Button
+            label="Request Device"
+            onClick={() => setIsOpen(true)}
+            type="button"
+          />
+        )}
       </div>
 
       {/* View toggle buttons */}
@@ -122,6 +138,7 @@ const Devices = () => {
           loading={devicesLoading}
           filterKey="status"
           filterOptions={["all", "Active", "Inactive"]}
+          searchableColumns={["deviceName","regions","status"]}
         />
       ) : (
         <ReusableTable
@@ -131,6 +148,7 @@ const Devices = () => {
           onRowClick={handleRowClick}
           filterKey="status"
           filterOptions={["all", "Pending", "Approved", "Rejected"]}
+          searchableColumns={["deviceName", "state", "country", "city", "regions","status"]}
         />
       )}
 
