@@ -36,10 +36,6 @@ const TicketRaise = () => {
   const openTicketModal = () => setIsTicketModalOpen(true);
   const closeTicketModal = () => setIsTicketModalOpen(false);
 
-  const handleOpenDetailsModal = (ticket) => {
-    setSelectedTicket(ticket);
-    setIsDetailsModalOpen(true);
-  };
 
   const handleCloseDetailsModal = () => {
     setIsDetailsModalOpen(false);
@@ -50,17 +46,6 @@ const TicketRaise = () => {
     {
       id: "ticketCode",
       label: "Ticket#",
-      render: (row) => (
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpenDetailsModal(row);
-          }}
-          className="cursor-pointer hover:text-blue-600 hover:underline"
-        >
-          {row.ticketCode}
-        </span>
-      ),
     },
     {
       id: "queryType",

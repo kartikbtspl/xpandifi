@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Typography, Chip } from "@mui/material";
 import StatCard from "../../../components/card/StatCard";
 import ReusableTable from "../../../components/table/ReusableTable";
@@ -10,14 +10,29 @@ import {
   fetchAllTickets,
   updateTicketStatus,
 } from "../../../redux/slices/admin/ticketsSlice";
+
+function getStatusCounts(arr) {
+  return arr.reduce(
+    (acc, item) => {
+      if (item.status in acc) {
+        acc[item.status] += 1;
+      } else {
+        acc[item.status] = 1;
+      }
+      acc.total += 1;
+      return acc;
+    },
+    { total: 0 }
+  );
+}
+
 const TicketSystem = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { tickets,loading,formLoading } = useSelector((state) => state.adminTicket);
+  const { tickets, loading, formLoading } = useSelector(
+    (state) => state.adminTicket
+  );
   const dispatch = useDispatch();
-  // const counts = ticketCounts(rows);
-
-
 
   useEffect(() => {
     dispatch(fetchAllTickets());
@@ -27,91 +42,89 @@ const TicketSystem = () => {
     setSelectedTicket(null);
   };
 
+  const handleRowClick = (row) => {
+    setSelectedTicket(row), setIsModalOpen(true);
+  };
 
- const  handleRowClick = (row)=>{
-    setSelectedTicket(row),
-    setIsModalOpen(true)
-  }
+  const {
+    ACTIVE = 0,
+    CLOSED = 0,
+    RESOLVED = 0,
+    total = 0,
+  } = useMemo(() => {
+    return getStatusCounts(tickets || []);
+  }, [tickets]);
 
-  // const statsData = [
-  //   {
-  //     title: "Total Tickets",
-  //     value: counts.total.toString(),
-  //     currency: false,
-  //     changeColor: "text-green-600",
-  //     bgGradient: "bg-gradient-to-br from-white via-blue-50 to-blue-60",
-  //   },
-  //   {
-  //     title: "Open",
-  //     value: counts.open.toString(),
-  //     currency: false,
-  //     changeColor: "text-orange-600",
-  //     bgGradient: "bg-gradient-to-br from-white via-orange-50 to-orange-100",
-  //   },
-  //   {
-  //     title: "In Progress",
-  //     value: counts.inProgress.toString(),
-  //     currency: false,
-  //     changeColor: "text-yellow-600",
-  //     bgGradient: "bg-gradient-to-br from-white via-yellow-50 to-yellow-100",
-  //   },
-  //   {
-  //     title: "Resolved",
-  //     value: counts.resolved.toString(),
-  //     currency: false,
-  //     changeColor: "text-blue-600",
-  //     bgGradient: "bg-gradient-to-br from-white via-blue-50 to-blue-100",
-  //   },
-  //   {
-  //     title: "Reopen",
-  //     value: counts.reopen.toString(),
-  //     currency: false,
-  //     changeColor: "text-red-600",
-  //     bgGradient: "bg-gradient-to-br from-white via-red-50 to-red-100",
-  //   },
-  // ];
+  const statsData = [
+    {
+      title: "Total Tickets",
+      value: total,
+      currency: false,
+      changeColor: "text-green-600",
+      bgGradient: "bg-gradient-to-br from-white via-blue-50 to-blue-60",
+    },
 
-   const handleUpdate = useCallback(
-      async (data) => {
-        try {
-          await dispatch(updateTicketStatus({ id: selectedTicket.id, data }));
-          Toast.success("Raised!", "Ticket status updated successfully!");
-          console.log(data);
-        } catch (error) {
-          Toast.error(
-            "Failed!",
-            error.message || "Failed to update status of Ticket!"
-          );
-          console.error(error);
-        }
-      },
-      [dispatch, selectedTicket?.id]
-    );
+    {
+      title: "Active",
+      value: ACTIVE,
+      currency: false,
+      changeColor: "text-yellow-600",
+      bgGradient: "bg-gradient-to-br from-white via-yellow-50 to-yellow-100",
+    },
+    {
+      title: "Closed",
+      value: CLOSED,
+      currency: false,
+      changeColor: "text-red-600",
+      bgGradient: "bg-gradient-to-br from-white via-red-50 to-red-100",
+    },
+    {
+      title: "Resolved",
+      value: RESOLVED,
+      currency: false,
+      changeColor: "text-blue-600",
+      bgGradient: "bg-gradient-to-br from-white via-green-50 to-green-100",
+    },
+  ];
+
+  const handleUpdate = useCallback(
+    async (data) => {
+      try {
+        await dispatch(updateTicketStatus({ id: selectedTicket.id, data }));
+        Toast.success("Raised!", "Ticket status updated successfully!");
+        console.log(data);
+      } catch (error) {
+        Toast.error(
+          "Failed!",
+          error.message || "Failed to update status of Ticket!"
+        );
+        console.error(error);
+      }
+    },
+    [dispatch, selectedTicket?.id]
+  );
 
   const columns = [
     {
       id: "ticketCode",
       label: "Ticket#",
-      render: (row) => (
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            handleRowClick(row);
-          }}
-          className="cursor-pointer hover:text-blue-600 hover:underline"
-        >
-          {row.ticketCode}
-        </span>
-      ),
     },
     {
       id: "queryType",
       label: "Issue",
     },
     {
+      id: "businessName",
+      label: "Business Name",
+    },
+    {
+      id: "role",
+      label: "Role",
+    },
+    {
       id: "createdAt",
       label: "Date",
-      render: (row) => new Date(row.createdAt).toLocaleString(), // format datetime
+      render: (row) => new Date(row.createdAt).toLocaleString(), 
     },
     {
       id: "status",
@@ -145,11 +158,9 @@ const TicketSystem = () => {
         className="grid gap-4 w-full"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))" }}
       >
-        {/* {statsData.map((item, index) => (
-          <StatCard
-          
-           key={index} {...item} />
-        ))} */}
+        {statsData.map((item, index) => (
+          <StatCard key={index} {...item} />
+        ))}
       </div>
 
       <div className="mt-4">
@@ -161,7 +172,7 @@ const TicketSystem = () => {
           onRowClick={handleRowClick}
           loading={loading}
           onRefresh={() => dispatch(fetchAllTickets())}
-          searchableColumns={["queryType", "ticketCode", "status"]}
+          searchableColumns={["ticketCode", "queryType", "status"]}
         />
       </div>
 
@@ -172,7 +183,6 @@ const TicketSystem = () => {
         onSubmit={handleUpdate}
         role="admin"
         formLoading={formLoading}
-        
       />
     </div>
   );
