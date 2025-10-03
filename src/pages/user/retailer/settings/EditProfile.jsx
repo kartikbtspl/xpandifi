@@ -1,4 +1,3 @@
-// EditProfile.jsx
 import React, { useEffect, useState } from "react";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Input from "../../../../components/ui/input/Input";
@@ -28,7 +27,6 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
 
   const [avatarPreview, setAvatarPreview] = useState(userData.avatar || "");
 
-  // Reset form whenever userData changes or modal opens
   useEffect(() => {
     if (userData) {
       reset({
@@ -41,6 +39,7 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
         gstNumber: userData.field2 || "XXXXXXXX1234",
         address: userData.address || "N/A",
       });
+
       setAvatarPreview(userData.avatar || "");
     }
   }, [userData, reset]);
@@ -49,23 +48,31 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
     const file = e.target.files[0];
     if (file) {
       setAvatarPreview(URL.createObjectURL(file));
-      setValue("avatar", file); // store file in form
+      setValue("avatar", file);
     }
   };
 
   const onSubmit = (data) => {
-    console.log("Edited Profile Data:", data);
-    onSave(data); // call parent save function
+    const updatedData = {
+      ...userData,
+      avatar: avatarPreview,
+      name: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      alternatePhone: data.alternatePhone,
+      field1: data.businessReg,
+      field2: data.gstNumber,
+      address: data.address,
+    };
+    onSave(updatedData); 
     onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" showCloseButton>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Row 1: Profile Picture */}
         <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
         <div className="flex items-center gap-4 mb-4">
-          {/* Avatar Preview */}
           <div>
             {avatarPreview ? (
               <img
@@ -77,7 +84,7 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
               <FiUser className="bg-gray-300 h-24 w-24 rounded-full text-gray-900" />
             )}
           </div>
-            <div className="flex flex-col">
+          <div className="flex flex-col">
             <input
               type="file"
               accept="image/*"
@@ -90,7 +97,6 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
           </div>
         </div>
 
-        {/* Row 2: Name & Email */}
         <div className="flex gap-4">
           <div className="flex-1">
             <label className="block text-sm font-medium mb-1">Full Name</label>
@@ -116,8 +122,7 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
           </div>
         </div>
 
-        {/* Row 3: Phone & Alternate Phone */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 mt-4">
           <div className="flex-1">
             <label className="block text-sm font-medium mb-1">
               Phone Number
@@ -143,8 +148,7 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
           </div>
         </div>
 
-        {/* Row 4: Business Reg & GST Number */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 mt-4">
           <div className="flex-1">
             <label className="block text-sm font-medium mb-1">
               Business Registration Number
@@ -157,15 +161,13 @@ const EditProfile = ({ isOpen, onClose, userData, onSave }) => {
           </div>
         </div>
 
-        {/* Row 5: Residential Address */}
-        <div className="mb-4">
+        <div className="mb-4 mt-4">
           <label className="block text-sm font-medium mb-1">
             Residential Address
           </label>
           <Input type="text" {...register("address")} />
         </div>
 
-        {/* Save Button */}
         <div className="flex justify-end">
           <Button type="submit" isIcon={false} variant="primary" label="Save" />
         </div>
