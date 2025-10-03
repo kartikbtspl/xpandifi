@@ -31,6 +31,7 @@ const isVideo = (url) => url?.match(/\.(mp4|webm|ogg)$/i);
 
 // Height class mapping for different sizes
 const sizeClassMap = {
+  xs:"h-40",
   sm: "h-60",
   md: "h-80",
   lg: "h-[500px]",

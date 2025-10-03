@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { Typography, Chip } from "@mui/material";
 import StatCard from "../../../components/card/StatCard";
 import ReusableTable from "../../../components/table/ReusableTable";
-import COLORS from "../../../constants/Colors";
 import Toast from "../../../components/ui/toast/Toast";
 import { useDispatch, useSelector } from "react-redux";
 import TicketDetailsModal from "../../shared/TicketDetailsModal";
@@ -91,6 +90,7 @@ const TicketSystem = () => {
     async (data) => {
       try {
         await dispatch(updateTicketStatus({ id: selectedTicket.id, data }));
+        handleClose()
         Toast.success("Raised!", "Ticket status updated successfully!");
         console.log(data);
       } catch (error) {
