@@ -1,34 +1,30 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Modal } from "../../../../../components/ui/modal/Modal";
 import Input from "../../../../../components/ui/input/Input";
 import Button from "../../../../../components/ui/button/Button";
 import Switch from "@mui/material/Switch";
-import { Controller } from "react-hook-form";
 import Select from "react-select";
 
-const AddUserModal = ({ isOpen, onClose }) => {
-  // local states
-  const [status, setStatus] = useState(true); // default ON
+const AddUserModal = ({ isOpen, onClose, onAddUser }) => {
+  const [status, setStatus] = useState(true);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    control, 
+    control,
   } = useForm();
 
-  // handle switch toggle
-  const handleSwitch = () => {
-    setStatus((prev) => !prev);
-  };
+  const handleSwitch = () => setStatus((prev) => !prev);
+
   const onSubmit = (data) => {
     const payload = {
       ...data,
-      status,
+      status: status ? "ACTIVE" : "INACTIVE",
+      permissions: [], // default empty permissions
     };
-    console.log("User Submitted:", payload);
-    onClose();
+    onAddUser(payload); // pass data back to parent
   };
 
   return (
@@ -37,9 +33,8 @@ const AddUserModal = ({ isOpen, onClose }) => {
         <h2 className="text-xl font-bold">Add User</h2>
 
         <div className="pt-6 space-y-6">
-          {/* Name + Role + Status Row */}
+          {/* Name + Role + Status */}
           <div className="flex items-center gap-4">
-            {/* Full Name */}
             <div className="flex-1 mt-4">
               <label className="block text-sm font-medium">Full Name</label>
               <Input
@@ -53,7 +48,6 @@ const AddUserModal = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Role Dropdown using Controller + react-select */}
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">Role</label>
               <Controller
@@ -65,25 +59,18 @@ const AddUserModal = ({ isOpen, onClose }) => {
                     {...field}
                     options={[
                       { value: "Store Manager", label: "Store Manager" },
-                      {
-                        value: "Marketing & Sales",
-                        label: "Marketing & Sales",
-                      },
+                      { value: "Marketing & Sales", label: "Marketing & Sales" },
                       { value: "Finance Manager", label: "Finance Manager" },
                     ]}
                     placeholder="Select role"
                     value={
                       [
                         { value: "Store Manager", label: "Store Manager" },
-                        {
-                          value: "Marketing & Sales",
-                          label: "Marketing & Sales",
-                        },
+                        { value: "Marketing & Sales", label: "Marketing & Sales" },
                         { value: "Finance Manager", label: "Finance Manager" },
                       ].find((opt) => opt.value === field.value) || null
                     }
                     onChange={(selected) => field.onChange(selected?.value)}
-                    className="react-select-container"
                   />
                 )}
               />
@@ -92,7 +79,6 @@ const AddUserModal = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Status */}
             <div className="flex items-center space-x-2 mb-10">
               <span className="text-sm text-gray-600">Status</span>
               <Switch
@@ -138,7 +124,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
           {/* Submit */}
           <div className="flex justify-end">
             <Button
-            isIcon={false}
+              isIcon={false}
               type="submit"
               variant="primary"
               label="Add User"

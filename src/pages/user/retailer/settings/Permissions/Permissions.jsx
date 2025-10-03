@@ -3,6 +3,7 @@ import ReusableTable from "../../../../../components/table/ReusableTable";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Breadcrumbs from "../../../../../components/ui/bread-crumb/Breadcrumbs";
 import { Switch } from "@mui/material";
+import Toast from "../../../../../components/ui/toast/Toast";
 
 const Permissions = () => {
   const [rows, setRows] = React.useState([
@@ -111,10 +112,12 @@ const Permissions = () => {
           : row
       )
     );
+
+    Toast.success("Status updated successfully ! ")
   };
 
   const handleThreeDotsClick = (row) => {
-    alert("No actions available for this row", row);
+    Toast.info(`No actions available `)
   };
 
   const handleRowClick = (row) => {

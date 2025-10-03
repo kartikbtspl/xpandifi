@@ -4,7 +4,7 @@ import Input from "../../../../components/ui/input/Input";
 import Button from "../../../../components/ui/button/Button";
 import Select from "react-select";
 
-const AddStore = ({ isOpen, onClose }) => {
+const AddStore = ({ isOpen, onClose, onAdd }) => {
   const {
     register,
     handleSubmit,
@@ -14,7 +14,7 @@ const AddStore = ({ isOpen, onClose }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Store Submitted:", data);
+    onAdd(data); 
     handleClose();
   };
 
@@ -29,7 +29,6 @@ const AddStore = ({ isOpen, onClose }) => {
         <h2 className="text-xl font-bold">Add Store</h2>
 
         <div className="pt-6">
-          {/* Store Address */}
           <div>
             <label className="block text-sm font-medium mb-1">
               Store Address
@@ -45,8 +44,7 @@ const AddStore = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Store Name + Regions */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-4">
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">
                 Store Name
@@ -70,8 +68,7 @@ const AddStore = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Business Registration Number + GST Number */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-4">
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">
                 Business Registration Number
@@ -102,8 +99,7 @@ const AddStore = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Phone Number + Alternate Number */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-4">
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">
                 Phone Number
@@ -125,8 +121,7 @@ const AddStore = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Contact's Role + Store Type (using react-select) */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-4">
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">
                 Contact's Role
@@ -198,7 +193,6 @@ const AddStore = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Submit */}
           <div className="flex justify-end pt-6">
             <Button
               isIcon={false}

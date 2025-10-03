@@ -6,7 +6,7 @@ import COLORS from "../../../../../constants/Colors";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../../../components/ui/bread-crumb/Breadcrumbs";
 import AddUserModal from "./AddUserModal";
-
+import Toast from "../../../../../components/ui/toast/Toast";
 const UserInSettings = () => {
   const [switchLoading, setSwitchLoading] = useState({});
   const [isOpen, setIsOpen] = useState(false);
@@ -63,44 +63,41 @@ const UserInSettings = () => {
   const handleStatusChange = async (userId, currentStatus) => {
     const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
-    // Set loading true for this user
     setSwitchLoading((prev) => ({ ...prev, [userId]: true }));
 
     try {
-      // Simulate API call
-      //await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Update the user status in state
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
+      setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.map((user) =>
           user.id === userId ? { ...user, status: newStatus } : user
-        )
-      );
-
-      console.log(
-        `User ${userId} status changed from ${currentStatus} to ${newStatus}`
-      );
-
-      // Simulate success
-      if (newStatus === "ACTIVE") {
-        console.log(
-          "User Activated",
-          "The user has been activated successfully!"
         );
-      } else {
-        console.log("User Deactivated", "The user has been deactivated.");
-      }
+
+        // Find the user from the previous state
+        const userToUpdate = prevUsers.find((user) => user.id === userId);
+
+        // Show toast after state update
+        setTimeout(() => {
+          if (newStatus === "ACTIVE") {
+            Toast.success(
+              `${userToUpdate.fullName} has been activated successfully!`
+            );
+          } else {
+            Toast.success(
+              `${userToUpdate.fullName} has been deactivated successfully!`
+            );
+          }
+        }, 0);
+
+        return updatedUsers;
+      });
     } catch (error) {
-      console.log("Error", error?.message || "Failed to update user status");
+      Toast.error(error?.message || "Failed to update user status");
     } finally {
-      // Set loading false for this user
       setSwitchLoading((prev) => ({ ...prev, [userId]: false }));
     }
   };
 
   const handleRowClick = (row) => {
     console.log("Row clicked:", row);
-    // Navigate to user profile with row data as state
     navigate("user-profile", { state: { userData: row } });
   };
 
@@ -180,7 +177,18 @@ const UserInSettings = () => {
         onRowClick={handleRowClick}
       />
 
-      <AddUserModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <AddUserModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onAddUser={(newUser) => {
+          setUsers((prev) => [
+            ...prev,
+            { id: prev.length + 1, ...newUser }, 
+          ]);
+          Toast.success("New user added successfully !")
+          setIsOpen(false);
+        }}
+      />
     </div>
   );
 };
