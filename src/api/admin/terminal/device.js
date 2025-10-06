@@ -15,3 +15,10 @@ export const updateRequestStatusAPI = async (id,status,remark="")=>{
     );
     return (await response).data;
 }
+
+
+
+export const getAllDevicesAPI = async ()=>{
+    const response = await axiosInstance.get('/api/v2/terminal/devices');
+    return response?.data?.data;
+}
