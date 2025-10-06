@@ -97,7 +97,7 @@ export const adminMenuItems = [
     path: "/revenue-payouts",
   },
   { name: "Bid Review", icon: <BidReviewIcon />, path: "/manage-bids" },
-  { name: "Device Reuquest", icon: <DeviceIcon />, path: "/device-request" },
+  { name: "Terminals", icon: <DeviceIcon />, path: "/terminals" },
 
   {
     name: "Ticket System",

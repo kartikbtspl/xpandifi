@@ -91,9 +91,11 @@ const CampaignPaymentHistory = lazy(() =>
 const CampaignRevenueRequest = lazy(() =>
   import("../pages/admin/campaign/CampaignRevenueRequest")
 );
-const DeviceRequest = lazy(() =>
-  import("../pages/admin/Terminal/DeviceRequest")
+const Terminal = lazy(() => import("../pages/admin/Terminal/Terminal"));
+const TerminalDetails = lazy(() =>
+  import("../pages/admin/Terminal/TerminalDetails")
 );
+
 export const dashboardRoutes = [
   <Route
     key="layout"
@@ -107,7 +109,6 @@ export const dashboardRoutes = [
   >
     {/* Shared route */}
     <Route path="/" element={<Dashboard />} />
-
     <Route
       path="/create-campaign"
       element={
@@ -168,7 +169,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="/payment-history"
       element={
@@ -177,7 +177,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     {/* Retailer routes */}
     <Route
       path="/devices"
@@ -187,7 +186,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="/ad-performance"
       element={
@@ -214,7 +212,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="/campaigns"
       element={
@@ -231,7 +228,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="/revenue-request"
       element={
@@ -240,7 +236,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="/report"
       element={
@@ -249,7 +244,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="/support"
       element={
@@ -260,7 +254,6 @@ export const dashboardRoutes = [
     >
       <Route path="raise-ticket" element={<TicketRaise />} />
     </Route>
-
     {/* <Route
       path="/settings"
       element={
@@ -276,7 +269,6 @@ export const dashboardRoutes = [
       path="/settings/users/user-profile"
       element={<UserProfileInSettings />}
     /> */}
-
     <Route
       path="/settings"
       element={
@@ -289,7 +281,6 @@ export const dashboardRoutes = [
       <Route path="permissions" element={<Permissions />} />
       <Route path="users/user-profile" element={<UserProfileInSettings />} />
     </Route>
-
     {/* ADMIN ROUTES */}
     <Route
       path="user-management"
@@ -380,7 +371,6 @@ export const dashboardRoutes = [
         </PrivateRoute>
       }
     />
-
     <Route
       path="ticket"
       element={
@@ -398,12 +388,19 @@ export const dashboardRoutes = [
       }
     />
     <Route
-      path="device-request"
+      path="terminals"
       element={
         <PrivateRoute allowedRoles={["SUPERADMIN", "ADMIN"]}>
-          <DeviceRequest />
+          <Terminal /> 
         </PrivateRoute>
       }
-    />
+    >
+      <Route
+        path="terminal-details"
+        element={
+          <TerminalDetails /> 
+        }
+      />
+    </Route>
   </Route>,
 ];

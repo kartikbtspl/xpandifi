@@ -31,7 +31,7 @@ export const createTicketAPI = async (data) => {
 
 
 export const getAllTicketAPI = async () => {
-  const response = await axiosInstance.get("/api/v1/ticket/all");
+  const response = await axiosInstance.get("/api/v1/ticket/all", {withCredentials:true});
   console.log(response.data)
   return response?.data?.data;
 };
