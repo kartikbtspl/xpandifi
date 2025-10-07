@@ -3,6 +3,7 @@ import {
   getAllRequestAPI,
   updateRequestStatusAPI,
   getAllDevicesAPI,
+  updateDeviceCountAPI,
 } from "../../../api/admin/terminal/device";
 
 // Thunks
@@ -60,6 +61,26 @@ export const fetchDevices = createAsyncThunk(
       const response = await getAllDevicesAPI();
 
       return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Update device count
+export const updateDeviceCount = createAsyncThunk(
+  "terminal/updateDeviceCount",
+  async (
+    { deviceId, retailerId, activeDevices, inactiveDevices },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await updateDeviceCountAPI(deviceId, {
+        retailerId,
+        activeDevices,
+        inactiveDevices,
+      });
+      return response; 
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -135,6 +156,38 @@ const terminalSlice = createSlice({
       .addCase(updateRequestStatus.rejected, (state, action) => {
         state.formLoading = false;
         state.error = action.payload || "Failed to update device request";
+      });
+    builder
+
+      // Update device count
+      .addCase(updateDeviceCount.fulfilled, (state, action) => {
+        state.deviceFormLoading = false;
+        const updatedDevice = action.payload;
+
+        state.devices = state.devices.map((retailer) => {
+          if (retailer.userId === updatedDevice.userId) {
+            return {
+              ...retailer,
+              devices: retailer.devices.map((d) =>
+                d.id === updatedDevice.deviceId 
+                  ? {
+                      ...d,
+                      activeDevices: updatedDevice.activeDevices,
+                      inactiveDevices: updatedDevice.inactiveDevices,
+                      totalDevices: updatedDevice.totalDevices,
+                      status: updatedDevice.status,
+                    }
+                  : d
+              ),
+            };
+          }
+          return retailer;
+        });
+      })
+
+      .addCase(updateDeviceCount.rejected, (state, action) => {
+        state.deviceFormLoading = false;
+        state.deviceError = action.payload || "Failed to update device count";
       });
   },
 });
