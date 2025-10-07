@@ -1,52 +1,79 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateDeviceCount,
+  fetchDevices,
+} from "../../../redux/slices/admin/terminalSlice";
 import StatusBadge from "../../../components/ui/badges/StatusBadge";
 import ReusableTable from "../../../components/table/ReusableTable";
 import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
 import Counter from "../../../components/ui/counter/Counter";
+import Toast from "../../../components/ui/toast/Toast";
 
 const TerminalDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const retailer = location.state?.retailer;
+  const {
+    deviceFormLoading,
+    deviceError,
+    devices: globalDevices,
+  } = useSelector((state) => state.adminTerminal);
+
+  const passedRetailer = location.state?.retailer;
+  const [retailer, setRetailer] = useState(passedRetailer || null);
   const [deviceList, setDeviceList] = useState([]);
-
-  // Debounce ref
-  const debounceTimeout = useRef(null);
-  console.log(retailer)
-
-  // Debounced API call
-  const sendDeviceUpdate = useCallback((payload) => {
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-
-    debounceTimeout.current = setTimeout(async () => {
-      try {
-        await fetch("/api/updateDeviceCount", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        console.log("Device update sent:", payload);
-      } catch (err) {
-        console.error("Error updating device:", err);
-      }
-    }, 3000); // 3000ms debounce
-  }, []);
-
-  // Initialize device list
+  const debounceTimeout = useRef({});
   useEffect(() => {
-    if (!retailer) {
+    if (!passedRetailer) {
       navigate("/terminals");
-    } else {
-      setDeviceList(retailer.devices || []);
+      return;
     }
-  }, [retailer, navigate]);
+
+    const freshRetailer = globalDevices.find(
+      (r) => r.userId === passedRetailer.userId
+    );
+
+    const retailerToUse = freshRetailer || passedRetailer;
+
+    setRetailer(retailerToUse);
+    setDeviceList(retailerToUse.devices || []);
+  }, [passedRetailer, globalDevices, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(fetchDevices());
+    };
+  }, [dispatch]);
+
+  // Debounced API update for counters
+  const sendDeviceUpdate = useCallback(
+    ({ deviceId, retailerId, activeDevices, inactiveDevices }) => {
+      if (debounceTimeout.current[deviceId]) {
+        clearTimeout(debounceTimeout.current[deviceId]);
+      }
+
+      debounceTimeout.current[deviceId] = setTimeout(() => {
+        dispatch(
+          updateDeviceCount({
+            deviceId, 
+            retailerId,
+            activeDevices,
+            inactiveDevices,
+          })
+        )
+          .unwrap()
+          .then(() => Toast.success("Device counts updated successfully"))
+          .catch(() => Toast.error("Failed to update device counts"));
+      }, 800);
+    },
+    [dispatch]
+  );
 
   if (!retailer) return null;
 
-  // Columns for table
   const columns = [
     { id: "deviceName", label: "Device Name" },
     { id: "totalDevices", label: "Total Devices" },
@@ -63,19 +90,21 @@ const TerminalDetails = () => {
           color="green"
           onChange={(newActive) => {
             const newInactive = row.totalDevices - newActive;
-
-            // Update local state
             setDeviceList((prev) =>
-              prev.map((device) =>
-                device.deviceName === row.deviceName
-                  ? { ...device, activeDevices: newActive, inactiveDevices: newInactive }
-                  : device
+              prev.map((d) =>
+                d.id === row.id
+                  ? {
+                      ...d,
+                      activeDevices: newActive,
+                      inactiveDevices: newInactive,
+                    }
+                  : d
               )
             );
 
-            // Send update to backend (debounced)
             sendDeviceUpdate({
-              retailerId: row.userId,
+              deviceId: row.id, 
+              retailerId: retailer.userId,
               activeDevices: newActive,
               inactiveDevices: newInactive,
             });
@@ -96,19 +125,21 @@ const TerminalDetails = () => {
           color="red"
           onChange={(newInactive) => {
             const newActive = row.totalDevices - newInactive;
-
-            // Update local state
             setDeviceList((prev) =>
-              prev.map((device) =>
-                device.deviceName === row.deviceName
-                  ? { ...device, activeDevices: newActive, inactiveDevices: newInactive }
-                  : device
+              prev.map((d) =>
+                d.id === row.id
+                  ? {
+                      ...d,
+                      activeDevices: newActive,
+                      inactiveDevices: newInactive,
+                    }
+                  : d
               )
             );
 
-            // Send update to backend (debounced)
             sendDeviceUpdate({
-              retailerId: row.retailerId,
+              deviceId: row.id, 
+              retailerId: retailer.userId,
               activeDevices: newActive,
               inactiveDevices: newInactive,
             });
@@ -120,7 +151,10 @@ const TerminalDetails = () => {
       id: "status",
       label: "Status",
       render: (row) => (
-        <StatusBadge isActive={row.status.toUpperCase() === "ACTIVE"} size={12} />
+        <StatusBadge
+          isActive={row.status?.toUpperCase() === "ACTIVE"}
+          size={12}
+        />
       ),
     },
     {
@@ -133,7 +167,6 @@ const TerminalDetails = () => {
   return (
     <div className="p-4">
       <Breadcrumbs />
-      <br />
       <div className="px-4 py-4 mb-4 shadow bg-white rounded-lg">
         <h2 className="text-2xl font-bold mb-2">{retailer.retailerBusiness}</h2>
         <p>
@@ -146,156 +179,19 @@ const TerminalDetails = () => {
       <ReusableTable
         columns={columns}
         rows={deviceList}
-        loading={false}
+        loading={deviceFormLoading}
         filterKey="status"
         filterOptions={["all", "active", "inactive"]}
         searchableColumns={["deviceName", "regions"]}
       />
+
+      {deviceError && (
+        <p className="text-red-500 mt-3">
+          {deviceError.error || "Failed to update device counts"}
+        </p>
+      )}
     </div>
   );
 };
 
 export default TerminalDetails;
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import StatusBadge from "../../../components/ui/badges/StatusBadge";
-// import Button from "../../../components/ui/button/Button";
-// import Toast from "../../../components/ui/toast/Toast";
-// import ReusableTable from "../../../components/table/ReusableTable";
-// import Breadcrumbs from "../../../components/ui/bread-crumb/Breadcrumbs";
-// import Counter from "../../../components/ui/counter/Counter";
-
-// const TerminalDetails = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-
-
-//   const retailer = location.state?.retailer;
-//   const [deviceList, setDeviceList] = useState([]);
-
-//   // Initialize device list
-//   useEffect(() => {
-//     if (!retailer) {
-//       navigate("/terminals");
-//     } else {
-//       setDeviceList(retailer.devices);
-//     }
-//   }, [retailer, navigate]);
-
-//   if (!retailer) return navigate("/terminals");
-
-
-//   // Columns for ReusableTable
-//   const columns = [
-//     { id: "deviceName", label: "Device Name" },
-//     {
-//       id: "totalDevices",
-//       label: "Total Devices",
-//     },
-//     {
-//       id: "activeDevices",
-//       label: "Active Devices",
-//       render: (row) => (
-//         <Counter
-//           value={row.activeDevices}
-//           min={0}
-//           max={row.totalDevices}
-//           size="sm"
-//           width="80px"
-//           color="green"
-//           onChange={(newActive) => {
-//             const newInactive = row.totalDevices - newActive;
-
-//             // Update the deviceList state for this row
-//             setDeviceList((prev) =>
-//               prev.map((device) =>
-//                 device.deviceName === row.deviceName
-//                   ? {
-//                       ...device,
-//                       activeDevices: newActive,
-//                       inactiveDevices: newInactive,
-//                     }
-//                   : device
-//               )
-//             );
-//           }}
-//         />
-//       ),
-//     },
-//     {
-//       id: "inactiveDevices",
-//       label: "Inactive Devices",
-//       render: (row) => (
-//         <Counter
-//           value={row.inactiveDevices}
-//           min={0}
-//           max={row.totalDevices}
-//           size="sm"
-//           width="80px"
-//           color="red"
-//           onChange={(newInactive) => {
-//             const newActive = row.totalDevices - newInactive;
-
-//             // Update the deviceList state for this row
-//             setDeviceList((prev) =>
-//               prev.map((device) =>
-//                 device.deviceName === row.deviceName
-//                   ? {
-//                       ...device,
-//                       activeDevices: newActive,
-//                       inactiveDevices: newInactive,
-//                     }
-//                   : device
-//               )
-//             );
-//           }}
-//         />
-//       ),
-//     },
-//     {
-//       id: "status",
-//       label: "Status",
-//       render: (row) => (
-//         <StatusBadge
-//           isActive={row.status.toUpperCase() === "ACTIVE"}
-//           size={12}
-//         />
-//       ),
-//     },
-//     {
-//       id: "regions",
-//       label: "Regions",
-//       render: (row) => row?.regions?.map((r) => r.name).join(", ") || "-",
-//     },
-//   ];
-
-//   return (
-//     <div className="p-4">
-//       <Breadcrumbs />
-//       <br />
-//       <div className="px-4 py-4 mb-4 shadow bg-white rounded-lg">
-//         <h2 className="text-2xl font-bold mb-2">{retailer.retailerBusiness}</h2>
-//         <p>
-//           <strong>Retailer Name:</strong> {retailer.retailerName}
-//         </p>
-//       </div>
-
-//       <h3 className="text-xl font-semibold mb-2">Devices</h3>
-
-//       <ReusableTable
-//         columns={columns}
-//         rows={deviceList}
-//         loading={false}
-//         filterKey="status"
-//         filterOptions={["all", "active", "inactive"]}
-//         searchableColumns={["deviceName", "regions"]}
-//       />
-//     </div>
-//   );
-// };
-
-// export default TerminalDetails;

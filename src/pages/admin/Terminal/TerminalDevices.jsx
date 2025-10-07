@@ -5,7 +5,6 @@ import ReusableTable from "../../../components/table/ReusableTable";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../../components/ui/button/Button";
 
-
 const TerminalDevices = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -15,7 +14,6 @@ const TerminalDevices = () => {
     (state) => state.adminTerminal
   );
   const isDetails = location.pathname.includes("terminal-details");
-  console.log(devices)
 
   useEffect(() => {
     if (!deviceFetched) dispatch(fetchDevices());
@@ -26,24 +24,40 @@ const TerminalDevices = () => {
   const formattedRows = useMemo(() => {
     if (!devices) return [];
 
-    // Keep a reference to the parent retailer
-    return devices.flatMap((retailer) =>
-      retailer.devices.map((device) => ({
-        id: `${retailer.retailerName}-${device.id}`,
-        retailerBusiness: retailer.retailerBusiness,
-        deviceName: device.deviceName,
-        qty: device.totalDevices,
-        status: device.status.toUpperCase(),
-        retailerData: retailer, // pass full retailer object
-      }))
-    );
+    return devices.map((retailer) => ({
+      id: retailer.retailerName,
+      retailerBusiness: retailer.retailerBusiness,
+      deviceNames: retailer.devices.map((d) => d.deviceName), 
+      totalDevices: retailer.devices.map((d) => d.totalDevices), 
+      retailerData: retailer,
+    }));
   }, [devices]);
 
   // Columns
   const columns = [
     { id: "retailerBusiness", label: "Retailer" },
-    { id: "deviceName", label: "Device Name" },
-    { id: "qty", label: "Total Devices" },
+    {
+      id: "deviceName",
+      label: "Device Name",
+      render: (row) => (
+        <div className="flex flex-col gap-1">
+          {row.deviceNames.map((name, idx) => (
+            <span key={idx}>{idx+1}.  {name}</span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "qty",
+      label: "Total Devices",
+      render: (row) => (
+        <div className="flex flex-col gap-1">
+          {row.totalDevices.map((qty, idx) => (
+            <span key={idx}>{qty}</span>
+          ))}
+        </div>
+      ),
+    },
     {
       id: "view",
       label: "View Details",
