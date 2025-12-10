@@ -37,57 +37,62 @@ const FormBuilder = ({
   const debounceRef = useRef(null);
   const lastPayloadRef = useRef({});
 
+  // Watch the specific estimate fields
+  const productVal = watch("product");
+  const regionsVal = watch("regions");
+  const targetDevicesVal = watch("targetDevices");
+
   useEffect(() => {
     if (!estimateApi || estimateWatchFields.length === 0 || !estimateSetField) return;
 
-    const subscription = watch((values) => {
-      const allFilled = estimateWatchFields.every((f) => {
-        const val = values[f];
-        return Array.isArray(val) ? val.length > 0 : !!val;
-      });
+    const values = { product: productVal, regions: regionsVal, targetDevices: targetDevicesVal };
 
-      if (!allFilled) return;
-
-      const fieldKeyMap = {
-        product: "productTypes",
-        targetDevices: "devices",
-        regions: "regions",
-      };
-
-      const payload = estimateWatchFields.reduce((acc, field) => {
-        const backendKey = fieldKeyMap[field] || field;
-        const value = values[field];
-        acc[backendKey] = Array.isArray(value)
-          ? value.filter(Boolean).map((v) => (typeof v === "string" ? v.trim() : v))
-          : value;
-        return acc;
-      }, {});
-
-      // Skip API call if payload hasn't changed
-      if (isEqual(payload, lastPayloadRef.current)) return;
-
-      lastPayloadRef.current = payload;
-
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-
-      debounceRef.current = setTimeout(() => {
-        estimateApi(payload)
-          .then((price) => {
-            console.log("Estimated price:", price);
-            setValue(estimateSetField, price);
-            console.log(`Set ${estimateSetField} to estimated price:`, price);
-          })
-          .catch((err) => {
-            console.error("Estimation error:", err.response?.data || err.message);
-          });
-      }, 500);
+    const allFilled = estimateWatchFields.every((f) => {
+      const val = values[f];
+      if (Array.isArray(val)) {
+        return val.length > 0;
+      }
+      return val !== undefined && val !== null && val !== "";
     });
 
-    return () => {
-      subscription.unsubscribe();
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!allFilled) return;
+
+    const fieldKeyMap = {
+      product: "productTypes",
+      targetDevices: "devices",
+      regions: "regions",
     };
-  }, [watch, estimateApi, estimateWatchFields, estimateSetField, setValue]);
+
+    const payload = estimateWatchFields.reduce((acc, field) => {
+      const backendKey = fieldKeyMap[field] || field;
+      const value = values[field];
+      
+      if (Array.isArray(value)) {
+        acc[backendKey] = value.filter(Boolean);
+      } else {
+        acc[backendKey] = value ? [value] : [];
+      }
+      return acc;
+    }, {});
+
+    if (isEqual(payload, lastPayloadRef.current)) return;
+
+    lastPayloadRef.current = payload;
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      estimateApi(payload)
+        .then((price) => {
+          setValue(estimateSetField, price);
+        })
+        .catch((err) => {
+          console.error("Estimation error:", err.response?.data || err.message);
+        });
+    }, 500);
+  }, [productVal, regionsVal, targetDevicesVal, estimateApi, estimateWatchFields, estimateSetField, setValue]);
 
   const handleFormSubmit = (data) => {
     if (onSubmit) onSubmit(data);

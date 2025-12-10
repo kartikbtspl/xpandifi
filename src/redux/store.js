@@ -21,6 +21,9 @@ import adminRevenueReducer from './slices/admin/adminRevenueSlice'
 import adminTerminalReducer from './slices/admin/terminalSlice'
 import adminTickertReducer from './slices/admin/ticketsSlice'
 
+// Shared Slices
+import notificationReducer from './slices/shared/notificationSlice'
+
 
 export const store = configureStore({
   reducer: {
@@ -43,6 +46,9 @@ export const store = configureStore({
     product: productReducer,
     payout: payoutReducer,
     adminTerminal:adminTerminalReducer,
-    adminTicket:adminTickertReducer
+    adminTicket:adminTickertReducer,
+
+    // Shared Slices
+    notification: notificationReducer,
   },
 })

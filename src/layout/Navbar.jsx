@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import {useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { agencyRouteMap, retailerRouteMap, adminRouteMap } from "../routes/routeMaps"; // ✅ import all maps
 import Input from "../components/ui/input/Input";
@@ -10,6 +10,8 @@ import UserProfile from "../components/ui/user/UserProfile";
 import { fetchUserProfile } from "../redux/slices/user/userSlice";
 import { fetchAdminProfile } from "../redux/slices/admin/adminSlice";
 import { useCurrentUser } from "../components/ui/user/CurrentUser";
+import { NotificationPanel, BellIcon } from "../components/notification/NotificationPanel";
+import { fetchNotifications } from "../redux/slices/shared/notificationSlice";
 
 const languages = [
   { label: "English", code: "en" },
@@ -24,9 +26,12 @@ const Navbar = ({ toggleSidebar }) => {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const profileRef = useRef();
+  const notificationRef = useRef();
 
   const dispatch = useDispatch();
+  const { unreadCount } = useSelector((state) => state.notification);
 
   // fetch correct profile depending on role
   useEffect(() => {
@@ -35,6 +40,7 @@ const Navbar = ({ toggleSidebar }) => {
     const isAdmin = ["SUPERADMIN", "ADMIN"].includes(user.role);
 
     dispatch(isAdmin ? fetchAdminProfile() : fetchUserProfile());
+    dispatch(fetchNotifications()); // Fetch notifications on login
   }, [dispatch, user?.role]);
 
   // close profile dropdown on outside click
@@ -154,6 +160,17 @@ const Navbar = ({ toggleSidebar }) => {
           ))}
         </select>
 
+        {/* Notification Bell */}
+        <div className="relative" ref={notificationRef}>
+          <button
+            onClick={() => setIsNotificationOpen(true)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Notifications"
+          >
+            <BellIcon hasUnread={unreadCount > 0} />
+          </button>
+        </div>
+
         <div className="relative" ref={profileRef}>
           <div
             onClick={() => setShowProfile((prev) => !prev)}
@@ -188,6 +205,12 @@ const Navbar = ({ toggleSidebar }) => {
           <AddAdminForm onClose={() => setIsModalOpen(false)} />
         </Modal>
       )}
+
+      {/* Notification Panel */}
+      <NotificationPanel
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+      />
     </div>
   );
 };
