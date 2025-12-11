@@ -68,7 +68,7 @@ const SignIn = () => {
 
       {/* Main Page Layout */}
       <div className="min-h-screen flex flex-col lg:flex-row">
-        <div className="w-full p-2 lg:w-1/2 bg-[url('/images/auth/login-img.png')] bg-cover bg-center h-60 sm:h-72 md:h-96 lg:h-auto" />
+        <div className="w-full p-2 lg:w-1/2 bg-[url('/images/auth/login-img.png')] bg-cover bg-center h-60 sm:h-72 md:h-96 lg:h-auto rounded-3xl m-2" />
 
         <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 md:p-16 lg:p-20 xl:p-24 bg-white">
           <Link to="/adminLogin" className="absolute right-2 top-2">

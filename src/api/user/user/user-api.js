@@ -27,9 +27,12 @@ export const getUserProfileAPI = async () => {
 };
 
 export const updateUserProfileAPI = async (data) => {
+  // Check if data contains a file (profileUrl) - use FormData
+  const isFormData = data instanceof FormData;
   
-  const response = await axiosInstance.put('/api/v1/users/editProfile', data , {
-      withCredentials: true,
+  const response = await axiosInstance.put('/api/v1/users/editProfile', data, {
+    withCredentials: true,
+    headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {},
   });
   return response.data;
 };

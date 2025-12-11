@@ -127,8 +127,8 @@ const userSlice = createSlice({
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.formLoading = false;
-        state.user = action.payload; // updated profile
-        state.successMessage = "Profile updated successfully!";
+        state.user = action.payload?.data || action.payload; // extract data from response
+        state.successMessage = action.payload?.message || "Profile updated successfully!";
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.formLoading = false;

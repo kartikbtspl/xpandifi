@@ -9,16 +9,45 @@ const LocationFields = ({ control, setValue, watch, errors, isPincode = true ,cu
   const [cities, setCities] = useState([]);
 
   const watchedCountry = watch('country');
+  const watchedState = watch('state');
+  const watchedCity = watch('city');
 
+  // Load countries on mount
   useEffect(() => {
     axios.get('https://countriesnow.space/api/v0.1/countries/positions')
       .then(res => {
         const options = res.data.data.map(c => ({ label: c.name, value: c.name }));
         setCountries(options);
-        //console.log(options);
       })
       .catch(err => console.error('Error loading countries', err));
   }, []);
+
+  // Load states when country is set (for pre-filling)
+  useEffect(() => {
+    if (watchedCountry && states.length === 0) {
+      axios.post('https://countriesnow.space/api/v0.1/countries/states', { country: watchedCountry })
+        .then(res => {
+          const options = res.data.data.states.map(s => ({ label: s.name, value: s.name }));
+          setStates(options);
+        })
+        .catch(err => console.error('Error loading states', err));
+    }
+  }, [watchedCountry, states.length]);
+
+  // Load cities when state is set (for pre-filling)
+  useEffect(() => {
+    if (watchedCountry && watchedState && cities.length === 0) {
+      axios.post('https://countriesnow.space/api/v0.1/countries/state/cities', {
+        country: watchedCountry,
+        state: watchedState,
+      })
+        .then(res => {
+          const options = res.data.data.map(c => ({ label: c, value: c }));
+          setCities(options);
+        })
+        .catch(err => console.error('Error loading cities', err));
+    }
+  }, [watchedCountry, watchedState, cities.length]);
 
   const handleCountryChange = async (selected) => {
     const country = selected?.value || '';

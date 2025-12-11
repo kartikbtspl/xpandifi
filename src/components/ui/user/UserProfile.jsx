@@ -5,7 +5,7 @@ import { logoutAdmin } from "../../../redux/slices/admin/adminSlice";
 import { closeCampaignSSE } from "../../../util/services/sseService";
 import { clearCampaigns } from "../../../redux/slices/user/approvedCampaignSlice";
 
-const UserProfile = ({ profile, onAddAdminClick }) => {
+const UserProfile = ({ profile, onAddAdminClick, onClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -45,7 +45,7 @@ const UserProfile = ({ profile, onAddAdminClick }) => {
             Add Admin
           </button>
         )}
-        <Link to="/profile">
+        <Link to="/profile" onClick={onClose}>
           <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer">
             Profile
           </li>

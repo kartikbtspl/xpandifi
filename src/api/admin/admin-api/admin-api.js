@@ -35,10 +35,12 @@ export const getAdminProfile = async () => {
 };
 
 export const updateUserProfile = async (data) => {
-  const response = await axiosInstance.put('/api/v2/admin/editProfile',
-     data , {
-    
-      withCredentials: true,
+  // Check if data contains a file - use FormData
+  const isFormData = data instanceof FormData;
+  
+  const response = await axiosInstance.put('/api/v2/admin/editProfile', data, {
+    withCredentials: true,
+    headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {},
   });
   return response?.data?.data;
 };

@@ -177,9 +177,9 @@ const Navbar = ({ toggleSidebar }) => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src={user?.avatar || user?.profile_url || "logo.svg"}
+              src={user?.profileUrl || user?.avatar || user?.profile_url || "logo.svg"}
               alt="User"
-              className="w-8 h-8 rounded-full border-gray-400 border"
+              className="w-8 h-8 rounded-full border-gray-400 border object-cover"
             />
             <span className="text-sm font-medium text-gray-700 hidden sm:block">
               {user?.fullName || user?.name || "Loading..."}
@@ -188,8 +188,10 @@ const Navbar = ({ toggleSidebar }) => {
           {showProfile && (
             <UserProfile
               profile={user}
+              onClose={() => setShowProfile(false)}
               onAddAdminClick={() => {
-                setIsModalOpen(true), setShowProfile(false);
+                setIsModalOpen(true);
+                setShowProfile(false);
               }}
             />
           )}
