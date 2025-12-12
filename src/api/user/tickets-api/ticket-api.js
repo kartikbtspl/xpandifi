@@ -37,8 +37,7 @@ export const getAllTicketAPI = async () => {
 };
 
 
-export const updateStatusTicketAPI = async (id,data) => {
-  const response = await axiosInstance.put(`/api/v1/ticket/${id}/status`, data);
-  console.log(response.data)
+export const updateStatusTicketAPI = async (id, data) => {
+  const response = await axiosInstance.put(`/api/v1/ticket/${id}/status`, data, { withCredentials: true });
   return response?.data?.data;
 };

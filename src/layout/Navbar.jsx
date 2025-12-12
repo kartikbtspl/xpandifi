@@ -177,9 +177,10 @@ const Navbar = ({ toggleSidebar }) => {
             className="cursor-pointer flex items-center gap-2"
           >
             <img
-              src={user?.profileUrl || user?.avatar || user?.profile_url || "logo.svg"}
+              src={user?.profileUrl || user?.avatar || user?.profile_url || "/logo.svg"}
               alt="User"
               className="w-8 h-8 rounded-full border-gray-400 border object-cover"
+              onError={(e) => { e.target.src = "/logo.svg"; }}
             />
             <span className="text-sm font-medium text-gray-700 hidden sm:block">
               {user?.fullName || user?.name || "Loading..."}

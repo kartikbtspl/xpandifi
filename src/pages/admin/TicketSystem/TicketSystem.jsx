@@ -46,9 +46,10 @@ const TicketSystem = () => {
   };
 
   const {
-    ACTIVE = 0,
-    CLOSED = 0,
+    OPEN = 0,
+    INPROGRESS = 0,
     RESOLVED = 0,
+    CLOSED = 0,
     total = 0,
   } = useMemo(() => {
     return getStatusCounts(tickets || []);
@@ -62,27 +63,33 @@ const TicketSystem = () => {
       changeColor: "text-green-600",
       bgGradient: "bg-gradient-to-br from-white via-blue-50 to-blue-60",
     },
-
     {
-      title: "Active",
-      value: ACTIVE,
-      currency: false,
-      changeColor: "text-yellow-600",
-      bgGradient: "bg-gradient-to-br from-white via-yellow-50 to-yellow-100",
-    },
-    {
-      title: "Closed",
-      value: CLOSED,
+      title: "Open",
+      value: OPEN,
       currency: false,
       changeColor: "text-red-600",
       bgGradient: "bg-gradient-to-br from-white via-red-50 to-red-100",
     },
     {
+      title: "In Progress",
+      value: INPROGRESS,
+      currency: false,
+      changeColor: "text-yellow-600",
+      bgGradient: "bg-gradient-to-br from-white via-yellow-50 to-yellow-100",
+    },
+    {
       title: "Resolved",
       value: RESOLVED,
       currency: false,
-      changeColor: "text-blue-600",
+      changeColor: "text-green-600",
       bgGradient: "bg-gradient-to-br from-white via-green-50 to-green-100",
+    },
+    {
+      title: "Closed",
+      value: CLOSED,
+      currency: false,
+      changeColor: "text-gray-600",
+      bgGradient: "bg-gradient-to-br from-white via-gray-50 to-gray-100",
     },
   ];
 
@@ -131,9 +138,10 @@ const TicketSystem = () => {
       label: "Status",
       render: (row) => {
         const styles = {
-          ACTIVE: "bg-yellow-100 text-yellow-700",
-          CLOSED: "bg-red-100 text-red-700",
+          OPEN: "bg-red-100 text-red-700",
+          INPROGRESS: "bg-yellow-100 text-yellow-700",
           RESOLVED: "bg-green-100 text-green-700",
+          CLOSED: "bg-gray-100 text-gray-700",
         };
         return (
           <span
@@ -167,7 +175,7 @@ const TicketSystem = () => {
         <ReusableTable
           columns={columns}
           rows={tickets || []}
-          filterOptions={["all", "ACTIVE", "RESOLVED", "CLOSED"]}
+          filterOptions={["all", "OPEN", "INPROGRESS", "RESOLVED", "CLOSED"]}
           filterKey="status"
           onRowClick={handleRowClick}
           loading={loading}

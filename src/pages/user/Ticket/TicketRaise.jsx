@@ -61,9 +61,10 @@ const TicketRaise = () => {
       label: "Status",
       render: (row) => {
         const styles = {
-          ACTIVE: "bg-yellow-100 text-yellow-700",
-          CLOSED: "bg-red-100 text-red-700",
+          OPEN: "bg-red-100 text-red-700",
+          INPROGRESS: "bg-yellow-100 text-yellow-700",
           RESOLVED: "bg-green-100 text-green-700",
+          CLOSED: "bg-gray-100 text-gray-700",
         };
         return (
           <span
@@ -171,7 +172,7 @@ const TicketRaise = () => {
           <ReusableTable
             columns={columns}
             rows={tickets || []}
-            filterOptions={["all", "ACTIVE", "RESOLVED", "CLOSED"]}
+            filterOptions={["all", "OPEN", "INPROGRESS", "RESOLVED", "CLOSED"]}
             filterKey="status"
             onRowClick={handleRowClick}
             loading={loading}

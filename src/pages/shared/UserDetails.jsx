@@ -150,10 +150,9 @@ const UserDetails = () => {
         const result = await dispatch(updateUserProfile(formData)).unwrap();
         console.log("API Result:", result);
         
-        if (result?.success) {
-          await dispatch(fetchUserProfile()).unwrap();
-          Toast.success(result?.message || "Profile updated successfully!");
-        }
+        // Refresh profile after update
+        await dispatch(fetchUserProfile()).unwrap();
+        Toast.success(result?.message || "Profile updated successfully!");
       }
 
       cancelEdit("profile");
@@ -201,100 +200,122 @@ const UserDetails = () => {
         </div>
       )}
 
-      {/* Profile Card */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#445E94] to-[#16122F] p-6 text-white">
-          <h2 className="text-2xl font-bold">Profile</h2>
-          <p className="text-blue-100">{user?.email || "Manage your profile"}</p>
-        </div>
+      {/* Profile Header Card */}
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+        {/* Gradient Header with Profile Info */}
+        <div className="relative bg-gradient-to-r from-[#445E94] to-[#16122F] px-6 py-8">
+          {/* Edit Button */}
+          <button
+            onClick={() => setEditMode((prev) => ({ ...prev, profile: true }))}
+            className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg transition-all duration-200 backdrop-blur-sm"
+          >
+            <FiEdit size={18} />
+          </button>
 
-        {/* Body */}
-        <div className="p-6">
-          {/* Profile Picture */}
-          <div className="flex flex-col items-center mb-8">
+          {/* Profile Picture and Info */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-5">
             <div className="relative">
               <img
-                src={profilePicPreview || user?.profileUrl || user?.profile_url || "logo.svg"}
+                src={profilePicPreview || user?.profileUrl || user?.profile_url || "/logo.svg"}
                 alt="Profile"
-                className="w-32 h-32 rounded-full border-4 border-white shadow-md object-cover"
+                className="w-24 h-24 rounded-full border-4 border-white/30 shadow-lg object-cover bg-white"
+                onError={(e) => { e.target.src = "/logo.svg"; }}
               />
+              <div className="absolute bottom-1 right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
             </div>
-            <div className="mt-3 text-gray-700 text-md font-bold">
-              {user?.businessName || user?.role || "User"}
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-white">
+                {user?.fullName || user?.name || "User"}
+              </h2>
+              <p className="text-sm text-blue-100 mt-1">{user?.email}</p>
+              <span className="inline-block mt-2 px-3 py-1 bg-white/20 text-white text-xs font-medium rounded-full backdrop-blur-sm">
+                {user?.role || "User"}
+              </span>
             </div>
           </div>
+        </div>
 
-          {/* Personal Info */}
-          <div className="bg-gray-50 rounded-xl shadow p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Personal Information
-              </h3>
-              <button
-                onClick={() =>
-                  setEditMode((prev) => ({ ...prev, profile: true }))
-                }
-                className="text-blue-600 hover:cursor-pointer hover:text-blue-800"
-              >
-                <FiEdit />
-              </button>
+        {/* Stats Section */}
+        <div className="px-6 py-4">
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-500 uppercase tracking-wide">Phone</p>
+              <p className="text-sm font-semibold text-gray-800 mt-1">{user?.phone || "N/A"}</p>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
-              <Info label="Full Name" value={user?.fullName || user?.name} />
-              <Info label="Email" value={user?.email} />
-              <Info label="Mobile Number" value={user?.phone} />
-              <Info label="Alternate Number" value={user?.alternateNumber} />
-              <Info label="City" value={user?.city} />
-              <Info label="State" value={user?.state} />
-              <Info label="Country" value={user?.country} />
-              <Info label="Address" value={user?.address} />
-              {!isAdminOrSuperAdmin && (
-                <>
-                  <Info label="Business Name" value={user?.businessName} />
-                  <Info label="On Board" value={formatDate(user?.createdAt)} />
-                </>
-              )}
+            <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-500 uppercase tracking-wide">City</p>
+              <p className="text-sm font-semibold text-gray-800 mt-1">{user?.city || "N/A"}</p>
             </div>
+            <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-500 uppercase tracking-wide">State</p>
+              <p className="text-sm font-semibold text-gray-800 mt-1">{user?.state || "N/A"}</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-500 uppercase tracking-wide">Country</p>
+              <p className="text-sm font-semibold text-gray-800 mt-1">{user?.country || "N/A"}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="mt-6">
+      {/* Details Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Personal Information Card */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <span className="w-2 h-2 bg-[#445E94] rounded-full"></span>
+              Personal Information
+            </h3>
+          </div>
+          <div className="p-6 space-y-4">
+            <InfoCard label="Full Name" value={user?.fullName || user?.name} />
+            <InfoCard label="Email Address" value={user?.email} />
+            <InfoCard label="Mobile Number" value={user?.phone} />
+            {!isAdminOrSuperAdmin && (
+              <InfoCard label="Alternate Number" value={user?.alternateNumber} />
+            )}
+            <InfoCard label="Address" value={user?.address} />
+            {!isAdminOrSuperAdmin && (
+              <InfoCard label="Member Since" value={formatDate(user?.createdAt)} />
+            )}
+          </div>
+        </div>
+
+        {/* Security & Actions Card */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <span className="w-2 h-2 bg-[#445E94] rounded-full"></span>
+              {isAdminOrSuperAdmin ? "Security" : "Organization Details"}
+            </h3>
+          </div>
+          <div className="p-6">
+            {!isAdminOrSuperAdmin ? (
+              <div className="space-y-4">
+                <InfoCard label="Business Name" value={user?.businessName} />
+                <InfoCard label="Business Type" value={user?.businessType} />
+                <InfoCard label="Registration Number" value={user?.businessRegistrationNumber} />
+                <InfoCard label="GST Number" value={user?.gstNumber} />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <InfoCard label="Role" value={user?.role} />
+                <InfoCard label="Account Status" value="Active" />
+              </div>
+            )}
+            
+            <div className="mt-6 pt-6 border-t border-gray-100">
               <Button
                 isIcon={false}
-                onClick={() =>
-                  setEditMode((prev) => ({ ...prev, passwordModal: true }))
-                }
+                onClick={() => setEditMode((prev) => ({ ...prev, passwordModal: true }))}
                 label="Change Password"
+                className="w-full justify-center"
               />
             </div>
           </div>
-
-          {/* Org Details for Users */}
-          {!isAdminOrSuperAdmin && (
-            <div className="bg-gray-50 rounded-xl shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Organization Details
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
-                <Info label="Business Name" value={user?.businessName} />
-                <Info label="Business Type" value={user?.businessType} />
-                <Info label="Business Registration Number" value={user?.businessRegistrationNumber} />
-                <Info label="GST Number" value={user?.gstNumber} />
-                <Info
-                  label="Registered On"
-                  value={formatDate(user?.createdAt)}
-                />
-                <Info
-                  label="Organization Email"
-                  value={user?.orgEmail || user?.email}
-                />
-                <Info
-                  label="Organization Phone"
-                  value={user?.orgPhone || user?.phone}
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -317,9 +338,10 @@ const UserDetails = () => {
             <div className="flex flex-col items-center mb-4">
               <div className="relative">
                 <img
-                  src={profilePicPreview || user?.profileUrl || user?.profile_url || "logo.svg"}
+                  src={profilePicPreview || user?.profileUrl || user?.profile_url || "/logo.svg"}
                   alt="Profile"
                   className="w-24 h-24 rounded-full border-4 border-gray-200 shadow-md object-cover"
+                  onError={(e) => { e.target.src = "/logo.svg"; }}
                 />
                 <label
                   htmlFor="adminProfilePicInput"
@@ -446,9 +468,10 @@ const UserDetails = () => {
             <div className="flex flex-col items-center mb-4">
               <div className="relative">
                 <img
-                  src={profilePicPreview || user?.profileUrl || "logo.svg"}
+                  src={profilePicPreview || user?.profileUrl || "/logo.svg"}
                   alt="Profile"
                   className="w-24 h-24 rounded-full border-4 border-gray-200 shadow-md object-cover"
+                  onError={(e) => { e.target.src = "/logo.svg"; }}
                 />
                 <label
                   htmlFor="profilePicInput"
@@ -621,12 +644,13 @@ const UserDetails = () => {
   );
 };
 
-// Small helper components
-const Info = ({ label, value }) => (
-  <div className="flex w-full space-x-2">
-    <span className="text-gray-500">{label}:</span>
-    <div className="font-medium">{value || "N/A"}</div>
+// Beautiful Info Card component
+const InfoCard = ({ label, value }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+    <span className="text-sm text-gray-500 font-medium">{label}</span>
+    <span className="text-sm font-semibold text-gray-800 mt-1 sm:mt-0">{value || "N/A"}</span>
   </div>
 );
+
 export default UserDetails;
 
